@@ -1,26 +1,23 @@
 {
   "name": "tfind",
-  "version": "0.1",
-  "description": "Find missing persons..",
+  "version": "1.0.0",
+  "description": "Find missing people.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "ejs": "2.3.3",
-    "express": "4.13.3"
-  },
-  "engines": {
-    "node": "0.12.7"
+    "test": "test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/semitaho/tfind"
+    "url": "https://github.com/semitaho/tfind.git"
   },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT"
-
+  "author": "Toni Aho",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/semitaho/tfind/issues"
+  },
+  "homepage": "https://github.com/semitaho/tfind",
+  "dependencies": {
+    "express": "^4.13.3",
+    "jade": "^1.11.0"
+  }
+}
