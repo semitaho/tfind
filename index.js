@@ -1,5 +1,9 @@
-var express = require('express');
-var app = module.exports = express();
+var express = require('express'),
+  browserify = require('browserify'),
+  stylus = require('stylus'),
+  nib = require('nib');
+
+var app = module.exports = express()
 //app.use(app.router);
 app.set('port', (process.env.PORT || 5000));
 app.set('views', __dirname + '/views');
@@ -9,7 +13,17 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
 app.use(express.static(__dirname + '/public'));
-
+app.use(stylus.middleware(
+  {
+    src: __dirname + '/stylus',
+    dest: __dirname +'/public/css',
+    compile: function (str, path) {
+      return stylus(str)
+        .set('filename', path)
+        .use(nib());
+    }
+  }
+))
 
 app.get('/', function (req, res) {
   res.render('index');
