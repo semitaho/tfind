@@ -5,8 +5,8 @@ var express = require('express'),
 require('babel/register');
 console.log('taaa');
 var app = module.exports = express();
-//var tfindApp = require(__dirname + '/components/tFindApp.jsx');
-//var AppFactory = React.createFactory(tfindApp);
+var tfindApp = require(__dirname + '/components/tfindApp.jsx');
+var AppFactory = React.createFactory(tfindApp);
 
 //app.use(app.router);
 app.set('port', (process.env.PORT || 5000));
