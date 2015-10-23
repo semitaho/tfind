@@ -1,11 +1,13 @@
-var express = require('express'),
-  stylus = require('stylus'),
-  nib = require('nib'),
-  React = require('react');
 require('babel/register');
+var React = require('react'),
+express = require('express'),
+  stylus = require('stylus'),
+  nib = require('nib');
+  tfindApp = require('./components/tfindApp.jsx');
+
+
 var app = module.exports = express();
-var tfindApp = require(__dirname + '/components/tfindApp.jsx');
-var AppFactory = React.createFactory(tfindApp);
+
 
 //app.use(app.router);
 app.set('port', (process.env.PORT || 5000));
@@ -27,7 +29,9 @@ app.use(stylus.middleware(
   }
 ));
 
+
 app.get('/', (req, res) => {
+  var AppFactory = React.createFactory(tfindApp);
   var reactHtml = React.renderToString(AppFactory({}));
   res.render('index', {reactOutput: reactHtml});
 });
