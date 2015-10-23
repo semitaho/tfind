@@ -3,6 +3,7 @@ var express = require('express'),
   nib = require('nib'),
   React = require('react');
 require('babel/register');
+console.log('taaa');
 var app = module.exports = express();
 var tfindApp = require(__dirname + '/components/tFindApp.jsx');
 var AppFactory = React.createFactory(tfindApp);
