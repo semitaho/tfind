@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "start": "node index.js"
+    "start": "node --harmony index.js"
   },
   "repository": {
     "type": "git",
@@ -18,10 +18,13 @@
   },
   "homepage": "https://github.com/semitaho/tfind",
   "dependencies": {
+    "babel-core": "^5.8.25",
+    "babelify": "^6.4.0",
     "browserify": "^11.2.0",
     "express": "^4.13.3",
     "jade": "^1.11.0",
     "nib": "^1.1.0",
+    "node-jsx": "^0.13.3",
     "react": "^0.14.0",
     "stylus": "^0.52.4"
   }
