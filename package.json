@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "preinstall": "browserify -t babelify client/main.js -o public/js/bundle.js",
+    "postinstall": "browserify -t babelify client/main.js -o public/js/bundle.js",
     "start": "node --harmony index.js",
     "local": "npm preinstall && node index.js"
   },
