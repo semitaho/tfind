@@ -1,7 +1,7 @@
 import React from 'react';
 export default class TFindApp extends React.Component {
-
   componentDidMount() {
+    console.log('harhar');
 
   }
 

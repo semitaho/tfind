@@ -1,13 +1,9 @@
 var express = require('express'),
-  browserify = require('browserify'),
   stylus = require('stylus'),
   nib = require('nib'),
-  React = require('react'),
-  options = {};
-require("babel-core").transform("code", options);
+  React = require('react');
+require('babel/register');
 var app = module.exports = express();
-var JSX = require('node-jsx').install();
-
 var tfindApp = require(__dirname + '/components/tFindApp.jsx');
 var AppFactory = React.createFactory(tfindApp);
 
@@ -30,9 +26,9 @@ app.use(stylus.middleware(
         .use(nib());
     }
   }
-))
+));
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   var reactHtml = React.renderToString(AppFactory({}));
   console.log('html', reactHtml);
 

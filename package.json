@@ -5,7 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "start": "node --harmony index.js"
+    "preinstall": "browserify -t babelify client/main.js -o public/js/bundle.js",
+    "start": "node --harmony index.js",
+    "local": "npm preinstall && node index.js"
+  },
+
+  "engines": {
+    "node": "0.11.x"
   },
   "repository": {
     "type": "git",
@@ -18,7 +24,7 @@
   },
   "homepage": "https://github.com/semitaho/tfind",
   "dependencies": {
-    "babel-core": "^5.8.25",
+    "babel": "^5.8.23",
     "babelify": "^6.4.0",
     "browserify": "^11.2.0",
     "express": "^4.13.3",
