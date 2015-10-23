@@ -28,10 +28,8 @@ app.use(stylus.middleware(
 ));
 
 app.get('/', (req, res) => {
-//  var reactHtml = React.renderToString(AppFactory({}));
-  console.log('html', reactHtml);
-
-//  res.render('index', {reactOutput: reactHtml});
+  var reactHtml = React.renderToString(AppFactory({}));
+  res.render('index', {reactOutput: reactHtml});
 });
 
 
