@@ -14,7 +14,6 @@ app.set('views', __dirname + '/views');
 // which prevents the need for extensions
 // (although you can still mix and match)
 app.set('view engine', 'jade');
-
 app.use(express.static(__dirname + '/public'));
 app.use(stylus.middleware(
   {
