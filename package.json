@@ -7,9 +7,11 @@
     "test": "test",
     "postinstall": "node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
     "start": "node --harmony index.js",
-    "build": "node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
-    "local": "npm preinstall && node index.js",
-    "watch": "watch 'npm run build'"
+    "build:css": "node_modules/.bin/stylus -u nib stylus/tfind.styl -o public/css/tfind.css",
+    "watch:css": "node_modules/.bin/stylus -w -u nib stylus/tfind.styl -o public/css/tfind.css",
+    "build": "npm run build:css && node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
+    "local": "npm run build && npm run watch:css & npm start",
+    "watch": "nodemon -e jsx,js -w ./components -x npm run local"
   },
   "engines": {
     "node": "0.11.x"
@@ -27,13 +29,13 @@
   "dependencies": {
     "babel": "^5.8.23",
     "babel-core": "^5.8.25",
-    "babel-plugin-typecheck": "^1.3.0",
+    "babelify": "^6.4.0",
     "browserify": "11.2.0",
     "express": "4.13.3",
     "jade": "1.11.0",
     "nib": "1.1.0",
     "react": "0.14.0",
-    "stylus": "0.52.4",
-    "watch": "latest"
+    "react-dom": "^0.14.0",
+    "stylus": "0.52.4"
   }
 }

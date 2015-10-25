@@ -6,6 +6,6 @@ export default class TFindApp extends React.Component {
   }
 
   render() {
-    return (<h2>hyva rdoni</h2>)
+    return (<h2></h2>)
   }
 }

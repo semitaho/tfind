@@ -1,4 +1,22 @@
 extends ./layout.jade
 block content
-  h1 Welcome to search missing people
+
+  .row
+    .col-md-12
+      nav.navbar.navbar-default.navbar-fixed-top
+        .container.center-block
+          .navbar-header
+
+            ul.nav.navbar-nav.pull-right
+              li.active
+                a(href="/kadonneet") Kadonneet
+              li
+                a(href="/some") Some
+
+  .row
+    .col-md-12
+      .content
+        .page-header
+          h1 Welcome to search missing people
+          p Suomessa tehdään vuosittain 2000 ihmistä.
   #content!= reactOutput
