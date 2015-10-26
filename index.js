@@ -19,9 +19,7 @@ app.use(express.static(__dirname + '/public'));
 
 console.log('jaa', content.description);
 app.get('/', (req, res) => {
-  var AppFactory = React.createFactory(tfindApp);
-  var reactHtml = ReactDOMServer.renderToString(AppFactory({}));
-  res.render('index', {reactOutput: reactHtml, description: content.description});
+  res.render('index', {description: content.description});
 });
 
 
