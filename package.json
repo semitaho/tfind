@@ -11,7 +11,7 @@
     "watch:css": "node_modules/.bin/stylus -w -u nib stylus/tfind.styl -o public/css/tfind.css",
     "build": "npm run build:css && node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
     "local": "npm run build && npm run watch:css & npm start",
-    "watch": "nodemon -e jsx,js -w ./components -x npm run local"
+    "watch": "nodemon -e jsx,js,json -w ./index.js -w ./components -w ./resources -x npm run local"
   },
   "engines": {
     "node": "0.11.x"

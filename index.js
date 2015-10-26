@@ -3,7 +3,8 @@ var React = require('react'),
   ReactDOMServer = require('react-dom/server');
 express = require('express'),
   stylus = require('stylus'),
-  nib = require('nib');
+  nib = require('nib'),
+  content = require('./resources/content.json'),
 tfindApp = require('./components/tfindApp.jsx');
 var app = module.exports = express();
 
@@ -16,10 +17,11 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
 
+console.log('jaa', content.description);
 app.get('/', (req, res) => {
   var AppFactory = React.createFactory(tfindApp);
   var reactHtml = ReactDOMServer.renderToString(AppFactory({}));
-  res.render('index', {reactOutput: reactHtml});
+  res.render('index', {reactOutput: reactHtml, description: content.description});
 });
 
 
