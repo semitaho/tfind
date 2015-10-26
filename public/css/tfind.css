@@ -1,3 +1,46 @@
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 body {
   background-color: #f1f0ef;
+}
+#facebook {
+  max-height: 100%;
+}
+.content {
+  animation: fadein 1.5s;
+}
+.navbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
 }

@@ -19,9 +19,11 @@ app.use(express.static(__dirname + '/public'));
 
 console.log('jaa', content.description);
 app.get('/', (req, res) => {
-  res.render('index', {description: content.description});
+  res.render('index', {description: content.description, quotetext: content.quotetext, quoteauthor: content.quoteauthor});
 });
-
+app.get('/kadonneet', (req, res) => {
+  res.render('kadonneet', {description: content.description, quotetext: content.quotetext, quoteauthor: content.quoteauthor});
+});
 
 app.listen(app.get('port'), function () {
   console.log('up and running...');
