@@ -39,6 +39,9 @@ body {
 .content {
   animation: fadein 1.5s;
 }
+.thumbnail {
+  max-width: 100%;
+}
 .navbar-center {
   position: absolute;
   left: 50%;

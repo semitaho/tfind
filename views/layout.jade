@@ -7,9 +7,10 @@ html(lang="en")
     link(rel='stylesheet', href='/css/tfind.css')
     script(src="http://code.jquery.com/jquery-1.11.3.min.js")
     script(src="/bootstrap/js/bootstrap.min.js")
-    title tFind - Search missing people
+    title tFind - Löydä kadonneet
   body.container-fluid
-    include navigation
+    .row
+      .col-md-12.col-sm-12.col-xs-12
+        nav#navigation!= navigation
     block content
-    script(src="js/bundle.js")
     script(src="js/scripts.js")

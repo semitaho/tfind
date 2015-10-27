@@ -5,9 +5,13 @@ express = require('express'),
   stylus = require('stylus'),
   nib = require('nib'),
   content = require('./resources/content.json'),
-tfindApp = require('./components/tfindApp.jsx');
+  tfindApp = require('./components/tfindApp.jsx'),
+  lostsgrid = require('./components/lostsgrid.jsx');
+nav = require('./components/navigation.jsx');
 var app = module.exports = express();
 
+var Navigation = React.createFactory(nav),
+    Losts = React.createFactory(lostsgrid);
 //app.use(app.router);
 app.set('port', (process.env.PORT || 5000));
 app.set('views', __dirname + '/views');
@@ -19,10 +23,21 @@ app.use(express.static(__dirname + '/public'));
 
 console.log('jaa', content.description);
 app.get('/', (req, res) => {
-  res.render('index', {description: content.description, quotetext: content.quotetext, quoteauthor: content.quoteauthor});
+  res.render('index', {
+    navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1})),
+    description: content.description,
+    quotetext: content.quotetext,
+    quoteauthor: content.quoteauthor
+  });
 });
 app.get('/kadonneet', (req, res) => {
-  res.render('kadonneet', {description: content.description, quotetext: content.quotetext, quoteauthor: content.quoteauthor});
+  res.render('kadonneet', {
+    navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 0})),
+    losts: ReactDOMServer.renderToString(Losts({})),
+    description: content.description,
+    quotetext: content.quotetext,
+    quoteauthor: content.quoteauthor
+  });
 });
 
 app.listen(app.get('port'), function () {
