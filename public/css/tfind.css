@@ -39,8 +39,8 @@ body {
 .content {
   animation: fadein 1.5s;
 }
-.image-thumbnail {
-  max-width: 100%;
+.fixed-height {
+  height: 200px !important;
 }
 .navbar-center {
   position: absolute;

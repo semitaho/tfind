@@ -30,10 +30,17 @@ app.get('/', (req, res) => {
     quoteauthor: content.quoteauthor
   });
 });
+
+var allMissings = require('./resources/missings.json');
+
 app.get('/kadonneet', (req, res) => {
+
+
+
+  console.log('missingga', allMissings);
   res.render('kadonneet', {
     navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 0})),
-    losts: ReactDOMServer.renderToString(Losts({})),
+    losts: ReactDOMServer.renderToString(Losts({items: allMissings})),
     description: content.description,
     quotetext: content.quotetext,
     quoteauthor: content.quoteauthor
