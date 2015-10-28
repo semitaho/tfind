@@ -6,7 +6,7 @@ export default class LostsGrid extends React.Component {
 
     console.log('items', this.props.items);
     var items = this.props.items.map(item => {
-      return (<div className="col-md-2"><a href="#" className="thumbnail"><img className="img-rounded fixed-height"
+      return (<div className="col-lg-3 col-md-4 col-sm-6"><a href="#" className="thumbnail"><img className="img-rounded img-responsive fixed-height"
                                                                                src={item.imgsrc}/>
 
         <div className="caption"><h4>{item.name}</h4></div>
