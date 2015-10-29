@@ -2,6 +2,7 @@ import React from 'react';
 import GridItem from './griditem.jsx';
 export default class LostsGrid extends React.Component {
 
+
   render() {
 
     var items = this.props.items.map((item,key) => {
@@ -15,4 +16,4 @@ export default class LostsGrid extends React.Component {
 
 LostsGrid.propTypes = {
   items: React.PropTypes.array.isRequired
-};sss
+};

@@ -30,6 +30,50 @@
     opacity: 1;
   }
 }
+@-moz-keyframes fadeinout {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes fadeinout {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-o-keyframes fadeinout {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fadeinout {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 body {
   background-color: #f1f0ef;
 }
@@ -38,6 +82,14 @@ body {
 }
 .content {
   animation: fadein 1.5s;
+}
+.fadein {
+  animation: fadein 2s;
+}
+.fadeinout {
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  animation: fadeinout 4s;
 }
 .fixed-height {
   height: 200px !important;
