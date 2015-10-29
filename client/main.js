@@ -1,4 +1,6 @@
+import ReactDOM from 'react-dom';
 import React from 'react';
-import App from '../components/tfindApp.jsx';
-var main = document.getElementById('content');
-React.render(<App />, main);
+import LostsGrid from '../components/lostsgrid.jsx';
+var main = document.getElementById('losts');
+var allMissings = require('..//resources/missings.json');
+ReactDOM.render(<LostsGrid items={allMissings} />, main);

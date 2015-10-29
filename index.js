@@ -21,7 +21,6 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
 
-console.log('jaa', content.description);
 app.get('/', (req, res) => {
   res.render('index', {
     navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1})),
@@ -34,10 +33,6 @@ app.get('/', (req, res) => {
 var allMissings = require('./resources/missings.json');
 
 app.get('/kadonneet', (req, res) => {
-
-
-
-  console.log('missingga', allMissings);
   res.render('kadonneet', {
     navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 0})),
     losts: ReactDOMServer.renderToString(Losts({items: allMissings})),

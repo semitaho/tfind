@@ -1,16 +1,13 @@
 import React from 'react';
-
+import GridItem from './griditem.jsx';
 export default class LostsGrid extends React.Component {
 
   render() {
 
-    console.log('items', this.props.items);
-    var items = this.props.items.map(item => {
-      return (<div className="col-lg-3 col-md-4 col-sm-6"><a href="#" className="thumbnail"><img className="img-rounded img-responsive fixed-height"
-                                                                               src={item.imgsrc}/>
-
-        <div className="caption"><h4>{item.name}</h4></div>
-      </a></div>)
+    var items = this.props.items.map((item,key) => {
+      let idkey = 'thumbnail_'+key;
+      return (<div key={idkey} className="col-lg-3 col-md-4 col-sm-6">
+          <GridItem item={item} /></div>)
     });
     return (<div className="row">{items}</div>)
   }
