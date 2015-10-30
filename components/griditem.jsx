@@ -6,7 +6,7 @@ export default class GridItem extends React.Component {
 
   constructor() {
     super();
-    this.state = {current: 0};
+    this.state = {current: -1};
     this.onTimeout = this.onTimeout.bind(this);
   }
 
@@ -24,8 +24,21 @@ export default class GridItem extends React.Component {
     this.setState({current: currentIndex});
   }
 
+  getKadonnut(lost){
+    console.log('lost', lost);
+    if (lost && lost.timestamp){
+      return lost.timestamp;
+    }
+    return '';
+
+  }
+
+
 
   render() {
+    if (this.state.current < 0){
+      return <div>Loading...</div>
+    }
     var item = this.props.item;
     var self = this;
     console.log('current index, ' + this.state.current);
@@ -44,7 +57,11 @@ export default class GridItem extends React.Component {
             )
           }
         )}
-        <div className="caption"><h4>{item.name}</h4></div>
+        <div className="caption">
+          <h4>{item.name}</h4>
+
+          <p>{this.getKadonnut(item.lost)}</p>
+        </div>
       </a>)
   }
 
