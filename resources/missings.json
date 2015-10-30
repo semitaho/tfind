@@ -3,9 +3,12 @@
     "name": "Nela Utkina",
     "imgsrc": "http://oi57.tinypic.com/5z1845.jpg",
     "lost": {
-      "timestamp": 1441702800
+
+      "timestamp": 1441702800000
       },
-    "thumbnails" : ["http://oi57.tinypic.com/5z1845.jpg", "http://static.iltalehti.fi/uutiset/nelaa_j_2910MS_244_uu.jpg"
+    "thumbnails" : ["http://oi57.tinypic.com/5z1845.jpg",
+      "http://static.iltalehti.fi/uutiset/nelaa_j_2910MS_244_uu.jpg",
+      "https://lh5.googleusercontent.com/-sr8SmEbQfho/VGpHYBGp-oI/AAAAAAAAAEE/ldNZ3XgsWP0/s1152-no/IMG_4552.JPG"
     ]
   },
   {
@@ -16,7 +19,7 @@
   {
     "name" : "Susanna Sainio",
     "imgsrc": "https://scontent-frt3-1.xx.fbcdn.net/hphotos-xpf1/v/t1.0-9/12191509_939796812760311_6575480075196608646_n.jpg?oh=3329273152130a10ded369798d86e1c9&oe=5687B7ED",
-    "thumbnails": [""]
+    "thumbnails": ["https://scontent-frt3-1.xx.fbcdn.net/hphotos-xpf1/v/t1.0-9/12191509_939796812760311_6575480075196608646_n.jpg?oh=3329273152130a10ded369798d86e1c9&oe=5687B7ED"]
   },
   {
     "name": "Saku Inomaa",

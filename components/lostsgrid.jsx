@@ -7,7 +7,7 @@ export default class LostsGrid extends React.Component {
 
     var items = this.props.items.map((item,key) => {
       let idkey = 'thumbnail_'+key;
-      return (<div key={idkey} className="col-lg-3 col-md-4 col-sm-6">
+      return (<div key={idkey} className="col-lg-12 col-md-12 col-sm-12">
           <GridItem item={item} /></div>)
     });
     return (<div className="row">{items}</div>)

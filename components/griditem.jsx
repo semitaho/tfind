@@ -1,18 +1,49 @@
 import React from 'react';
-import CSSTransitionGroup from 'react/lib/ReactTransitionGroup';
+import Carousel from 'react-bootstrap/lib/Carousel';
+import CarouselItem from 'react-bootstrap/lib/CarouselItem';
+
+
+import LostsModal from './lostsmodal.jsx';
 
 export default class GridItem extends React.Component {
 
 
   constructor() {
     super();
-    this.state = {current: -1};
+    this.state = {current: 0, kadonnutTime: 0, showmodal: false};
     this.onTimeout = this.onTimeout.bind(this);
+    this.onModalOpen = this.onModalOpen.bind(this);
+    this.onModalClose = this.onModalClose.bind(this);
+    this.onKadonnutTimeout = this.onKadonnutTimeout.bind(this);
   }
 
   componentDidMount() {
-    this.interval = setInterval(this.onTimeout, this.props.interval);
+    this.imageInterval = setInterval(this.onTimeout, this.props.interval);
+    if (this.props.item && this.props.item.lost) {
+      this.kadonnutInterval = setInterval(this.onKadonnutTimeout, 1000);
+
+    }
+
   }
+
+  formatToTime(milliseconds) {
+    var seconds = Math.round((milliseconds / 1000.0));
+    var daysDivide = 3600 * 24;
+    var days = ~~(seconds / daysDivide);
+    var hrs = ~~((seconds % daysDivide) / 3600) ;
+    var minutes = ~~((seconds % 3600 ) / 60);
+    var secs = seconds % 60;
+    var toDays = milliseconds / (1000 * 60 * 60 * 24);
+    var strBuilder = days + ' päivää, ' + hrs + ' tuntia, ' + minutes + " minuuttia, " + secs + " sekuntia.";
+    return strBuilder;
+
+  }
+
+  onKadonnutTimeout() {
+    var kadonnutTime = new Date().getTime() - this.props.item.lost.timestamp;
+    this.setState({kadonnutTime: this.formatToTime(kadonnutTime)});
+  }
+
 
   onTimeout() {
     var currentIndex = this.state.current;
@@ -24,45 +55,57 @@ export default class GridItem extends React.Component {
     this.setState({current: currentIndex});
   }
 
-  getKadonnut(lost){
-    console.log('lost', lost);
-    if (lost && lost.timestamp){
-      return lost.timestamp;
+  getKadonnut() {
+    if (this.state.kadonnutTime === 0) {
+      return '';
     }
-    return '';
+    return this.state.kadonnutTime;
+  }
+
+  onModalOpen(){
+    console.log('täällä');
+    this.setState({showmodal: true});
+
+  }
+
+  onModalClose(){
+    this.setState({showmodal: false});
 
   }
 
 
-
   render() {
-    if (this.state.current < 0){
-      return <div>Loading...</div>
-    }
     var item = this.props.item;
     var self = this;
-    console.log('current index, ' + this.state.current);
     return (
-      <a href="#" className="thumbnail">
-        {item.thumbnails.map((src, ind) => {
-            var clazz = 'img-rounded img-responsive fixed-height fadeinout';
-            if (ind !== self.state.current){
-              clazz += 'mg-rounded img-responsive fixed-height hide';
-            } else if (item.thumbnails.length === 1){
-              clazz = 'img-rounded img-responsive fixed-height fadein';
-            }
+      <div className="thumbnail text-left">
+        <LostsModal item={item} showmodal={this.state.showmodal} onclosemodal={this.onModalClose} />
+        <div className="row">
+          <div className="col-md-6 col-sm-6">
+            <Carousel controls={false}>
+            {item.thumbnails.map((src, ind) => {
 
-            return (
-              <img key={ind} className={clazz} src={src}/>
-            )
-          }
-        )}
-        <div className="caption">
-          <h4>{item.name}</h4>
+                var  clazz = 'img-rounded img-responsive fixed-height';
 
-          <p>{this.getKadonnut(item.lost)}</p>
+
+                return (
+                  <CarouselItem>
+                    <img key={ind} className={clazz} src={src}/>
+                  </CarouselItem>
+                )
+              }
+            )}
+            </Carousel>
+            </div>
+          <div className="col-md-6 col-sm-6">
+            <div className="caption">
+              <h3>{item.name}</h3>
+              <p><a href="javascript:void(0);" onClick={self.onModalOpen}>Viimeisin havainto</a></p>
+              {self.state.kadonnutTime === 0 ? '':  <p className="text-primary">Kadonneena<br/>{this.getKadonnut()}</p>}
+            </div>
+          </div>
         </div>
-      </a>)
+      </div>)
   }
 
 }
