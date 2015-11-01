@@ -1,8 +1,7 @@
 import React from 'react';
 import Carousel from 'react-bootstrap/lib/Carousel';
 import CarouselItem from 'react-bootstrap/lib/CarouselItem';
-
-
+import Button from 'react-bootstrap/lib/Button';
 import LostsModal from './lostsmodal.jsx';
 
 export default class GridItem extends React.Component {
@@ -81,11 +80,11 @@ export default class GridItem extends React.Component {
       <div className="thumbnail text-left">
         <LostsModal item={item} showmodal={this.state.showmodal} onclosemodal={this.onModalClose} />
         <div className="row">
-          <div className="col-md-6 col-sm-6">
-            <Carousel controls={false}>
+          <div className="col-md-5 col-sm-5">
+            <Carousel indicators={false} controls={false} interval={this.props.interval}>
             {item.thumbnails.map((src, ind) => {
 
-                var  clazz = 'img-rounded img-responsive fixed-height';
+                var  clazz = 'img-rounded img-responsive center-block fixed-height';
 
 
                 return (
@@ -97,10 +96,11 @@ export default class GridItem extends React.Component {
             )}
             </Carousel>
             </div>
-          <div className="col-md-6 col-sm-6">
+          <div className="col-md-7 col-sm-7">
             <div className="caption">
               <h3>{item.name}</h3>
-              <p><a href="javascript:void(0);" onClick={self.onModalOpen}>Viimeisin havainto</a></p>
+              <p>{item.description}</p>
+              <p><Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla</Button></p>
               {self.state.kadonnutTime === 0 ? '':  <p className="text-primary">Kadonneena<br/>{this.getKadonnut()}</p>}
             </div>
           </div>
@@ -110,4 +110,4 @@ export default class GridItem extends React.Component {
 
 }
 
-GridItem.defaultProps = {interval: 4000};
+GridItem.defaultProps = {interval: 2000};
