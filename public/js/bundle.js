@@ -398,7 +398,7 @@ var Map = (function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var mapOptions = { draggable: false, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.TERRAIN, zoom: this.props.initialZoom, center: { lat: -34.397, lng: 150.644 } };
+      var mapOptions = { draggable: false, disableDefaultUI: true, scrollWheel: false, mapTypeId: google.maps.MapTypeId.TERRAIN, zoom: this.props.initialZoom, center: { lat: -34.397, lng: 150.644 } };
       this.map = new google.maps.Map(_reactDom2['default'].findDOMNode(this), mapOptions);
     }
   }]);
@@ -22919,30 +22919,46 @@ module.exports=[
     "description": "Tsekkiläinen 27-vuotias Nela Utkina katosi oudosti keskiviikkona 9. syyskuuta Helsingin Malminkartanossa. Utkinan oli tarkoitus mennä töihin, mutta hän oli puoli kahdeksalta lähettänyt tekstiviestin työpaikalleen, että menee päänsäryn vuoksi lääkäriin. Tämän jälkeen hänestä ei ole kuultu mitään.",
     "imgsrc": "http://oi57.tinypic.com/5z1845.jpg",
     "lost": {
-
       "timestamp": 1441702800000
-      },
-    "thumbnails" : ["http://oi57.tinypic.com/5z1845.jpg",
+    },
+    "thumbnails": [
+      "http://oi57.tinypic.com/5z1845.jpg",
       "http://static.iltalehti.fi/uutiset/nelaa_j_2910MS_244_uu.jpg",
       "https://lh5.googleusercontent.com/-sr8SmEbQfho/VGpHYBGp-oI/AAAAAAAAAEE/ldNZ3XgsWP0/s1152-no/IMG_4552.JPG"
+    ],
+    "havainnot": [
+      {
+        "description": "Nela jää pois Nuuksionpää-pysäkillä.",
+        "imgsrc": "",
+        "timestamp": "",
+        "lat": 60.314912,
+        "lon": 24.543102
+      }
     ]
   },
   {
-    "name" : "Birgitta Silander",
+    "name": "Birgitta Silander",
     "description": "Poliisi etsii Helsingissä kadonnutta Birgitta Silanderia.Viimeisin tieto Silanderista on saatu maanantaina 24. elokuuta kello 17 aikaan. Tuolloin hän on ollut Helsingin keskustassa Eteläisen Rautatiekadun alueella. Sen jälkeen 65-vuotiaasta ei ole mitään havaintoa. Silander on noin 165 senttimetriä pitkä ja hän on normaalipainoinen. Poliisin mukaan naisella on vaaleahkot ja samalla hieman punertavat lyhyet hiukset.",
     "imgsrc": "http://static.iltalehti.fi/uutiset/birgj1809kj_244_uu.jpg",
-    "thumbnails": ["http://static.iltalehti.fi/uutiset/birgj1809kj_244_uu.jpg", "http://www.alingsastidning.se/wp-content/uploads/2014/09/birgitta_%C3%B6dlund_k_www-643x418.jpg"]
+    "thumbnails": [
+      "http://static.iltalehti.fi/uutiset/birgj1809kj_244_uu.jpg",
+      "http://www.alingsastidning.se/wp-content/uploads/2014/09/birgitta_%C3%B6dlund_k_www-643x418.jpg"
+    ]
   },
   {
-    "name" : "Susanna Sainio",
+    "name": "Susanna Sainio",
     "description": "Poliisi kaipaa tietoja sijaishuoltopaikastaan syyskuun alussa kadonneesta nurmijärveläisestä Susanna Sainiosta. Sainio poistui luvatta sijaishoitopaikastaan 8. syyskuuta, eikä hänen liikkeistään ole tämän jälkeen tarkkaa tietoa.",
     "imgsrc": "https://scontent-frt3-1.xx.fbcdn.net/hphotos-xpf1/v/t1.0-9/12191509_939796812760311_6575480075196608646_n.jpg?oh=3329273152130a10ded369798d86e1c9&oe=5687B7ED",
-    "thumbnails": ["https://scontent-frt3-1.xx.fbcdn.net/hphotos-xpf1/v/t1.0-9/12191509_939796812760311_6575480075196608646_n.jpg?oh=3329273152130a10ded369798d86e1c9&oe=5687B7ED"]
+    "thumbnails": [
+      "https://scontent-frt3-1.xx.fbcdn.net/hphotos-xpf1/v/t1.0-9/12191509_939796812760311_6575480075196608646_n.jpg?oh=3329273152130a10ded369798d86e1c9&oe=5687B7ED"
+    ]
   },
   {
     "name": "Saku Inomaa",
     "imgsrc": "http://www.poliisi.fi/instancedata/prime_product_julkaisu/intermin/embeds/poliisiwwwstructure/30120_Saku_Inomaa.JPG?0656b3be5160d288",
-    "thumbnails": ["http://www.poliisi.fi/instancedata/prime_product_julkaisu/intermin/embeds/poliisiwwwstructure/30120_Saku_Inomaa.JPG?0656b3be5160d288"]
+    "thumbnails": [
+      "http://www.poliisi.fi/instancedata/prime_product_julkaisu/intermin/embeds/poliisiwwwstructure/30120_Saku_Inomaa.JPG?0656b3be5160d288"
+    ]
   }
 ]
 

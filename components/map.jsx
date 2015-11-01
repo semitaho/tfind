@@ -16,7 +16,7 @@ export default class Map extends React.Component{
   }
 
   componentDidMount(){
-    var mapOptions = {draggable: false,disableDefaultUI: true,mapTypeId: google.maps.MapTypeId.TERRAIN, zoom: this.props.initialZoom, center: {lat: -34.397, lng: 150.644}};
+    var mapOptions = {draggable: false,disableDefaultUI: true, scrollWheel :false, mapTypeId: google.maps.MapTypeId.TERRAIN, zoom: this.props.initialZoom, center: {lat: -34.397, lng: 150.644}};
     this.map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
 
 
