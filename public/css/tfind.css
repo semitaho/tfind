@@ -109,3 +109,6 @@ body {
 #map-havainnot {
   height: 500px;
 }
+.modal-img {
+  max-height: 50%;
+}

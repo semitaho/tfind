@@ -315,7 +315,6 @@ var LostsModal = (function (_React$Component) {
   _createClass(LostsModal, [{
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      console.log('hah');
       this.setState({ showmodal: nextProps.showmodal });
     }
   }, {
@@ -342,8 +341,8 @@ var LostsModal = (function (_React$Component) {
         _react2['default'].createElement(
           _reactBootstrapLibModal2['default'].Body,
           null,
-          _react2['default'].createElement(_reactBootstrapLibImage2['default'], { className: 'center-block', src: this.props.item.imgsrc, responsive: true, circle: true }),
-          _react2['default'].createElement(_mapJsx2['default'], null)
+          _react2['default'].createElement(_reactBootstrapLibImage2['default'], { className: 'center-block modal-img', src: this.props.item.imgsrc, responsive: true, circle: true }),
+          _react2['default'].createElement(_mapJsx2['default'], { findings: this.props.item.findings })
         )
       );
     }
@@ -398,8 +397,17 @@ var Map = (function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var mapOptions = { draggable: false, disableDefaultUI: true, scrollWheel: false, mapTypeId: google.maps.MapTypeId.TERRAIN, zoom: this.props.initialZoom, center: { lat: -34.397, lng: 150.644 } };
+      var mapOptions = { draggable: false, disableDefaultUI: true, scrollWheel: false, mapTypeId: google.maps.MapTypeId.TERRAIN, zoom: this.props.initialZoom };
+
       this.map = new google.maps.Map(_reactDom2['default'].findDOMNode(this), mapOptions);
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      // center: {lat: this.props.findings[0].lat, lng: this.props.findings[0].lon}
+      // this.map.setCenter
+      // this.map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
+
     }
   }]);
 
@@ -22926,7 +22934,7 @@ module.exports=[
       "http://static.iltalehti.fi/uutiset/nelaa_j_2910MS_244_uu.jpg",
       "https://lh5.googleusercontent.com/-sr8SmEbQfho/VGpHYBGp-oI/AAAAAAAAAEE/ldNZ3XgsWP0/s1152-no/IMG_4552.JPG"
     ],
-    "havainnot": [
+    "findings": [
       {
         "description": "Nela jää pois Nuuksionpää-pysäkillä.",
         "imgsrc": "",
