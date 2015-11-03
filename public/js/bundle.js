@@ -144,7 +144,7 @@ var GridItem = (function (_React$Component) {
             { className: 'col-md-5 col-sm-5' },
             _react2['default'].createElement(
               _reactBootstrapLibCarousel2['default'],
-              { indicators: false, controls: false, interval: this.props.interval },
+              { indicators: false, controls: true, interval: this.props.interval },
               item.thumbnails.map(function (src, ind) {
 
                 var clazz = 'img-rounded img-responsive center-block fixed-height';
@@ -201,7 +201,7 @@ var GridItem = (function (_React$Component) {
 
 exports['default'] = GridItem;
 
-GridItem.defaultProps = { interval: 2000 };
+GridItem.defaultProps = { interval: 0 };
 module.exports = exports['default'];
 
 },{"./lostsmodal.jsx":4,"react":237,"react-bootstrap/lib/Button":8,"react-bootstrap/lib/Carousel":9,"react-bootstrap/lib/CarouselItem":10}],3:[function(require,module,exports){
@@ -386,6 +386,7 @@ var Map = (function (_React$Component) {
     _classCallCheck(this, Map);
 
     _get(Object.getPrototypeOf(Map.prototype), 'constructor', this).call(this);
+    this.markers = [];
     this.map = null;
   }
 
@@ -397,9 +398,57 @@ var Map = (function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var mapOptions = { draggable: false, disableDefaultUI: true, scrollWheel: false, mapTypeId: google.maps.MapTypeId.TERRAIN, zoom: this.props.initialZoom };
-
+      var mapOptions = {
+        draggable: false,
+        disableDefaultUI: true,
+        scrollWheel: false,
+        mapTypeId: google.maps.MapTypeId.TERRAIN,
+        zoom: this.props.initialZoom
+      };
+      mapOptions.center = this.calculateCenter(this.props.findings);
       this.map = new google.maps.Map(_reactDom2['default'].findDOMNode(this), mapOptions);
+      this.createMarkers();
+    }
+  }, {
+    key: 'calculateCenter',
+    value: function calculateCenter(findings) {
+      var finding = findings[findings.length - 1];
+      return { lat: finding.lat, lng: finding.lng };
+    }
+  }, {
+    key: 'createMarkers',
+    value: function createMarkers() {
+      var self = this;
+      this.props.findings.forEach(function (finding) {
+        var marker = new google.maps.Marker({
+          draggable: false,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 5
+          },
+          position: {
+            draggable: false,
+            lat: finding.lat,
+            lng: finding.lng
+          },
+          map: self.map
+        });
+
+        var infowindow = new google.maps.InfoWindow({
+          content: self.generateInfowindowContent(finding)
+        });
+        marker.addListener('click', function (e) {
+          infowindow.open(self.map, marker);
+        });
+      });
+    }
+  }, {
+    key: 'generateInfowindowContent',
+    value: function generateInfowindowContent(finding) {
+      console.log('desc', finding.description);
+      var str = '<p>' + finding.description + '</p>';
+      str += '<img class="img_responsive" src ="' + finding.imgsrc + '" />';
+      return str;
     }
   }, {
     key: 'componentDidUpdate',
@@ -416,7 +465,7 @@ var Map = (function (_React$Component) {
 
 exports['default'] = Map;
 
-Map.defaultProps = { initialZoom: 10 };
+Map.defaultProps = { initialZoom: 12 };
 module.exports = exports['default'];
 
 },{"react":237,"react-dom":82}],6:[function(require,module,exports){
@@ -22937,10 +22986,10 @@ module.exports=[
     "findings": [
       {
         "description": "Nela jää pois Nuuksionpää-pysäkillä.",
-        "imgsrc": "",
+        "imgsrc": "http://hs10.snstatic.fi/webkuva/taysi/700/1305985995428?ts=852",
         "timestamp": "",
         "lat": 60.314912,
-        "lon": 24.543102
+        "lng": 24.543102
       }
     ]
   },

@@ -81,7 +81,7 @@ export default class GridItem extends React.Component {
         <LostsModal item={item} showmodal={this.state.showmodal} onclosemodal={this.onModalClose} />
         <div className="row">
           <div className="col-md-5 col-sm-5">
-            <Carousel indicators={false} controls={false} interval={this.props.interval}>
+            <Carousel indicators={false} controls={true} interval={this.props.interval}>
             {item.thumbnails.map((src, ind) => {
 
                 var  clazz = 'img-rounded img-responsive center-block fixed-height';
@@ -110,4 +110,4 @@ export default class GridItem extends React.Component {
 
 }
 
-GridItem.defaultProps = {interval: 2000};
+GridItem.defaultProps = {interval: 0};
