@@ -28,7 +28,6 @@ export default class LostsModal extends React.Component {
           <Modal.Title>{this.props.item.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Image className="center-block modal-img" src={this.props.item.imgsrc} responsive circle />
           <Map findings={this.props.item.findings} />
         </Modal.Body>
       </Modal>
