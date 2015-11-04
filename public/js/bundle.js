@@ -16,10 +16,10 @@ var _componentsLostsgridJsx = require('../components/lostsgrid.jsx');
 var _componentsLostsgridJsx2 = _interopRequireDefault(_componentsLostsgridJsx);
 
 var main = document.getElementById('losts');
-var allMissings = require('..//resources/missings.json');
-_reactDom2['default'].render(_react2['default'].createElement(_componentsLostsgridJsx2['default'], { items: allMissings }), main);
 
-},{"..//resources/missings.json":238,"../components/lostsgrid.jsx":3,"react":237,"react-dom":82}],2:[function(require,module,exports){
+_reactDom2['default'].render(_react2['default'].createElement(_componentsLostsgridJsx2['default'], { items: [] }), main);
+
+},{"../components/lostsgrid.jsx":3,"react":237,"react-dom":82}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -23028,63 +23028,4 @@ module.exports = warning;
 
 module.exports = require('./lib/React');
 
-},{"./lib/React":106}],238:[function(require,module,exports){
-module.exports=[
-  {
-    "name": "Nela Utkina",
-    "description": "Tsekkiläinen 27-vuotias Nela Utkina katosi oudosti keskiviikkona 9. syyskuuta Helsingin Malminkartanossa. Utkinan oli tarkoitus mennä töihin, mutta hän oli puoli kahdeksalta lähettänyt tekstiviestin työpaikalleen, että menee päänsäryn vuoksi lääkäriin. Tämän jälkeen hänestä ei ole kuultu mitään.",
-    "imgsrc": "http://oi57.tinypic.com/5z1845.jpg",
-    "lost": {
-      "timestamp": 1441702800000
-    },
-    "thumbnails": [
-      "http://oi57.tinypic.com/5z1845.jpg",
-      "http://static.iltalehti.fi/uutiset/nelaa_j_2910MS_244_uu.jpg",
-      "https://lh5.googleusercontent.com/-sr8SmEbQfho/VGpHYBGp-oI/AAAAAAAAAEE/ldNZ3XgsWP0/s1152-no/IMG_4552.JPG"
-    ],
-    "findings": [
-      {
-        "description": "Nela jää pois Nuuksionpää-pysäkillä.",
-        "imgsrc": "http://hs10.snstatic.fi/webkuva/taysi/700/1305985995428?ts=852",
-        "timestamp": 1441783200000,
-        "lat": 60.314912,
-        "lng": 24.543102,
-        "type": 1
-      },
-      {
-        "description": "Nela löydettiin kuolleena täältä.",
-        "imgsrc": "http://im.mtv.fi/image/5540500/landscape16_9/752/423/ea30e4a1aa7ea157fb732449e1ceee31/ae/nela-utkina-3.jpg",
-        "timestamp": 1441783200000,
-        "lat": 60.278219,
-        "lng": 24.588842,
-        "type": 3
-      }
-    ]
-  },
-  {
-    "name": "Birgitta Silander",
-    "description": "Poliisi etsii Helsingissä kadonnutta Birgitta Silanderia.Viimeisin tieto Silanderista on saatu maanantaina 24. elokuuta kello 17 aikaan. Tuolloin hän on ollut Helsingin keskustassa Eteläisen Rautatiekadun alueella. Sen jälkeen 65-vuotiaasta ei ole mitään havaintoa. Silander on noin 165 senttimetriä pitkä ja hän on normaalipainoinen. Poliisin mukaan naisella on vaaleahkot ja samalla hieman punertavat lyhyet hiukset.",
-    "imgsrc": "http://static.iltalehti.fi/uutiset/birgj1809kj_244_uu.jpg",
-    "thumbnails": [
-      "http://static.iltalehti.fi/uutiset/birgj1809kj_244_uu.jpg",
-      "http://www.alingsastidning.se/wp-content/uploads/2014/09/birgitta_%C3%B6dlund_k_www-643x418.jpg"
-    ]
-  },
-  {
-    "name": "Susanna Sainio",
-    "description": "Poliisi kaipaa tietoja sijaishuoltopaikastaan syyskuun alussa kadonneesta nurmijärveläisestä Susanna Sainiosta. Sainio poistui luvatta sijaishoitopaikastaan 8. syyskuuta, eikä hänen liikkeistään ole tämän jälkeen tarkkaa tietoa.",
-    "imgsrc": "https://scontent-frt3-1.xx.fbcdn.net/hphotos-xpf1/v/t1.0-9/12191509_939796812760311_6575480075196608646_n.jpg?oh=3329273152130a10ded369798d86e1c9&oe=5687B7ED",
-    "thumbnails": [
-      "https://scontent-frt3-1.xx.fbcdn.net/hphotos-xpf1/v/t1.0-9/12191509_939796812760311_6575480075196608646_n.jpg?oh=3329273152130a10ded369798d86e1c9&oe=5687B7ED"
-    ]
-  },
-  {
-    "name": "Saku Inomaa",
-    "imgsrc": "http://www.poliisi.fi/instancedata/prime_product_julkaisu/intermin/embeds/poliisiwwwstructure/30120_Saku_Inomaa.JPG?0656b3be5160d288",
-    "thumbnails": [
-      "http://www.poliisi.fi/instancedata/prime_product_julkaisu/intermin/embeds/poliisiwwwstructure/30120_Saku_Inomaa.JPG?0656b3be5160d288"
-    ]
-  }
-]
-
-},{}]},{},[1]);
+},{"./lib/React":106}]},{},[1]);
