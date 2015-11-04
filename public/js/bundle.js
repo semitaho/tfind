@@ -341,7 +341,6 @@ var LostsModal = (function (_React$Component) {
         _react2['default'].createElement(
           _reactBootstrapLibModal2['default'].Body,
           null,
-          _react2['default'].createElement(_reactBootstrapLibImage2['default'], { className: 'center-block modal-img', src: this.props.item.imgsrc, responsive: true, circle: true }),
           _react2['default'].createElement(_mapJsx2['default'], { findings: this.props.item.findings })
         )
       );
@@ -401,33 +400,58 @@ var Map = (function (_React$Component) {
       var mapOptions = {
         draggable: false,
         disableDefaultUI: true,
-        scrollWheel: false,
+        scrollwheel: false,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         zoom: this.props.initialZoom
       };
       mapOptions.center = this.calculateCenter(this.props.findings);
       this.map = new google.maps.Map(_reactDom2['default'].findDOMNode(this), mapOptions);
       this.createMarkers();
+      this.createRoute();
     }
   }, {
     key: 'calculateCenter',
     value: function calculateCenter(findings) {
+      var latSum = findings.reduce(function (prev, current, index, array) {
+        return current.lat + prev.lat;
+      });
+      var lngSum = findings.reduce(function (prev, current, index, array) {
+        return current.lng + prev.lng;
+      });
       var finding = findings[findings.length - 1];
-      return { lat: finding.lat, lng: finding.lng };
+      return { lat: latSum / findings.length, lng: lngSum / findings.length };
     }
   }, {
     key: 'createMarkers',
     value: function createMarkers() {
       var self = this;
+
+      var cross = {
+        path: 'M 0,0 0,-8 0,0 -6,0 6,0 0,0 0,15 z',
+        fillColor: 'yellow',
+        fillOpacity: 0.8,
+        scale: 1,
+        strokeColor: 'black',
+        strokeWeight: 3
+      };
+
       this.props.findings.forEach(function (finding) {
+        var markerIcon = null;
+        switch (finding.type) {
+          case 3:
+            markerIcon = cross;
+            break;
+          default:
+            markerIcon = {
+              scale: 7,
+              path: google.maps.SymbolPath.CIRCLE
+            };
+        }
+
         var marker = new google.maps.Marker({
           draggable: false,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 5
-          },
+          icon: markerIcon,
           position: {
-            draggable: false,
             lat: finding.lat,
             lng: finding.lng
           },
@@ -438,16 +462,51 @@ var Map = (function (_React$Component) {
           content: self.generateInfowindowContent(finding)
         });
         marker.addListener('click', function (e) {
+          self.map.setCenter({ lat: finding.lat, lng: finding.lng });
           infowindow.open(self.map, marker);
         });
       });
     }
   }, {
+    key: 'createRoute',
+    value: function createRoute() {
+      var lineSymbol = {
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+      };
+      var path = this.props.findings.map(function (finding) {
+        return {
+          lat: finding.lat,
+          lng: finding.lng
+        };
+      });
+      var line = new google.maps.Polyline({
+        path: path,
+        strokeOpacity: '0.5',
+        icons: [{
+          icon: lineSymbol,
+          offset: '95%'
+        }],
+        map: this.map
+      });
+    }
+  }, {
+    key: 'convertTimestampToTime',
+    value: function convertTimestampToTime(timestamp) {
+      var dt = new Date(timestamp);
+      console.log('dt', dt);
+      var year = dt.getFullYear();
+      var month = dt.getMonth() + 1;
+      var day = dt.getDate();
+      var hours = dt.getHours();
+      var minutes = dt.getMinutes();
+      return day + '.' + month + '.' + year + " klo " + hours + ":" + minutes;
+    }
+  }, {
     key: 'generateInfowindowContent',
     value: function generateInfowindowContent(finding) {
       console.log('desc', finding.description);
-      var str = '<p>' + finding.description + '</p>';
-      str += '<img class="img_responsive" src ="' + finding.imgsrc + '" />';
+      var str = '<div class="thumbnail">' + '    <a target="_blank" href="' + finding.imgsrc + '"><img class="img-havainto" src="' + finding.imgsrc + '" /></a>' + '    <div class="caption"><h5>' + finding.description + '</h5><p>' + this.convertTimestampToTime(finding.timestamp) + '</p></div>';
+      str += '</div>';
       return str;
     }
   }, {
@@ -22987,9 +23046,18 @@ module.exports=[
       {
         "description": "Nela jää pois Nuuksionpää-pysäkillä.",
         "imgsrc": "http://hs10.snstatic.fi/webkuva/taysi/700/1305985995428?ts=852",
-        "timestamp": "",
+        "timestamp": 1441783200000,
         "lat": 60.314912,
-        "lng": 24.543102
+        "lng": 24.543102,
+        "type": 1
+      },
+      {
+        "description": "Nela löydettiin kuolleena täältä.",
+        "imgsrc": "http://im.mtv.fi/image/5540500/landscape16_9/752/423/ea30e4a1aa7ea157fb732449e1ceee31/ae/nela-utkina-3.jpg",
+        "timestamp": 1441783200000,
+        "lat": 60.278219,
+        "lng": 24.588842,
+        "type": 3
       }
     ]
   },

@@ -15,9 +15,18 @@
       {
         "description": "Nela jää pois Nuuksionpää-pysäkillä.",
         "imgsrc": "http://hs10.snstatic.fi/webkuva/taysi/700/1305985995428?ts=852",
-        "timestamp": "",
+        "timestamp": 1441783200000,
         "lat": 60.314912,
-        "lng": 24.543102
+        "lng": 24.543102,
+        "type": 1
+      },
+      {
+        "description": "Nela löydettiin kuolleena täältä.",
+        "imgsrc": "http://im.mtv.fi/image/5540500/landscape16_9/752/423/ea30e4a1aa7ea157fb732449e1ceee31/ae/nela-utkina-3.jpg",
+        "timestamp": 1441783200000,
+        "lat": 60.278219,
+        "lng": 24.588842,
+        "type": 3
       }
     ]
   },
