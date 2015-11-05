@@ -7,12 +7,14 @@ express = require('express'),
   nib = require('nib'),
   content = require('./resources/content.json'),
   tfindApp = require('./components/tfindApp.jsx'),
+  findingFormJsx = require('./components/findingform.jsx'),
   lostsgrid = require('./components/lostsgrid.jsx');
 nav = require('./components/navigation.jsx');
 var app = module.exports = express();
 
 var Navigation = React.createFactory(nav),
-  Losts = React.createFactory(lostsgrid);
+  Losts = React.createFactory(lostsgrid),
+  Findingform = React.createFactory(findingFormJsx);
 //app.use(app.router);
 app.set('port', (process.env.PORT || 5000));
 app.set('views', __dirname + '/views');
@@ -23,9 +25,8 @@ app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
 
 
-var uri = 'mongodb://tfinduser:tfind123@ds047484.mongolab.com:47484/tfinddb';
-
-mongoClient.connect(uri, function (err, db) {
+const URI = 'mongodb://tfinduser:tfind123@ds047484.mongolab.com:47484/tfinddb';
+mongoClient.connect(URI, function (err, db) {
 
   if (err) throw err;
   console.log('mongodb successfully connected...');
@@ -48,6 +49,7 @@ mongoClient.connect(uri, function (err, db) {
         return;
       }
       res.render('kadonneet', {
+        items: docs,
         navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 0})),
         losts: ReactDOMServer.renderToString(Losts({items: docs})),
         description: content.description,
@@ -55,6 +57,14 @@ mongoClient.connect(uri, function (err, db) {
         quoteauthor: content.quoteauthor
       });
 
+    });
+
+  });
+
+  app.get('/lisaahavainto', (req,res) => {
+    res.render('lisaahavainto', {
+      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
+      findingform: ReactDOMServer.renderToString(Findingform({}))
     });
 
   });

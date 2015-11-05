@@ -1,0 +1,9 @@
+extends ./layout.jade
+block content
+  .row
+    .col-md-6.col-md-offset-3
+      .content.center-block
+        .page-header
+          h1 Ilmoita havainnosta
+        #findingform!= findingform
+  script(src="js/bundle.js")

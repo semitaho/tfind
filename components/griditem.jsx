@@ -62,7 +62,6 @@ export default class GridItem extends React.Component {
   }
 
   onModalOpen(){
-    console.log('täällä');
     this.setState({showmodal: true});
 
   }
@@ -83,16 +82,14 @@ export default class GridItem extends React.Component {
           <div className="col-md-5 col-sm-5">
             <Carousel indicators={false} controls={true} interval={this.props.interval}>
             {item.thumbnails.map((src, ind) => {
-
-                var  clazz = 'img-rounded img-responsive center-block fixed-height';
-
-
-                return (
-                  <CarouselItem>
-                    <img key={ind} className={clazz} src={src}/>
-                  </CarouselItem>
-                )
-              }
+              var clazz = 'img-rounded img-responsive center-block fixed-height';
+              var keyindex = 'carousel_'+ind;
+              return (
+                <CarouselItem key={keyindex}>
+                  <img key={ind} className={clazz} src={src}/>
+                 </CarouselItem>
+              )
+            }
             )}
             </Carousel>
             </div>
