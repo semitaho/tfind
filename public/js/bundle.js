@@ -74,8 +74,9 @@ var FindingForm = (function (_React$Component) {
     _classCallCheck(this, FindingForm);
 
     _get(Object.getPrototypeOf(FindingForm.prototype), 'constructor', this).call(this);
-    this.state = { disabled: true, formstate: { description: '' } };
+    this.state = { disabled: true, formstate: { description: '', timestamp: null } };
     this.findingChange = this.findingChange.bind(this);
+    this.timeChange = this.timeChange.bind(this);
   }
 
   _createClass(FindingForm, [{
@@ -98,13 +99,26 @@ var FindingForm = (function (_React$Component) {
       return isValid;
     }
   }, {
+    key: 'timeChange',
+    value: function timeChange(time) {
+      var formstate = this.state.formstate;
+      formstate.timestamp = time;
+      if (isNaN(time)) {
+        this.setState({ formstate: this.state.formstate, disabled: true });
+        return;
+      }
+      this.setState({ formstate: this.state.formstate, disabled: !this.validate(formstate) });
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2['default'].createElement(
         'form',
         { noValidate: true },
-        _react2['default'].createElement(_reactBootstrapLibInput2['default'], { id: 'finding', type: 'textarea', value: this.state.formstate.description, label: 'Havainto', onChange: this.findingChange, required: 'true', bsSize: 'large', placeholder: 'Kuvaa mahdollisimman tarkasti havaintoa kadonneesta.' }),
-        _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { format: 'x' }),
+        _react2['default'].createElement(_reactBootstrapLibInput2['default'], { id: 'finding', type: 'textarea', value: this.state.formstate.description, label: 'Havainto',
+          onChange: this.findingChange, required: 'true', bsSize: 'large',
+          placeholder: 'Kuvaa mahdollisimman tarkasti havaintoa kadonneesta.' }),
+        _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { defaultText: 'select time', format: 'x', inputFormat: 'D.M.YYYY H:mm', onChange: this.timeChange }),
         _react2['default'].createElement(_reactBootstrapLibInput2['default'], { type: 'file', label: 'Kuva havaintopaikalta' }),
         _react2['default'].createElement(_reactBootstrapLibButtonInput2['default'], { type: 'submit', value: 'Ilmoita', bsStyle: 'primary', bsSize: 'large', disabled: this.state.disabled })
       );

@@ -2,39 +2,52 @@ import React from 'react';
 import Input from 'react-bootstrap/lib/Input';
 import ButtonInput from 'react-bootstrap/lib/ButtonInput';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
-export default class FindingForm extends React.Component{
+export default class FindingForm extends React.Component {
 
-  constructor(){
+  constructor() {
     super();
-    this.state = {disabled: true, formstate: {description: ''}};
+    this.state = {disabled: true, formstate: {description: '', timestamp: null}};
     this.findingChange = this.findingChange.bind(this);
+    this.timeChange = this.timeChange.bind(this);
+
   }
 
-  findingChange(event){
+  findingChange(event) {
     let self = this;
     this.state.formstate.description = event.target.value;
     this.setState({formstate: this.state.formstate, disabled: !this.validate(self.state.formstate)});
   }
 
-  validate(formstate){
+  validate(formstate) {
     var isValid = true;
-    for (let key in formstate){
+    for (let key in formstate) {
       let value = formstate[key];
-      if (!value || 0 === value.length){
+      if (!value || 0 === value.length) {
         return false;
       }
     }
     return isValid;
-  
   }
 
-  render(){
+  timeChange(time) {
+    var formstate = this.state.formstate;
+    formstate.timestamp = time;
+    if (isNaN(time)) {
+      this.setState({formstate: this.state.formstate, disabled: true});
+      return;
+    }
+    this.setState({formstate: this.state.formstate, disabled: !this.validate(formstate)});
+  }
+
+  render() {
     return (
       <form noValidate>
-        <Input id="finding" type="textarea" value={this.state.formstate.description} label="Havainto" onChange={this.findingChange} required="true" bsSize="large" placeholder="Kuvaa mahdollisimman tarkasti havaintoa kadonneesta." />
-        <DateTimePicker format="x" />
-        <Input type="file" label="Kuva havaintopaikalta"  />
-        <ButtonInput type="submit" value="Ilmoita"  bsStyle="primary" bsSize="large" disabled={this.state.disabled}   />
+        <Input id="finding" type="textarea" value={this.state.formstate.description} label="Havainto"
+               onChange={this.findingChange} required="true" bsSize="large"
+               placeholder="Kuvaa mahdollisimman tarkasti havaintoa kadonneesta."/>
+        <DateTimePicker defaultText="select time" format="x" inputFormat="D.M.YYYY H:mm" onChange={this.timeChange}/>
+        <Input type="file" label="Kuva havaintopaikalta"/>
+        <ButtonInput type="submit" value="Ilmoita" bsStyle="primary" bsSize="large" disabled={this.state.disabled}/>
       </form>
     )
   }
