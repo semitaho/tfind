@@ -24,8 +24,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
 
-
-const URI = 'mongodb://tfinduser:tfind123@ds047484.mongolab.com:47484/tfinddb';
+const URI = process.env.MONGOLAB_URI;
 mongoClient.connect(URI, function (err, db) {
 
   if (err) throw err;
@@ -40,7 +39,6 @@ mongoClient.connect(URI, function (err, db) {
       quoteauthor: content.quoteauthor
     });
   });
-
 
   app.get('/kadonneet', (req, res) => {
     kadonneetCollection.find().sort({timestamp: -1}).toArray(function (err, docs) {
@@ -61,7 +59,7 @@ mongoClient.connect(URI, function (err, db) {
 
   });
 
-  app.get('/lisaahavainto', (req,res) => {
+  app.get('/lisaahavainto', (req, res) => {
     res.render('lisaahavainto', {
       navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
       findingform: ReactDOMServer.renderToString(Findingform({}))
@@ -70,7 +68,6 @@ mongoClient.connect(URI, function (err, db) {
   });
 
 });
-
 
 app.listen(app.get('port'), function () {
   console.log('up and running...');
