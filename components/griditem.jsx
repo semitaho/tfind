@@ -97,7 +97,10 @@ export default class GridItem extends React.Component {
             <div className="caption">
               <h3>{item.name}</h3>
               <p>{item.description}</p>
-              <p><Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla</Button></p>
+              <p>
+                <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla</Button>
+                <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla</Button>
+              </p>
               {self.state.kadonnutTime === 0 ? '':  <p className="text-primary">Kadonneena<br/>{this.getKadonnut()}</p>}
             </div>
           </div>

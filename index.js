@@ -3,6 +3,7 @@ var React = require('react'),
   ReactDOMServer = require('react-dom/server'),
   mongoClient = require('mongodb').MongoClient;
 express = require('express'),
+bodyParser =require('body-parser'),
   stylus = require('stylus'),
   nib = require('nib'),
   content = require('./resources/content.json'),
@@ -23,6 +24,7 @@ app.set('views', __dirname + '/views');
 // (although you can still mix and match)
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
 
 const URI = process.env.MONGOLAB_URI;
 mongoClient.connect(URI, function (err, db) {
@@ -38,6 +40,11 @@ mongoClient.connect(URI, function (err, db) {
       quotetext: content.quotetext,
       quoteauthor: content.quoteauthor
     });
+  });
+
+  app.post('/submitfinding', (req,res) => {
+    console.log('hei vaan', req.body);
+
   });
 
   app.get('/kadonneet', (req, res) => {

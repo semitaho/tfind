@@ -1,6 +1,6 @@
 import React from 'react';
 import Input from 'react-bootstrap/lib/Input';
-import ButtonInput from 'react-bootstrap/lib/ButtonInput';
+import Button from 'react-bootstrap/lib/Button';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
 export default class FindingForm extends React.Component {
 
@@ -9,6 +9,7 @@ export default class FindingForm extends React.Component {
     this.state = {disabled: true, formstate: {description: '', timestamp: null}};
     this.findingChange = this.findingChange.bind(this);
     this.timeChange = this.timeChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
 
   }
 
@@ -39,16 +40,35 @@ export default class FindingForm extends React.Component {
     this.setState({formstate: this.state.formstate, disabled: !this.validate(formstate)});
   }
 
+
+
   render() {
     return (
-      <form noValidate>
-        <Input id="finding" type="textarea" value={this.state.formstate.description} label="Havainto"
+      <div className="panel panel-default">
+      <div className="panel-heading">
+        <h1>Ilmoita havainnosta</h1>
+      </div>
+      <div className="panel-body">
+      <form method="POST"  noValidate>
+        <Input id="finding" name="description" type="textarea" value={this.state.formstate.description} label="Havainto"
                onChange={this.findingChange} required="true" bsSize="large"
                placeholder="Kuvaa mahdollisimman tarkasti havaintoa kadonneesta."/>
-        <DateTimePicker defaultText="select time" format="x" inputFormat="D.M.YYYY H:mm" onChange={this.timeChange}/>
+        <div className="form-group form-group-lg">
+          <label className="control-label">Ajankohta</label>
+          <DateTimePicker name="timestamp" defaultText="" format="x" inputFormat="D.M.YYYY H:mm" onChange={this.timeChange}/>
+        </div>
         <Input type="file" label="Kuva havaintopaikalta"/>
-        <ButtonInput type="submit" value="Ilmoita" bsStyle="primary" bsSize="large" disabled={this.state.disabled}/>
+        <Button onClick={this.handleSubmit} bsStyle="primary" bsSize="large" disabled={this.state.disabled}>Ilmoita</Button>
       </form>
+      </div>
+      </div>  
     )
   }
+
+  handleSubmit(){
+    console.log('jepjep', this.state.formstate);
+  }
+
+
+
 }
