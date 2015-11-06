@@ -104,7 +104,7 @@ var FindingForm = (function (_React$Component) {
         'form',
         { noValidate: true },
         _react2['default'].createElement(_reactBootstrapLibInput2['default'], { id: 'finding', type: 'textarea', value: this.state.formstate.description, label: 'Havainto', onChange: this.findingChange, required: 'true', bsSize: 'large', placeholder: 'Kuvaa mahdollisimman tarkasti havaintoa kadonneesta.' }),
-        _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { format: 'l' }),
+        _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { format: 'x' }),
         _react2['default'].createElement(_reactBootstrapLibInput2['default'], { type: 'file', label: 'Kuva havaintopaikalta' }),
         _react2['default'].createElement(_reactBootstrapLibButtonInput2['default'], { type: 'submit', value: 'Ilmoita', bsStyle: 'primary', bsSize: 'large', disabled: this.state.disabled })
       );

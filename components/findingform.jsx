@@ -32,7 +32,7 @@ export default class FindingForm extends React.Component{
     return (
       <form noValidate>
         <Input id="finding" type="textarea" value={this.state.formstate.description} label="Havainto" onChange={this.findingChange} required="true" bsSize="large" placeholder="Kuvaa mahdollisimman tarkasti havaintoa kadonneesta." />
-        <DateTimePicker format="l" />
+        <DateTimePicker format="x" />
         <Input type="file" label="Kuva havaintopaikalta"  />
         <ButtonInput type="submit" value="Ilmoita"  bsStyle="primary" bsSize="large" disabled={this.state.disabled}   />
       </form>
