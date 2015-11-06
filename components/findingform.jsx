@@ -1,6 +1,6 @@
 import React from 'react';
-import Input from 'react-bootstrap/lib/input';
-import ButtonInput from 'react-bootstrap/lib/buttonInput';
+import Input from 'react-bootstrap/lib/Input';
+import ButtonInput from 'react-bootstrap/lib/ButtonInput';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
 export default class FindingForm extends React.Component{
 
