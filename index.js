@@ -8,29 +8,26 @@ express = require('express'),
   content = require('./resources/content.json'),
   tfindApp = require('./components/tfindApp.jsx'),
   findingFormJsx = require('./components/findingform.jsx'),
-  lostsgrid = require('./components/lostsgrid.jsx');
+  lostsgrid = require('./components/lostsgrid.jsx'),
+  kadonnutFormjsx = require('./components/kadonnutform.jsx');
 nav = require('./components/navigation.jsx');
 var app = module.exports = express(),
   upload = multer({dest: './public/files'});
 
 var Navigation = React.createFactory(nav),
   Losts = React.createFactory(lostsgrid),
-  Findingform = React.createFactory(findingFormJsx);
-//app.use(app.router);
+  Findingform = React.createFactory(findingFormJsx),
+  KadonnutForm = React.createFactory(kadonnutFormjsx);
+
 app.set('port', (process.env.PORT || 5000));
 app.set('views', __dirname + '/views');
-// Set our default template engine to "jade"
-// which prevents the need for extensions
-// (although you can still mix and match)
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
 
 var errorRoute = (req, res) => {
-
   res.render('error', {
     navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1}))
   });
-
 };
 
 var ObjectId = require('mongodb').ObjectID;
@@ -86,29 +83,11 @@ mongoConnection.then(function (db) {
     });
 
   });
-
-  app.get('/lisaahavainto/:id', (req, res) => {
-
-    var o_id = new ObjectId(req.params.id);
-    kadonneetCollection.findOne({'_id': o_id}, function (err, result) {
-
-      if (err) {
-
-      }
-      console.log('results', result);
-      if (result === null || result === undefined) {
-        res.redirect('/error');
-        return;
-
-      }
-      console.log('result', result);
-      res.render('lisaahavainto', {
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
-        findingform: ReactDOMServer.renderToString(Findingform({item: result}))
-      });
-
+  app.get('/ilmoita', (req, res) => {
+    res.render('lisaakadonnut', {
+      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2})),
+      kadonnutform: ReactDOMServer.renderToString(KadonnutForm({}))
     });
-
   });
 
   // error
