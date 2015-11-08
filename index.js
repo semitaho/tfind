@@ -1,9 +1,8 @@
 require('babel/register');
 var React = require('react'),
-  ReactDOMServer = require('react-dom/server'),
-  mongoClient = require('mongodb').MongoClient;
+  ReactDOMServer = require('react-dom/server')
 express = require('express'),
-bodyParser =require('body-parser'),
+  multer = require('multer'),
   stylus = require('stylus'),
   nib = require('nib'),
   content = require('./resources/content.json'),
@@ -11,7 +10,8 @@ bodyParser =require('body-parser'),
   findingFormJsx = require('./components/findingform.jsx'),
   lostsgrid = require('./components/lostsgrid.jsx');
 nav = require('./components/navigation.jsx');
-var app = module.exports = express();
+var app = module.exports = express(),
+  upload = multer({dest: './public/files'});
 
 var Navigation = React.createFactory(nav),
   Losts = React.createFactory(lostsgrid),
@@ -24,15 +24,22 @@ app.set('views', __dirname + '/views');
 // (although you can still mix and match)
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
-app.use(bodyParser.json());
 
-const URI = process.env.MONGOLAB_URI;
-mongoClient.connect(URI, function (err, db) {
+var errorRoute = (req, res) => {
 
-  if (err) throw err;
+  res.render('error', {
+    navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1}))
+  });
+
+};
+
+var ObjectId = require('mongodb').ObjectID;
+var mongoConnection = require('./mongodb.js').mongoConnection;
+mongoConnection.then(function (db) {
   console.log('mongodb successfully connected...');
   var kadonneetCollection = db.collection('kadonneet');
-
+  return kadonneetCollection
+}).then(function (kadonneetCollection) {
   app.get('/', (req, res) => {
     res.render('index', {
       navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1})),
@@ -42,9 +49,23 @@ mongoClient.connect(URI, function (err, db) {
     });
   });
 
-  app.post('/submitfinding', (req,res) => {
+  app.post('/submitfinding', upload.single('pic'), (req, res) => {
     console.log('hei vaan', req.body);
 
+    var findings = {
+      timestamp: parseInt(req.body.timestamp, 10),
+      description: req.body.description,
+      type: req.body.tyyppi,
+      lat: parseFloat(req.body.lat, 10),
+      lng: parseFloat(req.body.lng, 10)
+    };
+    kadonneetCollection.update({_id: new ObjectId(req.body._id)}, {'$push': {'findings': findings}}, function (err, result) {
+      if (err) {
+        res.redirect('/error');
+        return;
+      }
+      res.redirect('/kadonneet');
+    });
   });
 
   app.get('/kadonneet', (req, res) => {
@@ -66,13 +87,32 @@ mongoClient.connect(URI, function (err, db) {
 
   });
 
-  app.get('/lisaahavainto', (req, res) => {
-    res.render('lisaahavainto', {
-      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
-      findingform: ReactDOMServer.renderToString(Findingform({}))
+  app.get('/lisaahavainto/:id', (req, res) => {
+
+    var o_id = new ObjectId(req.params.id);
+    kadonneetCollection.findOne({'_id': o_id}, function (err, result) {
+
+      if (err) {
+
+      }
+      console.log('results', result);
+      if (result === null || result === undefined) {
+        res.redirect('/error');
+        return;
+
+      }
+      console.log('result', result);
+      res.render('lisaahavainto', {
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
+        findingform: ReactDOMServer.renderToString(Findingform({item: result}))
+      });
+
     });
 
   });
+
+  // error
+  app.get('*', errorRoute);
 
 });
 

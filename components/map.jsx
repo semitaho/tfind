@@ -3,34 +3,60 @@ import ReactDOM from 'react-dom';
 
 export default class Map extends React.Component {
 
-
   constructor() {
     super();
     this.markers = [];
     this.map = null;
+    this.createFindingMarker = this.createFindingMarker.bind(this);
   }
 
   render() {
+    var hide = this.props.hide;
+    var clazz = 'hide';
     return (
       <div id="map-havainnot"></div>
     );
+
   }
 
   componentDidMount() {
+    console.log('on did mount');
     var mapOptions = {
       draggable: false,
-      disableDefaultUI: true,
       scrollwheel: false,
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom
     };
-    mapOptions.center = this.calculateCenter(this.props.findings);
-    this.map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
+    var domNode = ReactDOM.findDOMNode(this);
+    var center = this.calculateCenter(this.props.findings);
+    console.log('center', center);
+    mapOptions.center = center;
+    this.map = new google.maps.Map(domNode, mapOptions);
     this.createMarkers();
     this.createRoute();
+
+    if (this.props.onClick) {
+      google.maps.event.addListener(this.map, 'click', event => {
+        console.log("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
+        this.props.onClick(event.latLng);
+        this.createFindingMarker({lat: event.latLng.lat(), lng: event.latLng.lng()});
+      });
+    }
   }
 
   calculateCenter(findings) {
+    if (findings.length === 0) {
+      return {
+        lat: 63.612101,
+        lng: 26.175575
+      };
+    }
+    if (findings.length == 1) {
+      return {
+        lat: findings[0].lat,
+        lng: findings[0].lng
+      };
+    }
     var latSum = findings.reduce((prev, current, index, array) => {
       return current.lat + prev.lat;
     });
@@ -41,10 +67,31 @@ export default class Map extends React.Component {
     return {lat: latSum / findings.length, lng: lngSum / findings.length};
   }
 
+  createFindingMarker(latlng) {
+    var markerIcon = {
+      scale: 7,
+      path: google.maps.SymbolPath.CIRCLE
+    };
+
+    if (this.findingMarker) {
+      this.findingMarker.setMap(null);
+    }
+
+    this.findingMarker = new google.maps.Marker({
+      draggable: false,
+      icon: markerIcon,
+      position: {
+        lat: latlng.lat,
+        lng: latlng.lng
+      },
+      map: this.map
+    });
+
+    this.createRoute(latlng);
+  }
 
   createMarkers() {
     var self = this;
-
 
     var cross = {
       path: 'M 0,0 0,-8 0,0 -6,0 6,0 0,0 0,15 z',
@@ -90,7 +137,10 @@ export default class Map extends React.Component {
     )
   }
 
-  createRoute() {
+  createRoute(latlng) {
+    if (this.line) {
+      this.line.setMap(null);
+    }
     var lineSymbol = {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
     };
@@ -100,7 +150,11 @@ export default class Map extends React.Component {
         lng: finding.lng
       };
     });
-    var line = new google.maps.Polyline({
+
+    if (latlng) {
+      path.push(latlng);
+    }
+    this.line = new google.maps.Polyline({
       path: path,
       strokeOpacity: '0.5',
       icons: [{
@@ -125,14 +179,14 @@ export default class Map extends React.Component {
   }
 
   generateInfowindowContent(finding) {
-    console.log('desc', finding.description);
-    var str = '<div class="thumbnail">' +
-      '    <a target="_blank" href="' + finding.imgsrc + '"><img class="img-havainto" src="' + finding.imgsrc + '" /></a>' +
-      '    <div class="caption"><h5>' + finding.description + '</h5><p>' + this.convertTimestampToTime(finding.timestamp) + '</p></div>';
+    var str = '<div class="thumbnail">';
+    if (finding.imgsrc) {
+      str += '    <a target="_blank" href="' + finding.imgsrc + '"><img class="img-havainto" src="' + finding.imgsrc + '" /></a>';
+    }
+    str += '<div class="caption"><h5>' + finding.description + '</h5><p>' + this.convertTimestampToTime(finding.timestamp) + '</p></div>';
     str += '</div>';
     return str;
   }
-
 
   componentDidUpdate(prevProps, prevState) {
     // center: {lat: this.props.findings[0].lat, lng: this.props.findings[0].lon}

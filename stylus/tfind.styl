@@ -1,7 +1,6 @@
 @import 'variables'
 @import 'animation'
 
-
 body
   background-color backgroundcolor
 
@@ -27,14 +26,12 @@ body
   left 50%
   transform translate(-50%)
 
-.example-appear 
+.example-appear
   opacity 0.01
 
-
-.example-appear.example-appear-active 
+.example-appear.example-appear-active
   opacity 1
   transition: opacity .5s ease-in
-
 
 #map-havainnot
   height 500px
@@ -44,3 +41,7 @@ body
 
 .img-havainto
   max-height 100px
+
+.darkened
+  z-index 1000
+  opacity 0.3 !important
