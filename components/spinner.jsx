@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import Spinjs from '../vendor/spin.js';
+import $ from 'jquery';
 
 export default class Spinner extends React.Component {
 
