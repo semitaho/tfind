@@ -9,15 +9,17 @@ express = require('express'),
   tfindApp = require('./components/tfindApp.jsx'),
   findingFormJsx = require('./components/findingform.jsx'),
   lostsgrid = require('./components/lostsgrid.jsx'),
-  kadonnutFormjsx = require('./components/kadonnutform.jsx');
-nav = require('./components/navigation.jsx');
-var app = module.exports = express(),
+  kadonneetlistjsx = require('./components/kadonneetlist.jsx'),
+  kadonnutFormjsx = require('./components/kadonnutform.jsx'),
+  nav = require('./components/navigation.jsx'),
+  app = module.exports = express(),
   upload = multer({dest: './public/files'});
 
 var Navigation = React.createFactory(nav),
   Losts = React.createFactory(lostsgrid),
   Findingform = React.createFactory(findingFormJsx),
-  KadonnutForm = React.createFactory(kadonnutFormjsx);
+  KadonnutForm = React.createFactory(kadonnutFormjsx),
+  KadonneetList = React.createFactory(kadonneetlistjsx);
 
 app.set('port', (process.env.PORT || 5000));
 app.set('views', __dirname + '/views');
@@ -47,8 +49,6 @@ mongoConnection.then(function (db) {
   });
 
   app.post('/submitfinding', upload.single('pic'), (req, res) => {
-    console.log('hei vaan', req.body);
-
     var findings = {
       timestamp: parseInt(req.body.timestamp, 10),
       description: req.body.description,
@@ -83,6 +83,18 @@ mongoConnection.then(function (db) {
     });
 
   });
+
+  app.get('/etsi', (req,res) => {
+    kadonneetCollection.find({}, {name: 1, imgsrc: 1}).sort({name: 1}).toArray((err, docs) => {
+      res.render('etsi', {
+        kadonneet: docs,
+        kadonneetlist: ReactDOMServer.renderToString(KadonneetList({items: docs})),
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2}))
+      });
+    });
+   
+  });
+
   app.get('/ilmoita', (req, res) => {
     res.render('lisaakadonnut', {
       navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),

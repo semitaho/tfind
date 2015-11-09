@@ -6,7 +6,6 @@ import $ from 'jquery';
 import Modal from 'react-bootstrap/lib/Modal';
 import Map from './map.jsx';
 import Spinner from './spinner.jsx';
-
 import DateTimePicker from 'react-bootstrap-datetimepicker';
 export default class FindingForm extends React.Component {
 

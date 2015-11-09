@@ -15,7 +15,7 @@ export default class Navigation extends React.Component {
     return (
       <nav className="navbar navbar-default navbar-static-top">
         <div className="row">
-          <div className="col-md-6 col-xs-12 col-sm-12 col-md-offset-3 end navbar-inner">
+          <div className="col-md-8 col-xs-12 col-sm-12 col-md-offset-2 end navbar-inner">
             <div className="navbar-header">
               <a className="navbar-brand" href="/">tFind</a>
             </div>
@@ -42,7 +42,7 @@ export default class Navigation extends React.Component {
 Navigation.defaultProps = {items: [
   {title: 'Kadonneet', link: '/kadonneet'}, 
   {title: 'Ilmoita kadonneeksi', link: '/ilmoita'},
-   {title: 'UKK', link: '/ukk'}
-
+  {title: 'Etsi henkilöä', link: '/etsi'},
+  {title: 'UKK', link: '/ukk'}
   ]};
 

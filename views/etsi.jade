@@ -1,0 +1,13 @@
+extends ./layout.jade
+block content
+  .row
+    .col-md-6.col-md-offset-3
+      .content.center-block
+        .page-header
+          h1 Etsi kadonnutta
+        p.lead Valitse listalta kadonnut henkilö ja aloita etsinnät 
+        #kadonneetlist!= kadonneetlist
+  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByzQDlFO3HK8MQmkCMpZ9Wzg-hyECUKNI")
+  script.
+    var kadonneet = !{JSON.stringify(kadonneet)}        
+
