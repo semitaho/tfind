@@ -85,7 +85,7 @@ mongoConnection.then(function (db) {
   });
   app.get('/ilmoita', (req, res) => {
     res.render('lisaakadonnut', {
-      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2})),
+      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
       kadonnutform: ReactDOMServer.renderToString(KadonnutForm({}))
     });
   });
