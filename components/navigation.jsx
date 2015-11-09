@@ -41,6 +41,8 @@ export default class Navigation extends React.Component {
 
 Navigation.defaultProps = {items: [
   {title: 'Kadonneet', link: '/kadonneet'}, 
-  {title: 'Ilmoita kadonneeksi', link: '/ilmoita'}
+  {title: 'Ilmoita kadonneeksi', link: '/ilmoita'},
+   {title: 'UKK', link: '/ukk'}
+
   ]};
 
