@@ -15,24 +15,28 @@ export default class Navigation extends React.Component {
     return (
       <nav className="navbar navbar-default navbar-static-top">
         <div className="row">
-          <div className="col-md-8 col-xs-12 col-sm-12 col-md-offset-2 end navbar-inner">
-            <div className="navbar-header">
+          <div className="col-md-2 col-sm-2 col-lg-2 col-xs-2">
+            <div className="navbar-header navbar-right">
               <a className="navbar-brand" href="/">tFind</a>
             </div>
+            </div>
+           <div className="col-md-8 col-xs-8 col-sm-8"> 
             <ul className="navbar-nav nav navbar-center">
               {navitems}
             </ul>
-            <ul className="nav navbar-nav navbar-right">
-              <li>
-                <a href="#">
-                  <img id="facebook" title="Kadonneet Facebookissa" data-toggle="tooltip" data-placement="bottom"
+            </div>
+            <div className="col-md-2 col-sm-2 col-xs-2">
+              <ul className="nav navbar-nav">
+                <li>
+                  <a href="#">
+                    <img id="facebook" title="Kadonneet Facebookissa" data-toggle="tooltip" data-placement="bottom"
                        src="/images/FB-f-Logo__blue_29.png"/>
-                </a>
-              </li>
-            </ul>
+                  </a>
+                </li>
+              </ul>
+            </div>
 
           </div>
-        </div>
       </nav>)
 
 

@@ -21,7 +21,7 @@ var Navigation = React.createFactory(nav),
   KadonnutForm = React.createFactory(kadonnutFormjsx),
   KadonneetList = React.createFactory(kadonneetlistjsx);
 
-app.set('port', (process.env.PORT || 5000));
+app.set('port', (process.env.PORT || 8080));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));

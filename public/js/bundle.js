@@ -575,6 +575,7 @@ var KadonneetSearchMap = (function (_React$Component) {
 
     _get(Object.getPrototypeOf(KadonneetSearchMap.prototype), 'constructor', this).call(this);
     this.gotLocation = this.gotLocation.bind(this);
+    this.startSearching = this.startSearching.bind(this);
     this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
     this.state = { opened: true };
   }
@@ -585,36 +586,81 @@ var KadonneetSearchMap = (function (_React$Component) {
       var mapClass = this.state.opened ? 'grayable' : '';
       return _react2['default'].createElement(
         _reactBootstrapLibModal2['default'],
-        { show: true, bsSize: 'large' },
-        this.state.opened ? _react2['default'].createElement(
-          'div',
-          { className: 'opened' },
+        { show: true, bsSize: 'large', onHide: this.props.onclose },
+        _react2['default'].createElement(
+          _reactBootstrapLibModal2['default'].Body,
+          null,
+          this.state.opened ? _react2['default'].createElement(
+            'div',
+            { className: 'opened' },
+            _react2['default'].createElement(
+              'h3',
+              null,
+              'Valmiina aloittamaan etsinnät henkilöstä ',
+              this.props.item.name,
+              '?'
+            ),
+            _react2['default'].createElement(
+              'div',
+              { className: 'btn-group pull-right' },
+              _react2['default'].createElement(
+                'button',
+                { type: 'button', className: 'btn btn-default btn-lg', onClick: this.props.onclose },
+                'Sulje'
+              ),
+              _react2['default'].createElement(
+                'button',
+                { type: 'button', className: 'btn btn-primary btn-lg', onClick: this.startSearching },
+                'Aloita'
+              )
+            )
+          ) : '',
+          _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass })
+        ),
+        this.state.opened === false ? _react2['default'].createElement(
+          _reactBootstrapLibModal2['default'].Footer,
+          null,
           _react2['default'].createElement(
-            'h3',
-            null,
-            'Valmiina aloittamaan etsinnät henkilöstä ',
-            this.props.item.name,
-            '?'
-          ),
-          _react2['default'].createElement(
-            'button',
-            { type: 'button', className: 'btn btn-default btn-lg', 'aria-label': 'Left Align' },
-            'Sulje'
-          ),
-          _react2['default'].createElement(
-            'button',
-            { type: 'button', className: 'btn btn-primary btn-lg', 'aria-label': 'Left Align' },
-            'Aloita'
+            'div',
+            { className: 'btn-group' },
+            _react2['default'].createElement(
+              'button',
+              { type: 'button', className: 'btn btn-default btn-lg', onClick: this.props.onclose },
+              'Peruuta etsintä'
+            ),
+            _react2['default'].createElement(
+              'button',
+              { type: 'button', className: 'btn btn-primary btn-lg' },
+              'Tallenna'
+            )
           )
-        ) : '',
-        _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass })
+        ) : ''
       );
     }
   }, {
     key: 'gotLocation',
     value: function gotLocation(latlng) {
       console.log('gotloc', latlng);
-      this.initMap(latlng.coords);
+      if (this.state.opened) {
+        this.initMap(latlng.coords);
+      }
+      this.updateMarker(latlng.coords);
+    }
+  }, {
+    key: 'updateMarker',
+    value: function updateMarker(location) {
+      var marker = new google.maps.Marker({
+        position: { lat: location.latitude, lng: location.longitude },
+        map: this.map,
+        title: 'Nykyinen sijainti'
+      });
+      this.map.setCenter(marker);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      console.log('did un mount');
+      this.map = null;
     }
   }, {
     key: 'initMap',
@@ -622,6 +668,7 @@ var KadonneetSearchMap = (function (_React$Component) {
       console.log(coordinates);
       var mapOptions = {
         draggable: false,
+        disableDefaultUI: true,
         scrollwheel: false,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         zoom: this.props.initialZoom,
@@ -643,7 +690,7 @@ var KadonneetSearchMap = (function (_React$Component) {
         timeout: 5000,
         maximumAge: 0
       };
-      navigator.geolocation.getCurrentPosition(this.gotLocation, this.onErrorGeocoding, options);
+      this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
 
       console.log('on did mount');
 
@@ -652,6 +699,11 @@ var KadonneetSearchMap = (function (_React$Component) {
       console.log('center', center);
       mapOptions.center = center;
       */
+    }
+  }, {
+    key: 'startSearching',
+    value: function startSearching() {
+      this.setState({ opened: false });
     }
   }]);
 
@@ -696,12 +748,18 @@ var KadonneetList = (function (_React$Component) {
 
     _get(Object.getPrototypeOf(KadonneetList.prototype), 'constructor', this).call(this);
     this.state = { item: null };
+    this.closeMap = this.closeMap.bind(this);
   }
 
   _createClass(KadonneetList, [{
     key: 'clickButton',
     value: function clickButton(item) {
       this.setState({ item: item });
+    }
+  }, {
+    key: 'closeMap',
+    value: function closeMap() {
+      this.setState({ item: null });
     }
   }, {
     key: 'render',
@@ -724,7 +782,7 @@ var KadonneetList = (function (_React$Component) {
             );
           })
         ),
-        this.state.item !== null ? _react2['default'].createElement(_kadonneetSearchMapJsx2['default'], { item: this.state.item }) : ''
+        this.state.item !== null ? _react2['default'].createElement(_kadonneetSearchMapJsx2['default'], { item: this.state.item, onclose: this.closeMap }) : ''
       );
     }
   }]);

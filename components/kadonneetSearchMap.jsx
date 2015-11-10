@@ -7,6 +7,7 @@ export default class KadonneetSearchMap extends React.Component{
   constructor(){
     super();
     this.gotLocation = this.gotLocation.bind(this);
+    this.startSearching = this.startSearching.bind(this);
     this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
     this.state = {opened: true};
   }
@@ -14,28 +15,56 @@ export default class KadonneetSearchMap extends React.Component{
 
   render(){
     var mapClass = this.state.opened ? 'grayable': '';
-    return (<Modal show={true} bsSize="large">
+    return (<Modal show={true} bsSize="large" onHide={this.props.onclose}>
+              <Modal.Body>
+
       {this.state.opened ? <div className="opened">
                               <h3>Valmiina aloittamaan etsinnät henkilöstä {this.props.item.name}?</h3>
-                              <button type="button" className="btn btn-default btn-lg" aria-label="Left Align">Sulje</button>
-                              <button type="button" className="btn btn-primary btn-lg" aria-label="Left Align">Aloita</button>
-                              
-
+                              <div className="btn-group pull-right">
+                                <button type="button" className="btn btn-default btn-lg" onClick={this.props.onclose}>Sulje</button>
+                                <button type="button" className="btn btn-primary btn-lg" onClick={this.startSearching}>Aloita</button>
+                              </div>
                             </div> : ''}
       <div id="kadonneet-search-map" className={mapClass} />
+      </Modal.Body>
+      {this.state.opened === false ?
+      <Modal.Footer>
+        <div className="btn-group">
+          <button type="button" className="btn btn-default btn-lg" onClick={this.props.onclose}>Peruuta etsintä</button>
+          <button type="button" className="btn btn-primary btn-lg">Tallenna</button>
+          </div>
+      </Modal.Footer> : ''}
     </Modal>)
   }
 
   gotLocation(latlng){
     console.log('gotloc', latlng);
-    this.initMap(latlng.coords);
-    
+    if (this.state.opened){
+      this.initMap(latlng.coords);
+    }
+    this.updateMarker(latlng.coords);   
+  }
+
+  updateMarker(location){
+    var marker = new google.maps.Marker({
+      position: {lat:location.latitude, lng: location.longitude},
+      map: this.map,
+      title: 'Nykyinen sijainti'
+    });
+    this.map.setCenter(marker);
+  }
+
+
+  componentWillUnmount(){
+    console.log('did un mount');
+    this.map = null;
   }
 
   initMap(coordinates){
     console.log(coordinates);
     var mapOptions = {
       draggable: false,
+      disableDefaultUI: true,
       scrollwheel: false,
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom,
@@ -56,7 +85,7 @@ export default class KadonneetSearchMap extends React.Component{
       timeout: 5000,
       maximumAge: 0
     };
-    navigator.geolocation.getCurrentPosition(this.gotLocation, this.onErrorGeocoding, options);
+    this.watchId =  navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
 
     console.log('on did mount');
     
@@ -66,8 +95,11 @@ export default class KadonneetSearchMap extends React.Component{
     mapOptions.center = center;
     */
   }
-}
+  startSearching(){
+    this.setState({opened: false});
 
+  }
+}
 
 KadonneetSearchMap.defaultProps = {initialZoom: 14};
 

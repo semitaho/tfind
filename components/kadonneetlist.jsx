@@ -5,11 +5,16 @@ export default class KadonneetList extends React.Component{
   constructor(){
     super();
     this.state = {item: null};
+    this.closeMap = this.closeMap.bind(this);
   }
 
   clickButton(item){
     this.setState({item: item});
   }
+
+  closeMap(){
+    this.setState({item:null});
+  };
 
   render(){
     return <div>
@@ -18,7 +23,7 @@ export default class KadonneetList extends React.Component{
                   return <button key={'search_'+key} className="list-group-item" onClick={this.clickButton.bind(this,item)}>  {item.name}<span className="pull-right glyphicon glyphicon-menu-right" aria-hidden="true"></span></button>;
               })}
             </div>  
-            {this.state.item !== null ?  <KadonneetMap item={this.state.item} /> : ''}
+            {this.state.item !== null ?  <KadonneetMap item={this.state.item} onclose={this.closeMap}  /> : ''}
           </div>
   }
 
