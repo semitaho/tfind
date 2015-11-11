@@ -7,7 +7,7 @@ block content
           h1 Etsi kadonnutta
         p.lead Valitse listalta kadonnut henkilö ja aloita etsinnät 
         #kadonneetlist!= kadonneetlist
-  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByzQDlFO3HK8MQmkCMpZ9Wzg-hyECUKNI")
+  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByzQDlFO3HK8MQmkCMpZ9Wzg-hyECUKNI&libraries=geometry")
   script.
     var kadonneet = !{JSON.stringify(kadonneet)}        
 

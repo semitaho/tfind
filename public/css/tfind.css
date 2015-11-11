@@ -99,6 +99,8 @@ body {
   margin-right: -50%;
   left: 50%;
   transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  -webkit-transform: translate(-50%, 0);
 }
 .example-appear {
   opacity: 0.01;
@@ -127,10 +129,18 @@ body {
 .grayable {
   opacity: 0.2;
 }
+.search-modal {
+  width: 100%;
+}
 .opened {
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   position: absolute;
   z-index: 9999;
+  width: 50%;
+  height: 50%;
+  overflow: auto;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }

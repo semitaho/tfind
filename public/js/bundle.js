@@ -567,6 +567,10 @@ var _reactBootstrapLibModal = require('react-bootstrap/lib/Modal');
 
 var _reactBootstrapLibModal2 = _interopRequireDefault(_reactBootstrapLibModal);
 
+var _spinnerJsx = require('./spinner.jsx');
+
+var _spinnerJsx2 = _interopRequireDefault(_spinnerJsx);
+
 var KadonneetSearchMap = (function (_React$Component) {
   _inherits(KadonneetSearchMap, _React$Component);
 
@@ -577,90 +581,173 @@ var KadonneetSearchMap = (function (_React$Component) {
     this.gotLocation = this.gotLocation.bind(this);
     this.startSearching = this.startSearching.bind(this);
     this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
-    this.state = { opened: true };
+    this.state = { opened: true, loading: true };
+    this.polyline = new google.maps.Polyline({
+      strokeColor: '#000000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
   }
 
   _createClass(KadonneetSearchMap, [{
+    key: 'renderSpinner',
+    value: function renderSpinner() {
+      return _react2['default'].createElement(_spinnerJsx2['default'], { dimm: 'kadonneet-search-map' });
+    }
+  }, {
+    key: 'renderQuestion',
+    value: function renderQuestion() {
+      return _react2['default'].createElement(
+        'div',
+        null,
+        _react2['default'].createElement(
+          'h3',
+          null,
+          'Valmiina aloittamaan etsinnät henkilöstä ',
+          this.props.item.name,
+          '?'
+        ),
+        _react2['default'].createElement(
+          'div',
+          { className: 'btn-group pull-right' },
+          _react2['default'].createElement(
+            'button',
+            { type: 'button', className: 'btn btn-default btn-lg', onClick: this.props.onclose },
+            'Sulje'
+          ),
+          _react2['default'].createElement(
+            'button',
+            { type: 'button', className: 'btn btn-primary btn-lg', onClick: this.startSearching },
+            'Aloita'
+          )
+        )
+      );
+    }
+  }, {
     key: 'render',
     value: function render() {
       var mapClass = this.state.opened ? 'grayable' : '';
       return _react2['default'].createElement(
         _reactBootstrapLibModal2['default'],
-        { show: true, bsSize: 'large', onHide: this.props.onclose },
+        { dialogClassName: 'search-modal', show: true, bsSize: 'large', onHide: this.props.onclose },
+        this.state.opened === false ? _react2['default'].createElement(
+          _reactBootstrapLibModal2['default'].Header,
+          null,
+          _react2['default'].createElement(
+            'div',
+            { className: 'row' },
+            _react2['default'].createElement(
+              'div',
+              { className: 'col-md-8 col-xs-6 small' },
+              'Kuljettu matka ',
+              this.state.length,
+              ' m.'
+            ),
+            _react2['default'].createElement(
+              'div',
+              { className: 'col-md-4 col-xs-6' },
+              _react2['default'].createElement(
+                'div',
+                { className: 'btn-group pull-right' },
+                _react2['default'].createElement(
+                  'button',
+                  { type: 'button', className: 'btn btn-default btn-sm', onClick: this.props.onclose },
+                  'Peruuta etsintä'
+                ),
+                _react2['default'].createElement(
+                  'button',
+                  { type: 'button', className: 'btn btn-primary btn-sm' },
+                  'Tallenna'
+                )
+              )
+            )
+          )
+        ) : '',
         _react2['default'].createElement(
           _reactBootstrapLibModal2['default'].Body,
           null,
           this.state.opened ? _react2['default'].createElement(
             'div',
             { className: 'opened' },
-            _react2['default'].createElement(
-              'h3',
-              null,
-              'Valmiina aloittamaan etsinnät henkilöstä ',
-              this.props.item.name,
-              '?'
-            ),
-            _react2['default'].createElement(
-              'div',
-              { className: 'btn-group pull-right' },
-              _react2['default'].createElement(
-                'button',
-                { type: 'button', className: 'btn btn-default btn-lg', onClick: this.props.onclose },
-                'Sulje'
-              ),
-              _react2['default'].createElement(
-                'button',
-                { type: 'button', className: 'btn btn-primary btn-lg', onClick: this.startSearching },
-                'Aloita'
-              )
-            )
+            this.state.loading ? this.renderSpinner() : this.renderQuestion()
           ) : '',
           _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass })
-        ),
-        this.state.opened === false ? _react2['default'].createElement(
-          _reactBootstrapLibModal2['default'].Footer,
-          null,
-          _react2['default'].createElement(
-            'div',
-            { className: 'btn-group' },
-            _react2['default'].createElement(
-              'button',
-              { type: 'button', className: 'btn btn-default btn-lg', onClick: this.props.onclose },
-              'Peruuta etsintä'
-            ),
-            _react2['default'].createElement(
-              'button',
-              { type: 'button', className: 'btn btn-primary btn-lg' },
-              'Tallenna'
-            )
-          )
-        ) : ''
+        )
       );
     }
   }, {
     key: 'gotLocation',
     value: function gotLocation(latlng) {
-      console.log('gotloc', latlng);
+      console.log('latlng', latlng.coords);
       if (this.state.opened) {
         this.initMap(latlng.coords);
       }
-      this.updateMarker(latlng.coords);
+      if (!this.checkLatestPointsDistance(latlng.coords)) {
+        return;
+      }
+
+      var position = this.updateMarker(latlng.coords);
+      this.updateRoute(position);
+      if (this.state.loading) {
+        this.setState({ loading: false });
+      }
+      var length = this.calculateLength();
+      this.setState({ length: length });
+    }
+  }, {
+    key: 'calculateLength',
+    value: function calculateLength() {
+      var length = google.maps.geometry.spherical.computeLength(this.polyline.getPath().getArray());
+      return length.toFixed(2);
+    }
+  }, {
+    key: 'checkLatestPointsDistance',
+    value: function checkLatestPointsDistance(latlng) {
+      var wholePath = this.polyline.getPath();
+      if (wholePath.getArray().length <= 1) {
+        return true;
+      }
+      var wholePath = this.polyline.getPath();
+      var lastPointLng = wholePath.getAt(wholePath.getLength() - 1);
+      var distance = google.maps.geometry.spherical.computeDistanceBetween(lastPointLng, new google.maps.LatLng(latlng.latitude, latlng.longitude));
+      console.log('distance', distance);
+      if (distance < 10) {
+        return false;
+      }
+      return true;
     }
   }, {
     key: 'updateMarker',
     value: function updateMarker(location) {
-      var marker = new google.maps.Marker({
-        position: { lat: location.latitude, lng: location.longitude },
+      if (this.marker) {
+        this.marker.setMap(null);
+      }
+      var position = { lat: location.latitude, lng: location.longitude };
+      this.marker = new google.maps.Marker({
+        position: position,
         map: this.map,
         title: 'Nykyinen sijainti'
       });
-      this.map.setCenter(marker);
+      console.log('marker', this.marker);
+      this.map.setCenter(this.marker.getPosition());
+      return this.marker.position;
+    }
+  }, {
+    key: 'updateRoute',
+    value: function updateRoute(position) {
+      var path = this.polyline.getPath();
+      path.push(position);
+      console.log('route', this.polyline.getPath().getLength());
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       console.log('did un mount');
       this.map = null;
+      if (this.watchId) {
+        navigator.geolocation.clearWatch(this.watchId);
+        console.log('watch cleared');
+      }
     }
   }, {
     key: 'initMap',
@@ -676,6 +763,8 @@ var KadonneetSearchMap = (function (_React$Component) {
       };
       var domNode = document.getElementById('kadonneet-search-map');
       this.map = new google.maps.Map(domNode, mapOptions);
+      this.polyline.setMap(this.map);
+      console.log('pathlength initmap', this.polyline.getPath().getLength());
     }
   }, {
     key: 'onErrorGeocoding',
@@ -691,7 +780,6 @@ var KadonneetSearchMap = (function (_React$Component) {
         maximumAge: 0
       };
       this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
-
       console.log('on did mount');
 
       /*
@@ -715,7 +803,7 @@ exports['default'] = KadonneetSearchMap;
 KadonneetSearchMap.defaultProps = { initialZoom: 14 };
 module.exports = exports['default'];
 
-},{"react":372,"react-bootstrap/lib/Modal":137,"react-dom":217}],5:[function(require,module,exports){
+},{"./spinner.jsx":10,"react":372,"react-bootstrap/lib/Modal":137,"react-dom":217}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
