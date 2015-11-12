@@ -74,7 +74,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -343,7 +343,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -547,7 +547,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -579,8 +579,12 @@ var KadonneetSearchMap = (function (_React$Component) {
 
     _get(Object.getPrototypeOf(KadonneetSearchMap.prototype), 'constructor', this).call(this);
     this.gotLocation = this.gotLocation.bind(this);
+    this.geocoder = new google.maps.Geocoder();
+
     this.startSearching = this.startSearching.bind(this);
     this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
+    this.markToMap = this.markToMap.bind(this);
+    console.log('props', this.props);
     this.state = { opened: true, loading: true };
     this.polyline = new google.maps.Polyline({
       strokeColor: '#000000',
@@ -603,13 +607,13 @@ var KadonneetSearchMap = (function (_React$Component) {
         _react2['default'].createElement(
           'h3',
           null,
-          'Valmiina aloittamaan etsinnät henkilöstä ',
+          'Valitse etsintätapa henkilöstä ',
           this.props.item.name,
           '?'
         ),
         _react2['default'].createElement(
           'div',
-          { className: 'btn-group pull-right' },
+          { className: 'btn-group center-block' },
           _react2['default'].createElement(
             'button',
             { type: 'button', className: 'btn btn-default btn-lg', onClick: this.props.onclose },
@@ -617,8 +621,13 @@ var KadonneetSearchMap = (function (_React$Component) {
           ),
           _react2['default'].createElement(
             'button',
+            { type: 'button', className: 'btn btn-success btn-lg', onClick: this.markToMap },
+            'Merkitse karttaan'
+          ),
+          _react2['default'].createElement(
+            'button',
             { type: 'button', className: 'btn btn-primary btn-lg', onClick: this.startSearching },
-            'Aloita'
+            'Aloita jäljittäminen (vaatii HTML5 geotunnisteen)'
           )
         )
       );
@@ -630,39 +639,8 @@ var KadonneetSearchMap = (function (_React$Component) {
       return _react2['default'].createElement(
         _reactBootstrapLibModal2['default'],
         { dialogClassName: 'search-modal', show: true, bsSize: 'large', onHide: this.props.onclose },
-        this.state.opened === false ? _react2['default'].createElement(
-          _reactBootstrapLibModal2['default'].Header,
-          null,
-          _react2['default'].createElement(
-            'div',
-            { className: 'row' },
-            _react2['default'].createElement(
-              'div',
-              { className: 'col-md-8 col-xs-6 small' },
-              'Kuljettu matka ',
-              this.state.length,
-              ' m.'
-            ),
-            _react2['default'].createElement(
-              'div',
-              { className: 'col-md-4 col-xs-6' },
-              _react2['default'].createElement(
-                'div',
-                { className: 'btn-group pull-right' },
-                _react2['default'].createElement(
-                  'button',
-                  { type: 'button', className: 'btn btn-default btn-sm', onClick: this.props.onclose },
-                  'Peruuta etsintä'
-                ),
-                _react2['default'].createElement(
-                  'button',
-                  { type: 'button', className: 'btn btn-primary btn-sm' },
-                  'Tallenna'
-                )
-              )
-            )
-          )
-        ) : '',
+        this.state.opened === false && this.state.started ? this.renderTracking() : '',
+        this.state.opened === false && this.state.marking ? this.renderMarking() : '',
         _react2['default'].createElement(
           _reactBootstrapLibModal2['default'].Body,
           null,
@@ -672,6 +650,68 @@ var KadonneetSearchMap = (function (_React$Component) {
             this.state.loading ? this.renderSpinner() : this.renderQuestion()
           ) : '',
           _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass })
+        )
+      );
+    }
+  }, {
+    key: 'renderTracking',
+    value: function renderTracking() {
+      return _react2['default'].createElement(
+        _reactBootstrapLibModal2['default'].Header,
+        null,
+        _react2['default'].createElement(
+          'div',
+          { className: 'row' },
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-8 col-xs-6 small' },
+            'Kuljettu matka ',
+            this.state.length,
+            ' m.'
+          ),
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-4 col-xs-6' },
+            _react2['default'].createElement(
+              'div',
+              { className: 'btn-group pull-right' },
+              _react2['default'].createElement(
+                'button',
+                { type: 'button', className: 'btn btn-default btn-sm', onClick: this.props.onclose },
+                'Peruuta etsintä'
+              ),
+              _react2['default'].createElement(
+                'button',
+                { type: 'button', className: 'btn btn-primary btn-sm' },
+                'Tallenna'
+              )
+            )
+          )
+        )
+      );
+    }
+  }, {
+    key: 'renderMarking',
+    value: function renderMarking() {
+      return _react2['default'].createElement(
+        _reactBootstrapLibModal2['default'].Header,
+        null,
+        _react2['default'].createElement(
+          'div',
+          { className: 'row' },
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-8 col-xs-6 small' },
+            'Etsitty kohteesta ',
+            _react2['default'].createElement(
+              'strong',
+              null,
+              this.state.location
+            ),
+            ' säteellä ',
+            this.state.radius,
+            ' m.'
+          )
         )
       );
     }
@@ -781,17 +821,66 @@ var KadonneetSearchMap = (function (_React$Component) {
       };
       this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
       console.log('on did mount');
-
-      /*
-      var center = this.calculateCenter(this.props.findings);
-      console.log('center', center);
-      mapOptions.center = center;
-      */
     }
   }, {
     key: 'startSearching',
     value: function startSearching() {
-      this.setState({ opened: false });
+      this.setState({ opened: false, started: true });
+    }
+  }, {
+    key: 'markToMap',
+    value: function markToMap() {
+      var _this = this;
+
+      this.state.radius = this.props.radius;
+      this.drawCircle(this.marker.getPosition());
+      this.updateLocation(this.marker.getPosition());
+
+      this.map.addListener('click', function (e) {
+        console.log('e.', e.latLng);
+        _this.updateMarker({ latitude: e.latLng.lat(), longitude: e.latLng.lng() });
+        _this.updateLocation(e.latLng);
+        _this.drawCircle(e.latLng);
+      });
+
+      this.setState({ opened: false, marking: true, radius: this.state.radius });
+    }
+  }, {
+    key: 'updateLocation',
+    value: function updateLocation(latlng) {
+      var _this2 = this;
+
+      this.geocoder.geocode({ 'location': latlng }, function (results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          if (results[0]) {
+            _this2.setState({ location: results[0].formatted_address });
+          }
+        }
+      });
+    }
+  }, {
+    key: 'drawCircle',
+    value: function drawCircle(latlng) {
+      var _this3 = this;
+
+      if (this.cityCircle) {
+        this.cityCircle.setMap(null);
+      }
+      this.cityCircle = new google.maps.Circle({
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        map: this.map,
+        center: latlng,
+        radius: this.state.radius,
+        editable: true
+      });
+      this.cityCircle.addListener('radius_changed', function (_) {
+        console.log('center', _this3.cityCircle.getRadius());
+        _this3.setState({ radius: Math.round(_this3.cityCircle.getRadius()) });
+      });
     }
   }]);
 
@@ -800,7 +889,7 @@ var KadonneetSearchMap = (function (_React$Component) {
 
 exports['default'] = KadonneetSearchMap;
 
-KadonneetSearchMap.defaultProps = { initialZoom: 14 };
+KadonneetSearchMap.defaultProps = { initialZoom: 14, radius: 1000 };
 module.exports = exports['default'];
 
 },{"./spinner.jsx":10,"react":372,"react-bootstrap/lib/Modal":137,"react-dom":217}],5:[function(require,module,exports){
@@ -812,7 +901,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -890,7 +979,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -990,7 +1079,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -1054,7 +1143,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -1133,7 +1222,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -1369,7 +1458,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -24750,50 +24839,61 @@ exports["default"] = function (obj, keys) {
 exports.__esModule = true;
 },{}],163:[function(require,module,exports){
 arguments[4][35][0].apply(exports,arguments)
-},{"../../modules/$.core":171,"../../modules/es6.object.assign":184,"dup":35}],164:[function(require,module,exports){
+},{"../../modules/$.core":172,"../../modules/es6.object.assign":184,"dup":35}],164:[function(require,module,exports){
 arguments[4][36][0].apply(exports,arguments)
-},{"../../modules/$":179,"dup":36}],165:[function(require,module,exports){
+},{"../../modules/$":180,"dup":36}],165:[function(require,module,exports){
 require('../../modules/es6.object.is-frozen');
 module.exports = require('../../modules/$.core').Object.isFrozen;
-},{"../../modules/$.core":171,"../../modules/es6.object.is-frozen":185}],166:[function(require,module,exports){
+},{"../../modules/$.core":172,"../../modules/es6.object.is-frozen":185}],166:[function(require,module,exports){
 arguments[4][39][0].apply(exports,arguments)
-},{"../../modules/$.core":171,"../../modules/es6.object.keys":186,"dup":39}],167:[function(require,module,exports){
+},{"../../modules/$.core":172,"../../modules/es6.object.keys":186,"dup":39}],167:[function(require,module,exports){
 arguments[4][40][0].apply(exports,arguments)
-},{"../../modules/$.core":171,"../../modules/es6.object.set-prototype-of":187,"dup":40}],168:[function(require,module,exports){
+},{"../../modules/$.core":172,"../../modules/es6.object.set-prototype-of":187,"dup":40}],168:[function(require,module,exports){
 arguments[4][41][0].apply(exports,arguments)
 },{"dup":41}],169:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
-},{"./$.is-object":178,"dup":42}],170:[function(require,module,exports){
-arguments[4][43][0].apply(exports,arguments)
-},{"dup":43}],171:[function(require,module,exports){
-arguments[4][44][0].apply(exports,arguments)
-},{"dup":44}],172:[function(require,module,exports){
-arguments[4][45][0].apply(exports,arguments)
-},{"./$.a-function":168,"dup":45}],173:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"./$.core":171,"./$.global":176,"dup":46}],174:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],175:[function(require,module,exports){
-arguments[4][48][0].apply(exports,arguments)
-},{"dup":48}],176:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"dup":49}],177:[function(require,module,exports){
-arguments[4][50][0].apply(exports,arguments)
-},{"./$.cof":170,"dup":50}],178:[function(require,module,exports){
-arguments[4][51][0].apply(exports,arguments)
-},{"dup":51}],179:[function(require,module,exports){
-arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],180:[function(require,module,exports){
+},{"./$.is-object":179,"dup":42}],170:[function(require,module,exports){
 arguments[4][53][0].apply(exports,arguments)
-},{"./$":179,"./$.fails":175,"./$.iobject":177,"./$.to-object":183,"dup":53}],181:[function(require,module,exports){
-arguments[4][54][0].apply(exports,arguments)
-},{"./$.core":171,"./$.def":173,"./$.fails":175,"dup":54}],182:[function(require,module,exports){
+},{"./$":180,"./$.fails":176,"./$.iobject":178,"./$.to-object":183,"dup":53}],171:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],172:[function(require,module,exports){
+var core = module.exports = {version: '1.2.3'};
+if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+},{}],173:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"./$.a-function":168,"dup":45}],174:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"./$.core":172,"./$.global":177,"dup":46}],175:[function(require,module,exports){
+arguments[4][47][0].apply(exports,arguments)
+},{"dup":47}],176:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"dup":48}],177:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"dup":49}],178:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"./$.cof":171,"dup":50}],179:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"dup":51}],180:[function(require,module,exports){
+arguments[4][52][0].apply(exports,arguments)
+},{"dup":52}],181:[function(require,module,exports){
+// most Object methods by ES6 should accept primitives
+module.exports = function(KEY, exec){
+  var $def = require('./$.def')
+    , fn   = (require('./$.core').Object || {})[KEY] || Object[KEY]
+    , exp  = {};
+  exp[KEY] = exec(fn);
+  $def($def.S + $def.F * require('./$.fails')(function(){ fn(1); }), 'Object', exp);
+};
+},{"./$.core":172,"./$.def":174,"./$.fails":176}],182:[function(require,module,exports){
 arguments[4][55][0].apply(exports,arguments)
-},{"./$":179,"./$.an-object":169,"./$.ctx":172,"./$.is-object":178,"dup":55}],183:[function(require,module,exports){
+},{"./$":180,"./$.an-object":169,"./$.ctx":173,"./$.is-object":179,"dup":55}],183:[function(require,module,exports){
 arguments[4][57][0].apply(exports,arguments)
-},{"./$.defined":174,"dup":57}],184:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"./$.def":173,"./$.object-assign":180,"dup":58}],185:[function(require,module,exports){
+},{"./$.defined":175,"dup":57}],184:[function(require,module,exports){
+// 19.1.3.1 Object.assign(target, source)
+var $def = require('./$.def');
+
+$def($def.S + $def.F, 'Object', {assign: require('./$.assign')});
+},{"./$.assign":170,"./$.def":174}],185:[function(require,module,exports){
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = require('./$.is-object');
 
@@ -24802,11 +24902,11 @@ require('./$.object-sap')('isFrozen', function($isFrozen){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
-},{"./$.is-object":178,"./$.object-sap":181}],186:[function(require,module,exports){
+},{"./$.is-object":179,"./$.object-sap":181}],186:[function(require,module,exports){
 arguments[4][60][0].apply(exports,arguments)
 },{"./$.object-sap":181,"./$.to-object":183,"dup":60}],187:[function(require,module,exports){
 arguments[4][61][0].apply(exports,arguments)
-},{"./$.def":173,"./$.set-proto":182,"dup":61}],188:[function(require,module,exports){
+},{"./$.def":174,"./$.set-proto":182,"dup":61}],188:[function(require,module,exports){
 arguments[4][62][0].apply(exports,arguments)
 },{"dup":62}],189:[function(require,module,exports){
 'use strict';
