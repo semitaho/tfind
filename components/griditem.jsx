@@ -77,7 +77,7 @@ export default class GridItem extends React.Component {
     this.setState({showmodal: false});
   }
 
-  onFormClose(){
+  onFormClose() {
     console.log('roonkeli');
     this.setState({showform: false});
 
@@ -88,8 +88,8 @@ export default class GridItem extends React.Component {
     var self = this;
     return (
       <div className="thumbnail text-left">
-        {this.state.showmodal ? <LostsModal item={item}  onclosemodal={this.onModalClose} /> : ''}
-        {this.state.showform ? <FindingForm item={item}  onclosemodal={this.onFormClose} /> : ''}
+        {this.state.showmodal ? <LostsModal item={item} onclosemodal={this.onModalClose}/> : ''}
+        {this.state.showform ? <FindingForm item={item} onclosemodal={this.onFormClose}/> : ''}
 
         <div className="row">
           <div className="col-md-5 col-sm-5">
@@ -110,9 +110,10 @@ export default class GridItem extends React.Component {
             <div className="caption">
               <h3>{item.name}</h3>
 
-              <div dangerouslySetInnerHTML={{__html: item.description}} />
+              <div dangerouslySetInnerHTML={{__html: item.description}}/>
               <p>
-                <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla</Button>
+                <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla
+                  ({this.props.item.findings.length})</Button>
                 <Button bsStyle="success" onClick={self.onFormOpen}>Ilmoita havainnosta</Button>
               </p>
               {self.state.kadonnutTime === 0 ? '' : <p className="text-primary">Kadonneena<br/>{this.getKadonnut()}</p>}

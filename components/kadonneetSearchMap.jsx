@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Modal from 'react-bootstrap/lib/Modal';
-import Spinner from './spinner.jsx';
+import $ from 'jquery';
+import {Modal,FormControls, Input} from 'react-bootstrap';
 
+import Spinner from './spinner.jsx';
+import ConfirmDialog from './confirmDialog.jsx';
+import DateTimePicker from 'react-bootstrap-datetimepicker';
 
 export default class KadonneetSearchMap extends React.Component {
   constructor() {
@@ -13,6 +16,8 @@ export default class KadonneetSearchMap extends React.Component {
     this.startSearching = this.startSearching.bind(this);
     this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
     this.markToMap = this.markToMap.bind(this);
+    this.cancelConfirmMarking = this.cancelConfirmMarking.bind(this);
+
     console.log('props', this.props);
     this.state = {opened: true, loading: true};
     this.polyline = new google.maps.Polyline({
@@ -22,8 +27,8 @@ export default class KadonneetSearchMap extends React.Component {
     });
   }
 
-  renderSpinner() {
-    return (<Spinner dimm="kadonneet-search-map"/>)
+  renderSpinner(prop) {
+    return (<Spinner dimm={prop}/>)
   }
 
   renderQuestion() {
@@ -49,12 +54,112 @@ export default class KadonneetSearchMap extends React.Component {
         this.renderMarking() : ''}
       <Modal.Body>
         {this.state.opened ? <div className="opened">
-          {this.state.loading ? this.renderSpinner() : this.renderQuestion()}
+          {this.state.loading ? this.renderSpinner("kadonneet-search-map") : this.renderQuestion()}
         </div> : ''}
-        <div id="kadonneet-search-map" className={mapClass}/>
+        {
+          this.state.saveMarking ? this.renderMarkingConfirm() : ''
+        }
+        <div id="kadonneet-search-map" className={mapClass}>
+
+        </div>
       </Modal.Body>
 
     </Modal>)
+  }
+
+  renderMarking() {
+    let confirmSaveMarking = _ => {
+      var d = new Date();
+      var n = d.getTime();
+      this.setState({saveMarking: true, ajankohtaTimestamp: n});
+    };
+
+    return (<Modal.Header>
+      <div className="row">
+        <div className="col-md-8 col-xs-6 small">
+          Etsitty kohteesta <strong>{this.state.location}</strong> säteellä {this.state.radius} m.
+        </div>
+        <div className="col-md-4 col-xs-6">
+          <button onClick={confirmSaveMarking} className="btn btn-primary pull-right">Tallenna</button>
+        </div>
+      </div>
+    </Modal.Header>)
+  }
+
+  renderMarkingConfirm() {
+
+    let ajankohtaChange = (val) => {
+      console.log('vali is', val);
+      this.setState({ajankohtaTimestamp: val});
+
+    };
+
+    let searchResultChange = (event) => {
+      this.setState({searchResult: event.target.value});
+    };
+
+    let saveMarking = _ => {
+      this.setState({saving: true});
+      var saveobj = {
+        _id: this.props.item._id,
+        radius: this.state.radius,
+        location: this.state.location,
+        searchResult: this.state.searchResult,
+        latLng: {
+          lat: this.marker.getPosition().lat(),
+          lng: this.marker.getPosition().lng()
+        },
+        ajankohtaTimestamp: this.state.ajankohtaTimestamp
+      };
+      $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        url: '/savemarking',
+        data: JSON.stringify(saveobj),
+        success: _ => {
+          this.setState({saving: false,saveMarking: false});
+          this.props.onclose();
+        },
+      });
+    };
+    return (
+
+      <ConfirmDialog onHide={this.cancelConfirmMarking} onSave={saveMarking}>
+        {this.state.saving ? this.renderSpinner('confirm-form') : '' }
+        <form className="form-horizontal" id="confirm-form">
+          <FormControls.Static label="Nimi" value={this.props.item.name} labelClassName="col-md-4"
+                               wrapperClassName="col-md-8"/>
+          <FormControls.Static label="Etsitty kohteesta" value={this.state.location} labelClassName="col-md-4"
+                               wrapperClassName="col-md-8"/>
+          <FormControls.Static label="Etsintäsäde" value={this.state.radius+' m'} labelClassName="col-md-4"
+                               wrapperClassName="col-md-8"/>
+
+          <div className="form-group">
+            <label className="control-label col-md-4">
+              Etsintäajankohta
+            </label>
+
+            <div className="col-md-8">
+              <DateTimePicker format="x" ref="time"
+                              inputFormat="D.M.YYYY H:mm"
+                              onChange={ajankohtaChange}/>
+            </div>
+          </div>
+          <Input type="select" labelClassName="col-md-4" wrapperClassName="col-md-8" label="Etsinnän tulos"
+                 onChange={searchResultChange}
+                 placeholder="1">
+            {this.props.searchResults.map(item => {
+              return (<option value={item.value}>{item.label}</option>)
+            }) }
+          </Input>
+
+        </form>
+      </ConfirmDialog>
+    )
+  }
+
+  cancelConfirmMarking() {
+    this.setState({saveMarking: false});
   }
 
   renderTracking() {
@@ -74,18 +179,7 @@ export default class KadonneetSearchMap extends React.Component {
     </Modal.Header>)
   }
 
-  renderMarking() {
-    return (<Modal.Header>
-      <div className="row">
-        <div className="col-md-8 col-xs-6 small">
-          Etsitty kohteesta <strong>{this.state.location}</strong> säteellä {this.state.radius} m.
-        </div>
-      </div>
-    </Modal.Header>)
-  }
-
   gotLocation(latlng) {
-    console.log('latlng', latlng.coords);
     if (this.state.opened) {
       this.initMap(latlng.coords);
     }
@@ -185,6 +279,7 @@ export default class KadonneetSearchMap extends React.Component {
 
   startSearching() {
     this.setState({opened: false, started: true});
+    this.updateLocation(this.marker)
   }
 
   markToMap() {
@@ -200,6 +295,7 @@ export default class KadonneetSearchMap extends React.Component {
     });
 
     this.setState({opened: false, marking: true, radius: this.state.radius});
+
   }
 
   updateLocation(latlng) {
@@ -225,14 +321,27 @@ export default class KadonneetSearchMap extends React.Component {
       map: this.map,
       center: latlng,
       radius: this.state.radius,
-      editable: true
+      editable: true,
+      draggable: true
     });
     this.cityCircle.addListener('radius_changed', _ => {
       console.log('center', this.cityCircle.getRadius());
       this.setState({radius: Math.round(this.cityCircle.getRadius())});
     });
+    this.cityCircle.addListener('center_changed', _ => {
+      var center = this.cityCircle.getCenter();
+      this.updateMarker({latitude: center.lat(), longitude: center.lng()});
+      this.updateLocation(center);
+    });
   }
 }
 
-KadonneetSearchMap.defaultProps = {initialZoom: 14, radius: 1000};
+KadonneetSearchMap.defaultProps = {
+  initialZoom: 14,
+  radius: 1000,
+  searchResults: [{value: 1, label: 'Ei havaintoa'}, {value: 2, label: 'Löydetty elävänä'}, {
+    value: 3,
+    label: 'Löydetty kuolleena'
+  }]
+};
 

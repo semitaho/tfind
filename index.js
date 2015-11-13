@@ -3,6 +3,7 @@ var React = require('react'),
   ReactDOMServer = require('react-dom/server')
 express = require('express'),
   multer = require('multer'),
+  bodyParser = require('body-parser'),
   stylus = require('stylus'),
   nib = require('nib'),
   content = require('./resources/content.json'),
@@ -25,7 +26,7 @@ app.set('port', (process.env.PORT || 8080));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/public'));
-
+app.use(bodyParser.json());
 var errorRoute = (req, res) => {
   res.render('error', {
     navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1}))
@@ -65,6 +66,20 @@ mongoConnection.then(function (db) {
     });
   });
 
+  app.post('/savemarking', (req, res) => {
+    console.log('body', req.body);
+    var copy = Object.assign({}, req.body);
+    copy.searchResult = parseInt(copy.searchResult, 10);
+    delete copy._id;
+
+    kadonneetCollection.update({_id: new ObjectId(req.body._id)}, {'$push': {'markings': copy}}, function (err, result) {
+      if (err) {
+        res.redirect('/error');
+        return;
+      }
+      res.end('OK');
+    });
+  });
   app.get('/kadonneet', (req, res) => {
     kadonneetCollection.find().sort({timestamp: -1}).toArray(function (err, docs) {
       if (err) {
@@ -84,7 +99,7 @@ mongoConnection.then(function (db) {
 
   });
 
-  app.get('/etsi', (req,res) => {
+  app.get('/etsi', (req, res) => {
     kadonneetCollection.find({}, {name: 1, imgsrc: 1}).sort({name: 1}).toArray((err, docs) => {
       res.render('etsi', {
         kadonneet: docs,
@@ -92,7 +107,7 @@ mongoConnection.then(function (db) {
         navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2}))
       });
     });
-   
+
   });
 
   app.get('/ilmoita', (req, res) => {
