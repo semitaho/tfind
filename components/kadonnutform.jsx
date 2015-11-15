@@ -2,8 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Panel from 'react-bootstrap/lib/Panel.js';
 import Input from 'react-bootstrap/lib/Input.js';
+import $ from 'jquery';
 
-export default class KadonnutForm extends React.Component {
+class KadonnutForm extends React.Component {
   constructor() {
     super();
     this.state = {formstate: {}};
@@ -38,6 +39,8 @@ export default class KadonnutForm extends React.Component {
 
   render() {
     var isNameValid = this.isValid("name");
+    var showDescription = this.isValid(['name']);
+    var showKellonaika = this.isValid(['name', 'description']);
     var isDescriptionValid = this.isValid("description");
 
     return (<Panel>
@@ -47,8 +50,14 @@ export default class KadonnutForm extends React.Component {
         <Input type="textarea" name="description" label="Henkilön kuvaus" onBlur={this.handleTextChange}
                bsStyle={this.checkSuccessStyle("description")} labelClassName={!isNameValid ? 'hide' : ''}
                wrapperClassName={!isNameValid ? 'hide': ''} hasFeedback/>
+
+        <Input type="select" name="type" label="Henkilön tilanne" labelClassName={!isDescriptionValid ? 'hide' : ''} wrapperClassName={!isDescriptionValid ? 'hide' : ''} hasFeedback>
+
+        </Input>
       </form>
     </Panel>)
   }
 
 }
+
+export default KadonnutForm;

@@ -1,21 +1,21 @@
-require('babel/register');
-var React = require('react'),
-  ReactDOMServer = require('react-dom/server')
-express = require('express'),
-  multer = require('multer'),
-  bodyParser = require('body-parser'),
-  stylus = require('stylus'),
-  nib = require('nib'),
-  content = require('./resources/content.json'),
-  tfindApp = require('./components/tfindApp.jsx'),
-  findingFormJsx = require('./components/findingform.jsx'),
-  ukkformjsx = require('./components/questionsanswers.jsx'),
-  lostsgrid = require('./components/lostsgrid.jsx'),
-  kadonneetlistjsx = require('./components/kadonneetlist.jsx'),
-  kadonnutFormjsx = require('./components/kadonnutform.jsx'),
-  nav = require('./components/navigation.jsx'),
-  app = module.exports = express(),
-  upload = multer({dest: './public/files'});
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import express  from 'express';
+import multer from 'multer';
+import bodyParser from 'body-parser';
+import stylus from 'stylus';
+import nib from 'nib';
+import tfindApp from './components/tfindApp.jsx';
+import findingFormJsx from './components/findingform.jsx';
+import ukkformjsx from './components/questionsanswers.jsx';
+import lostsgrid from './components/lostsgrid.jsx';
+import kadonneetlistjsx from './components/kadonneetlist.jsx';
+import kadonnutFormjsx from './components/kadonnutform.jsx';
+import nav from './components/navigation.jsx';
+import content from './resources/content.json';
+
+let app = express();
+let upload = multer({dest: './public/files'});
 
 var Navigation = React.createFactory(nav),
   Losts = React.createFactory(lostsgrid),
@@ -37,13 +37,13 @@ var errorRoute = (req, res) => {
 
 var ObjectId = require('mongodb').ObjectID;
 var mongoConnection = require('./mongodb.js').mongoConnection;
-mongoConnection.then(function (db) {
+mongoConnection.then(db => {
   console.log('mongodb successfully connected...');
   var kadonneetCollection = db.collection('kadonneet'),
     ukkCollection = db.collection('ukk');
   var collections = {ukk: ukkCollection, kadonneet: kadonneetCollection};
   return collections
-}).then(function (collections) {
+}).then(collections => {
   app.get('/', (req, res) => {
     res.render('index', {
       navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1})),

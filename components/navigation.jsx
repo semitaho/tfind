@@ -1,6 +1,11 @@
 import React from 'react';
 
-export default class Navigation extends React.Component {
+class Navigation extends React.Component {
+
+  constructor(){
+    super();
+    console.log('created');
+  }
   render() {
     var navitems = this.props.items.map((item, index) => {
       var className = '';
@@ -52,4 +57,4 @@ Navigation.defaultProps = {items: [
   {title: 'Etsi henkilöä', link: '/etsi'},
   {title: 'UKK', link: '/ukk'}
   ]};
-
+export default Navigation;

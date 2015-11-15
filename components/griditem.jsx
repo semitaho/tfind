@@ -4,7 +4,7 @@ import CarouselItem from 'react-bootstrap/lib/CarouselItem';
 import Button from 'react-bootstrap/lib/Button';
 import LostsModal from './lostsmodal.jsx';
 import FindingForm from './findingform.jsx';
-export default class GridItem extends React.Component {
+class GridItem extends React.Component {
 
   constructor() {
     super();
@@ -86,8 +86,7 @@ export default class GridItem extends React.Component {
   render() {
     var item = this.props.item;
     var self = this;
-    return (
-      <div className="thumbnail text-left">
+    return <div className="thumbnail text-left">
         {this.state.showmodal ? <LostsModal item={item} onclosemodal={this.onModalClose}/> : ''}
         {this.state.showform ? <FindingForm item={item} onclosemodal={this.onFormClose}/> : ''}
 
@@ -120,9 +119,10 @@ export default class GridItem extends React.Component {
             </div>
           </div>
         </div>
-      </div>)
+      </div>
   }
 
 }
 
 GridItem.defaultProps = {interval: 0};
+export default GridItem;

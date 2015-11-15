@@ -4,7 +4,7 @@ import $ from 'jquery';
 import {Modal,FormControls, Input} from 'react-bootstrap';
 
 import Spinner from './spinner.jsx';
-import ConfirmDialog from './confirmDialog.jsx';
+import ConfirmDialog from './modals/confirmDialog.jsx';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
 
 export default class KadonneetSearchMap extends React.Component {

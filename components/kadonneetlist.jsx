@@ -1,7 +1,7 @@
 import React from 'react';
 import KadonneetMap from './kadonneetSearchMap.jsx';
 
-export default class KadonneetList extends React.Component{
+class KadonneetList extends React.Component{
   constructor(){
     super();
     this.state = {item: null};
@@ -28,3 +28,5 @@ export default class KadonneetList extends React.Component{
   }
 
 }
+
+export default KadonneetList;

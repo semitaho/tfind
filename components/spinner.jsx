@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Spinjs from '../vendor/spin.js';
 import $ from 'jquery';
 
-export default class Spinner extends React.Component {
+class Spinner extends React.Component {
 
   render() {
     return <div />
@@ -23,3 +23,5 @@ export default class Spinner extends React.Component {
   }
 
 }
+
+export default Spinner;

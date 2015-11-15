@@ -4,10 +4,12 @@ import Input from 'react-bootstrap/lib/Input';
 import Button from 'react-bootstrap/lib/Button';
 import $ from 'jquery';
 import Modal from 'react-bootstrap/lib/Modal';
+import MapModal from './modals/mapmodal.jsx';
+
 import Map from './map.jsx';
 import Spinner from './spinner.jsx';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
-export default class FindingForm extends React.Component {
+class FindingForm extends React.Component {
 
   constructor() {
     super();
@@ -88,14 +90,11 @@ export default class FindingForm extends React.Component {
     var hideSubmitClass = !this.canSubmit() ? 'hide' : '';
     return (
 
-      <Modal id="modal" show={true} onHide={this.props.onclosemodal}>
-        {this.state.loading ? <Spinner dimm="findingForm"/> : ''}
-        <Modal.Header closeButton>
-          <Modal.Title>Ilmoita uusi havainto henkilöstä {this.props.item.name}.</Modal.Title>
-        </Modal.Header>
-
+      <MapModal onHide={this.props.onclosemodal} size="large" title={'Ilmoita uusi havainto henkilöstä '+this.props.item.name+'.'}>
         <form method="POST" id="findingForm" action="/submitfinding" noValidate encType="multipart/form-data">
           <Modal.Body>
+            {this.state.loading ? <Spinner dimm="findingForm"/> : ''}
+
             <Input type="select" onChange={this.tyyppiChange} name="tyyppi" placeholder=""
                    label="Havainnon tyyppi">
               <option value="">Valitse</option>
@@ -104,7 +103,8 @@ export default class FindingForm extends React.Component {
               <option value="3">Ilmottautunut löydetyksi</option>
 
             </Input>
-            <Input id="finding" labelClassName={hideDescriptionClass} wrapperClassName={hideDescriptionClass} ref="file"
+            <Input id="finding" labelClassName={hideDescriptionClass} wrapperClassName={hideDescriptionClass}
+                   ref="file"
                    name="description" type="textarea"
                    label="Havainto"
                    onChange={this.findingChange} required="true" bsSize="large"
@@ -128,8 +128,7 @@ export default class FindingForm extends React.Component {
                     disabled={this.state.disabled}>Ilmoita</Button>
           </Modal.Footer>
         </form>
-
-      </Modal>
+      </MapModal>
 
     )
   }
@@ -158,3 +157,5 @@ export default class FindingForm extends React.Component {
   }
 
 }
+
+export default FindingForm;

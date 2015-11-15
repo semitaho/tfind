@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-export default class Map extends React.Component {
+class Map extends React.Component {
 
   constructor() {
     super();
@@ -198,3 +198,4 @@ export default class Map extends React.Component {
 }
 
 Map.defaultProps = {initialZoom: 12};
+export default Map;

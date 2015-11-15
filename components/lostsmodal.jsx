@@ -1,7 +1,8 @@
-import Modal from 'react-bootstrap/lib/Modal';
+import MapModal from './modals/mapmodal.jsx';
 import React from 'react';
 import Image from 'react-bootstrap/lib/Image';
 import Map from './map.jsx';
+import {Modal} from 'react-bootstrap';
 
 
 export default class LostsModal extends React.Component {
@@ -19,14 +20,11 @@ export default class LostsModal extends React.Component {
 
   render() {
     return (
-      <Modal show={true} onHide={this.props.onclosemodal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{this.props.item.name}</Modal.Title>
-        </Modal.Header>
+      <MapModal onHide={this.props.onclosemodal}  size="large" title={this.props.item.name}>
         <Modal.Body>
-          <Map findings={this.props.item.findings} />
+          <Map findings={this.props.item.findings}/>
         </Modal.Body>
-      </Modal>
+      </MapModal>
 
     )
   }
