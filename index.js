@@ -1,3 +1,5 @@
+require('babel-core').transform('code', {'presets': ['es2015','react']});
+
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import express  from 'express';
