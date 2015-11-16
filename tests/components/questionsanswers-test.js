@@ -1,7 +1,11 @@
-import React from 'react/addons';
+
+ //jest.dontMock('../../components/questionsanswers.jsx');
+
+import React from 'react';
 import ReactDOM from 'react-dom';
-const CheckboxWithLabel = require('../../components/checkboxWithLabel');
-var TestUtils = React.addons.TestUtils;
+
+import UKKForm from '../../components/questionsanswers.jsx';
+import TestUtils  from 'react-addons-test-utils';
 
 describe('ukk page tests', _ => {
   it('tests initial render', () => {
@@ -9,10 +13,10 @@ describe('ukk page tests', _ => {
       question: "toka kyssäri",
       answer: "Vastaus tokaan"
     }];
-    console.log('testss');
-    var ukk = TestUtils.renderIntoDocument(
-      <CheckboxWithLabel labelOn="On" labelOff="Off"/>
-    );
+    let ukk = TestUtils.renderIntoDocument(<UKKForm items={elems} />);
+    let components = TestUtils.scryRenderedDOMComponentsWithClass(ukk, 'lead');
+    expect(components.length).toBe(2);
+ 
   });
 
 });
