@@ -1124,17 +1124,19 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactBootstrapLibPanelJs = require('react-bootstrap/lib/Panel.js');
-
-var _reactBootstrapLibPanelJs2 = _interopRequireDefault(_reactBootstrapLibPanelJs);
-
-var _reactBootstrapLibInputJs = require('react-bootstrap/lib/Input.js');
-
-var _reactBootstrapLibInputJs2 = _interopRequireDefault(_reactBootstrapLibInputJs);
+var _reactBootstrap = require('react-bootstrap');
 
 var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
+
+var _reactBootstrapDatetimepicker = require('react-bootstrap-datetimepicker');
+
+var _reactBootstrapDatetimepicker2 = _interopRequireDefault(_reactBootstrapDatetimepicker);
+
+var _mapJsx = require('./map.jsx');
+
+var _mapJsx2 = _interopRequireDefault(_mapJsx);
 
 var KadonnutForm = (function (_React$Component) {
   _inherits(KadonnutForm, _React$Component);
@@ -1145,6 +1147,8 @@ var KadonnutForm = (function (_React$Component) {
     _get(Object.getPrototypeOf(KadonnutForm.prototype), 'constructor', this).call(this);
     this.state = { formstate: {} };
     this.handleTextChange = this.handleTextChange.bind(this);
+    this.onPasteImage = this.onPasteImage.bind(this);
+    this.timeChange = this.timeChange.bind(this);
   }
 
   _createClass(KadonnutForm, [{
@@ -1154,47 +1158,132 @@ var KadonnutForm = (function (_React$Component) {
     }
   }, {
     key: 'isValid',
-    value: function isValid(param) {
-      var name = this.state.formstate[param];
-      if (name !== null && name !== undefined && name.length > 0) {
-        console.log('no ttur');
-        return true;
-      }
-      return false;
-    }
-  }, {
-    key: 'checkSuccessStyle',
-    value: function checkSuccessStyle(property) {
-      var style = this.isValid(property) ? "success" : "";
-      return style;
+    value: function isValid(params) {
+      var _this = this;
+
+      var isValid = true;
+      params.forEach(function (param) {
+        var name = _this.state.formstate[param];
+        if (name === null || name === undefined || name.length === 0) {
+          isValid = false;
+        }
+      });
+      return isValid;
     }
   }, {
     key: 'handleTextChange',
     value: function handleTextChange(event) {
-      console.log('ohhoh', event.target.name);
       this.state.formstate[event.target.name] = event.target.value;
       this.setState({ formstate: this.state.formstate });
     }
   }, {
+    key: 'getPercents',
+    value: function getPercents() {
+      var length = 7;
+      var valids = 0;
+
+      for (var key in this.state.formstate) {
+        if (this.isValid([key])) {
+          valids++;
+        }
+      }
+      return Math.round(valids / length * 100);
+    }
+  }, {
+    key: 'setFormstate',
+    value: function setFormstate(key, value) {
+      this.state.formstate[key] = value;
+      this.setState({ formstate: this.state.formstate });
+    }
+  }, {
+    key: 'onPasteImage',
+    value: function onPasteImage(e) {
+      var _this2 = this;
+
+      var content = e.target.value;
+      var img = new Image();
+      img.onload = function () {
+        console.log('joo siel on kuva');
+        _this2.setFormstate('imgsrc', content);
+      };
+
+      img.onerror = function () {
+        console.log('se oli virhe');
+        _this2.setFormstate('imgsrc', null);
+      };
+      img.src = content;
+    }
+  }, {
+    key: 'timeChange',
+    value: function timeChange(e) {
+      if (!isNaN(e)) {
+        this.setFormstate('timestamp', e);
+      } else {
+        this.setFormstate('timestamp', null);
+      }
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var isNameValid = this.isValid("name");
-      var showDescription = this.isValid(['name']);
-      var showKellonaika = this.isValid(['name', 'description']);
-      var isDescriptionValid = this.isValid("description");
+      var isNameValid = this.isValid(["name"]);
+      var isDescriptionValid = this.isValid(['name', 'description']);
+      var isTimeValid = this.isValid(['name', 'description', 'timestamp']);
+      var isImageValid = this.isValid(['name', 'description', 'timestamp', 'imgsrc']);
 
       return _react2['default'].createElement(
-        _reactBootstrapLibPanelJs2['default'],
+        _reactBootstrap.Panel,
         null,
         _react2['default'].createElement(
           'form',
           null,
-          _react2['default'].createElement(_reactBootstrapLibInputJs2['default'], { type: 'text', name: 'name', onBlur: this.handleTextChange, placeholder: 'Syötä muodossa etunimi sukunimi',
-            bsStyle: this.checkSuccessStyle("name"), label: 'Henkilön nimi', hasFeedback: true }),
-          _react2['default'].createElement(_reactBootstrapLibInputJs2['default'], { type: 'textarea', name: 'description', label: 'Henkilön kuvaus', onBlur: this.handleTextChange,
-            bsStyle: this.checkSuccessStyle("description"), labelClassName: !isNameValid ? 'hide' : '',
-            wrapperClassName: !isNameValid ? 'hide' : '', hasFeedback: true }),
-          _react2['default'].createElement(_reactBootstrapLibInputJs2['default'], { type: 'select', name: 'type', label: 'Henkilön tilanne', labelClassName: !isDescriptionValid ? 'hide' : '', wrapperClassName: !isDescriptionValid ? 'hide' : '', hasFeedback: true })
+          _react2['default'].createElement(_reactBootstrap.Input, { type: 'text', name: 'name', onBlur: this.handleTextChange, placeholder: 'Syötä muodossa etunimi sukunimi',
+            bsStyle: isNameValid ? 'success' : '', label: 'Henkilön nimi', hasFeedback: true }),
+          isNameValid ? _react2['default'].createElement(_reactBootstrap.Input, { type: 'textarea', name: 'description', label: 'Henkilön kuvaus', onBlur: this.handleTextChange,
+            bsStyle: isDescriptionValid ? 'success' : '', hasFeedback: true }) : '',
+          isDescriptionValid ? _react2['default'].createElement(
+            'div',
+            { className: 'form-group' },
+            _react2['default'].createElement(
+              'label',
+              { className: 'control-label' },
+              'Katoamisajankohta'
+            ),
+            _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { defaultText: '', format: 'x', ref: 'time',
+              inputFormat: 'D.M.YYYY H:mm',
+              onChange: this.timeChange }),
+            ' '
+          ) : '',
+          isTimeValid ? _react2['default'].createElement(
+            'div',
+            null,
+            _react2['default'].createElement(_reactBootstrap.Input, { type: 'text', bsStyle: isImageValid ? 'success' : '', onBlur: this.onPasteImage, label: 'Kuva henkilöstä', className: 'form-control', placeholder: 'Liitä kuva kadonneesta henkilöstä', hasFeedback: true }),
+            this.state.formstate.imgsrc ? _react2['default'].createElement('img', { src: this.state.formstate.imgsrc, className: 'thumbnail img-responsive' }) : ''
+          ) : '',
+          isImageValid ? _react2['default'].createElement(
+            'div',
+            { className: 'form-group' },
+            _react2['default'].createElement(
+              'label',
+              { className: 'control-label' },
+              'Viimeisin havainto kartalla'
+            ),
+            _react2['default'].createElement(
+              'div',
+              { className: 'form-control' },
+              _react2['default'].createElement(_mapJsx2['default'], { initialZoom: 5, findings: [{ lat: 63.612101, lng: 26.175575, type: 7 }] })
+            )
+          ) : ''
+        ),
+        _react2['default'].createElement('hr', null),
+        _react2['default'].createElement(
+          'div',
+          { className: 'form-group' },
+          _react2['default'].createElement(
+            'label',
+            { className: 'control-label' },
+            'Edistys'
+          ),
+          _react2['default'].createElement(_reactBootstrap.ProgressBar, { now: this.getPercents(), label: '%(percent)s%', bsStyle: 'success' })
         )
       );
     }
@@ -1203,10 +1292,12 @@ var KadonnutForm = (function (_React$Component) {
   return KadonnutForm;
 })(_react2['default'].Component);
 
+KadonnutForm.defaultProps = { tilanteet: [{ value: 1, label: 'Kadonnut' }] };
+
 exports['default'] = KadonnutForm;
 module.exports = exports['default'];
 
-},{"jquery":14,"react":519,"react-bootstrap/lib/Input.js":154,"react-bootstrap/lib/Panel.js":180,"react-dom":363}],7:[function(require,module,exports){
+},{"./map.jsx":9,"jquery":14,"react":519,"react-bootstrap":196,"react-bootstrap-datetimepicker":16,"react-dom":363}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
