@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from '../../node_modules/react-bootstrap-datetimepicker/node_modules/react-bootstrap/lib/Modal';
+import Modal from 'react-bootstrap/lib/Modal';
 
 export default class ConfirmDialog extends React.Component {
 

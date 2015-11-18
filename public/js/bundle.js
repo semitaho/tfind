@@ -1138,6 +1138,10 @@ var _mapJsx = require('./map.jsx');
 
 var _mapJsx2 = _interopRequireDefault(_mapJsx);
 
+var _modalsConfirmDialogJsx = require('./modals/confirmDialog.jsx');
+
+var _modalsConfirmDialogJsx2 = _interopRequireDefault(_modalsConfirmDialogJsx);
+
 var KadonnutForm = (function (_React$Component) {
   _inherits(KadonnutForm, _React$Component);
 
@@ -1171,6 +1175,15 @@ var KadonnutForm = (function (_React$Component) {
       return isValid;
     }
   }, {
+    key: 'isMapValid',
+    value: function isMapValid() {
+      var location = this.state.formstate[location];
+      if (location && location.lat && location.lng) {
+        return true;
+      }
+      return false;
+    }
+  }, {
     key: 'handleTextChange',
     value: function handleTextChange(event) {
       this.state.formstate[event.target.name] = event.target.value;
@@ -1179,7 +1192,7 @@ var KadonnutForm = (function (_React$Component) {
   }, {
     key: 'getPercents',
     value: function getPercents() {
-      var length = 7;
+      var length = 5;
       var valids = 0;
 
       for (var key in this.state.formstate) {
@@ -1203,12 +1216,10 @@ var KadonnutForm = (function (_React$Component) {
       var content = e.target.value;
       var img = new Image();
       img.onload = function () {
-        console.log('joo siel on kuva');
         _this2.setFormstate('imgsrc', content);
       };
 
       img.onerror = function () {
-        console.log('se oli virhe');
         _this2.setFormstate('imgsrc', null);
       };
       img.src = content;
@@ -1225,20 +1236,50 @@ var KadonnutForm = (function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _this3 = this;
+
       var isNameValid = this.isValid(["name"]);
       var isDescriptionValid = this.isValid(['name', 'description']);
       var isTimeValid = this.isValid(['name', 'description', 'timestamp']);
       var isImageValid = this.isValid(['name', 'description', 'timestamp', 'imgsrc']);
+      var isMapValid = this.isValid(['name', 'description', 'timestamp', 'imgsrc']) && this.isMapValid();
+      var esikatseleClass = !isMapValid;
+
+      var areaSelected = function areaSelected(loc) {
+        console.log('alue valittu', loc);
+        var location = { lat: loc.lat(), lng: loc.lng() };
+        _this3.setFormstate('location', location);
+      };
+
+      var onHide = function onHide() {
+        console.log('ok');
+      };
+
+      var onSave = function onSave() {};
 
       return _react2['default'].createElement(
         _reactBootstrap.Panel,
         null,
         _react2['default'].createElement(
+          _modalsConfirmDialogJsx2['default'],
+          { onHide: onHide, onSave: onSave },
+          _react2['default'].createElement(
+            'form',
+            { className: 'form-horizontal', id: 'confirm-form' },
+            _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön nimi', value: '', labelClassName: 'col-md-4',
+              wrapperClassName: 'col-md-8' }),
+            _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön kuvaus', value: '', labelClassName: 'col-md-4',
+              wrapperClassName: 'col-md-8' }),
+            _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Etsintäsäde', value: '', labelClassName: 'col-md-4',
+              wrapperClassName: 'col-md-8' })
+          )
+        ),
+        _react2['default'].createElement(
           'form',
           null,
-          _react2['default'].createElement(_reactBootstrap.Input, { type: 'text', name: 'name', onBlur: this.handleTextChange, placeholder: 'Syötä muodossa etunimi sukunimi',
+          _react2['default'].createElement(_reactBootstrap.Input, { tabIndex: '1', type: 'text', name: 'name', onBlur: this.handleTextChange, placeholder: 'Syötä muodossa etunimi sukunimi',
             bsStyle: isNameValid ? 'success' : '', label: 'Henkilön nimi', hasFeedback: true }),
-          isNameValid ? _react2['default'].createElement(_reactBootstrap.Input, { type: 'textarea', name: 'description', label: 'Henkilön kuvaus', onBlur: this.handleTextChange,
+          isNameValid ? _react2['default'].createElement(_reactBootstrap.Input, { type: 'textarea', autoFocus: 'true', tabIndex: '2', placeholder: 'Kuvaile pylleröä', name: 'description', label: 'Henkilön kuvaus', onBlur: this.handleTextChange,
             bsStyle: isDescriptionValid ? 'success' : '', hasFeedback: true }) : '',
           isDescriptionValid ? _react2['default'].createElement(
             'div',
@@ -1248,7 +1289,8 @@ var KadonnutForm = (function (_React$Component) {
               { className: 'control-label' },
               'Katoamisajankohta'
             ),
-            _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { defaultText: '', format: 'x', ref: 'time',
+            _react2['default'].createElement(_reactBootstrap.Input, { type: 'hidden', tabIndex: '3' }),
+            _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { defaultText: '', format: 'x', size: 'sm',
               inputFormat: 'D.M.YYYY H:mm',
               onChange: this.timeChange }),
             ' '
@@ -1256,7 +1298,10 @@ var KadonnutForm = (function (_React$Component) {
           isTimeValid ? _react2['default'].createElement(
             'div',
             null,
-            _react2['default'].createElement(_reactBootstrap.Input, { type: 'text', bsStyle: isImageValid ? 'success' : '', onBlur: this.onPasteImage, label: 'Kuva henkilöstä', className: 'form-control', placeholder: 'Liitä kuva kadonneesta henkilöstä', hasFeedback: true }),
+            _react2['default'].createElement(_reactBootstrap.Input, { autoFocus: 'true',
+              type: 'text', tabIndex: '4',
+              bsStyle: isImageValid ? 'success' : '',
+              onBlur: this.onPasteImage, label: 'Kuva henkilöstä', className: 'form-control', placeholder: 'Liitä kuva kadonneesta henkilöstä', hasFeedback: true }),
             this.state.formstate.imgsrc ? _react2['default'].createElement('img', { src: this.state.formstate.imgsrc, className: 'thumbnail img-responsive' }) : ''
           ) : '',
           isImageValid ? _react2['default'].createElement(
@@ -1267,23 +1312,36 @@ var KadonnutForm = (function (_React$Component) {
               { className: 'control-label' },
               'Viimeisin havainto kartalla'
             ),
-            _react2['default'].createElement(
-              'div',
-              { className: 'form-control' },
-              _react2['default'].createElement(_mapJsx2['default'], { initialZoom: 5, findings: [{ lat: 63.612101, lng: 26.175575, type: 7 }] })
-            )
+            _react2['default'].createElement(_mapJsx2['default'], { initialZoom: 5, center: { lat: 63.612101, lng: 26.175575 }, onArea: areaSelected })
           ) : ''
+        ),
+        _react2['default'].createElement(
+          'div',
+          { className: 'row' },
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-12' },
+            _react2['default'].createElement(
+              'button',
+              { className: 'btn pull-right btn-primary' },
+              'Esikatsele'
+            )
+          )
         ),
         _react2['default'].createElement('hr', null),
         _react2['default'].createElement(
           'div',
-          { className: 'form-group' },
+          { className: 'row' },
           _react2['default'].createElement(
-            'label',
-            { className: 'control-label' },
-            'Edistys'
-          ),
-          _react2['default'].createElement(_reactBootstrap.ProgressBar, { now: this.getPercents(), label: '%(percent)s%', bsStyle: 'success' })
+            'div',
+            { className: 'col-md-12' },
+            _react2['default'].createElement(
+              'label',
+              { className: 'control-label' },
+              'Edistys'
+            ),
+            _react2['default'].createElement(_reactBootstrap.ProgressBar, { now: this.getPercents(), label: '%(percent)s%', bsStyle: 'success' })
+          )
         )
       );
     }
@@ -1297,7 +1355,7 @@ KadonnutForm.defaultProps = { tilanteet: [{ value: 1, label: 'Kadonnut' }] };
 exports['default'] = KadonnutForm;
 module.exports = exports['default'];
 
-},{"./map.jsx":9,"jquery":14,"react":519,"react-bootstrap":196,"react-bootstrap-datetimepicker":16,"react-dom":363}],7:[function(require,module,exports){
+},{"./map.jsx":9,"./modals/confirmDialog.jsx":10,"jquery":14,"react":519,"react-bootstrap":196,"react-bootstrap-datetimepicker":16,"react-dom":363}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1466,6 +1524,7 @@ var Map = (function (_React$Component) {
     _get(Object.getPrototypeOf(Map.prototype), 'constructor', this).call(this);
     this.markers = [];
     this.map = null;
+    this.geocoder = new google.maps.Geocoder();
     this.createFindingMarker = this.createFindingMarker.bind(this);
   }
 
@@ -1489,13 +1548,15 @@ var Map = (function (_React$Component) {
         zoom: this.props.initialZoom
       };
       var domNode = _reactDom2['default'].findDOMNode(this);
-      var center = this.calculateCenter(this.props.findings);
-      console.log('center', center);
-      mapOptions.center = center;
+      if (this.props.findings && this.props.findings.length > 0) {
+        var center = this.calculateCenter(this.props.findings);
+        mapOptions.center = center;
+        this.createMarkers();
+        this.createRoute();
+      } else if (this.props.center) {
+        mapOptions.center = this.props.center;
+      }
       this.map = new google.maps.Map(domNode, mapOptions);
-      this.createMarkers();
-      this.createRoute();
-
       if (this.props.onClick) {
         google.maps.event.addListener(this.map, 'click', function (event) {
           console.log("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
@@ -1503,6 +1564,42 @@ var Map = (function (_React$Component) {
           _this.createFindingMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() });
         });
       }
+
+      if (this.props.onArea) {
+        google.maps.event.addListener(this.map, 'click', function (event) {
+          _this.updateArea(event.latLng);
+          _this.updateLocation(event.latLng);
+          _this.props.onArea(event.latLng);
+        });
+      }
+    }
+  }, {
+    key: 'updateArea',
+    value: function updateArea(location) {
+      if (this.marker) {
+        this.marker.setMap(null);
+      }
+      this.marker = new google.maps.Marker({
+        position: location,
+        map: this.map,
+        title: 'Nykyinen sijainti'
+      });
+      console.log('marker', this.marker);
+      this.map.setCenter(this.marker.getPosition());
+      return this.marker.position;
+    }
+  }, {
+    key: 'updateLocation',
+    value: function updateLocation(latlng) {
+      var _this2 = this;
+
+      this.geocoder.geocode({ 'location': latlng }, function (results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          if (results[0]) {
+            _this2.setState({ location: results[0].formatted_address });
+          }
+        }
+      });
     }
   }, {
     key: 'calculateCenter',
@@ -1688,9 +1785,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal = require('../../node_modules/react-bootstrap-datetimepicker/node_modules/react-bootstrap/lib/Modal');
+var _reactBootstrapLibModal = require('react-bootstrap/lib/Modal');
 
-var _node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal2 = _interopRequireDefault(_node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal);
+var _reactBootstrapLibModal2 = _interopRequireDefault(_reactBootstrapLibModal);
 
 var ConfirmDialog = (function (_React$Component) {
   _inherits(ConfirmDialog, _React$Component);
@@ -1705,24 +1802,24 @@ var ConfirmDialog = (function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2['default'].createElement(
-        _node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal2['default'],
+        _reactBootstrapLibModal2['default'],
         { id: 'confirm-modal', show: true, onHide: this.props.onHide },
         _react2['default'].createElement(
-          _node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal2['default'].Header,
+          _reactBootstrapLibModal2['default'].Header,
           { closeButton: true },
           _react2['default'].createElement(
-            _node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal2['default'].Title,
+            _reactBootstrapLibModal2['default'].Title,
             null,
             'Tarkista seuraavat tiedot'
           )
         ),
         _react2['default'].createElement(
-          _node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal2['default'].Body,
+          _reactBootstrapLibModal2['default'].Body,
           null,
           this.props.children
         ),
         _react2['default'].createElement(
-          _node_modulesReactBootstrapDatetimepickerNode_modulesReactBootstrapLibModal2['default'].Footer,
+          _reactBootstrapLibModal2['default'].Footer,
           null,
           _react2['default'].createElement(
             'div',
@@ -1745,7 +1842,7 @@ exports['default'] = ConfirmDialog;
 ;
 module.exports = exports['default'];
 
-},{"../../node_modules/react-bootstrap-datetimepicker/node_modules/react-bootstrap/lib/Modal":92,"react":519}],11:[function(require,module,exports){
+},{"react":519,"react-bootstrap/lib/Modal":162}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

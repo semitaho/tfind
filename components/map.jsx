@@ -7,6 +7,7 @@ class Map extends React.Component {
     super();
     this.markers = [];
     this.map = null;
+    this.geocoder = new google.maps.Geocoder;
     this.createFindingMarker = this.createFindingMarker.bind(this);
   }
 
@@ -28,13 +29,15 @@ class Map extends React.Component {
       zoom: this.props.initialZoom
     };
     var domNode = ReactDOM.findDOMNode(this);
-    var center = this.calculateCenter(this.props.findings);
-    console.log('center', center);
-    mapOptions.center = center;
+    if (this.props.findings && this.props.findings.length > 0 ){
+      let center = this.calculateCenter(this.props.findings);
+      mapOptions.center = center;
+      this.createMarkers();
+      this.createRoute();
+    } else if (this.props.center){
+      mapOptions.center = this.props.center;
+    }
     this.map = new google.maps.Map(domNode, mapOptions);
-    this.createMarkers();
-    this.createRoute();
-
     if (this.props.onClick) {
       google.maps.event.addListener(this.map, 'click', event => {
         console.log("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
@@ -42,6 +45,39 @@ class Map extends React.Component {
         this.createFindingMarker({lat: event.latLng.lat(), lng: event.latLng.lng()});
       });
     }
+
+    if (this.props.onArea){
+      google.maps.event.addListener(this.map, 'click', event => {
+        this.updateArea(event.latLng);
+        this.updateLocation(event.latLng);
+        this.props.onArea(event.latLng);
+      }); 
+    }
+  }
+
+  updateArea(location) {
+    if (this.marker) {
+      this.marker.setMap(null);
+    }
+    this.marker = new google.maps.Marker({
+      position: location,
+      map: this.map,
+      title: 'Nykyinen sijainti'
+    });
+    console.log('marker', this.marker);
+    this.map.setCenter(this.marker.getPosition());
+    return this.marker.position;
+  }
+
+
+  updateLocation(latlng) {
+    this.geocoder.geocode({'location': latlng}, (results, status) => {
+      if (status === google.maps.GeocoderStatus.OK) {
+        if (results[0]) {
+          this.setState({location: results[0].formatted_address});
+        }
+      }
+    });
   }
 
   calculateCenter(findings) {
