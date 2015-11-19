@@ -7,20 +7,19 @@ class Map extends React.Component {
     super();
     this.markers = [];
     this.map = null;
-    this.geocoder = new google.maps.Geocoder;
     this.createFindingMarker = this.createFindingMarker.bind(this);
   }
 
   render() {
-    var hide = this.props.hide;
-    var clazz = 'hide';
     return (
-      <div id="map-havainnot"></div>
+      <div ref="map" id="map-havainnot"></div>
     );
 
   }
 
   componentDidMount() {
+    this.geocoder = new google.maps.Geocoder;
+
     console.log('on did mount');
     var mapOptions = {
       draggable: false,
@@ -28,14 +27,18 @@ class Map extends React.Component {
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom
     };
-    var domNode = ReactDOM.findDOMNode(this);
+    var domNode = ReactDOM.findDOMNode(this.refs.map);
     if (this.props.findings && this.props.findings.length > 0 ){
       let center = this.calculateCenter(this.props.findings);
       mapOptions.center = center;
       this.createMarkers();
       this.createRoute();
     } else if (this.props.center){
+      console.log('center');
       mapOptions.center = this.props.center;
+      google.maps.event.addDomListener(window, 'resize', ()  => {
+        this.map.setCenter(this.props.center);
+      });
     }
     this.map = new google.maps.Map(domNode, mapOptions);
     if (this.props.onClick) {
