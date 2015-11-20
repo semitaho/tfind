@@ -13,7 +13,7 @@ class Navigation extends React.Component {
         className = 'active';
       }
       return (<li className={className}>
-        <a href={item.link}>{item.title}</a>
+        <a tabIndex="-1" href={item.link}>{item.title}</a>
       </li>)
 
     });
@@ -29,7 +29,7 @@ class Navigation extends React.Component {
                 <span className="icon-bar"></span>
                 <span className="icon-bar"></span>
               </button>
-              <a className="navbar-brand pull-left" href="/">tFind</a>
+              <a className="navbar-brand pull-left" tabIndex="-1" href="/">tFind</a>
             </div>
            
             <div className="collapse  navbar-collapse" id="collapsing">
@@ -37,7 +37,7 @@ class Navigation extends React.Component {
                   {navitems}
                  </ul>
                  <ul className="navbar-nav nav navbar-right"> 
-                    <li><a href="#"><img id="facebook" title="Kadonneet Facebookissa" data-toggle="tooltip" data-placement="bottom"
+                    <li><a tabIndex="-1" href="#"><img id="facebook" title="Kadonneet Facebookissa" data-toggle="tooltip" data-placement="bottom"
                        src="/images/FB-f-Logo__blue_29.png"/></a>
                     </li>
                 </ul>

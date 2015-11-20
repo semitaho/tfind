@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Panel, Input, ProgressBar, Button,FormControls, Tabs, Tab} from 'react-bootstrap';
+import {Panel, Input, ProgressBar, Button, ButtonGroup,FormControls, Tabs, Tab} from 'react-bootstrap';
 import $ from 'jquery';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
 import Map from './map.jsx';
@@ -42,22 +42,11 @@ class KadonnutForm extends React.Component {
     this.setFormstate(event.target.name, event.target.value);
   }
 
-  getPercents(){
-    const length = 5;
-    var valids = 0;
 
-    for (var key in this.state.formstate){
-      if (this.isValid([key])){
-        valids++;
-      }
-    }
-    return Math.round(valids/length * 100);
 
-  }
-
-  setFormstate(key,value){
+  setFormstate(key,value, interval){
     this.state.formstate[key] = value;
-    if (value !== null && value.length > 0){
+    if (value !== null && typeof value === 'string' && value.length > 0){
       this.increaseIndex();
     }
   }
@@ -66,7 +55,7 @@ class KadonnutForm extends React.Component {
     var content =  e.target.value;
     var img = new Image();
     img.onload = () => { 
-      this.setFormstate('imgsrc', content);  
+      this.setFormstate('imgsrc', content, 1000);  
     };
 
     img.onerror = () => {
@@ -75,111 +64,177 @@ class KadonnutForm extends React.Component {
     img.src = content;
   }
 
-  increaseIndex(){
-   let activeKey = this.state.activeKey;
-   let newActiveIndex = activeKey+1;
-   this.setState({activeKey: newActiveIndex})
-   this.setState({formstate: this.state.formstate});
-    
+  increaseIndex(interval){
+    let activeKey = this.state.activeKey;
+    let newActiveIndex = activeKey+1;
+    if (interval){
+      setTimeout(() => {
+        this.setState({activeKey: newActiveIndex, formstate:  this.state.formstate});
+      }, interval);
+    } 
+    else { 
+      this.setState({activeKey: newActiveIndex, formstate:  this.state.formstate});
+    }
   }
 
   timeChange(e){
     if(!isNaN(e)){
-      this.setFormstate('timestamp', e);   
+      var fs = this.state.formstate;
+      fs.timestamp = e;
+      this.setState({formstate: fs});  
     } else {
       this.setFormstate('timestamp', null);
     }
   }
 
+  isTimeValid(){
+    var time = this.state.formstate.timestamp;
+    if(time && !isNaN(time)){
+      console.log('time', time);
+      return true;
+    }
+    return false;
+
+  }
+
   render() {
     let isNameValid = this.isValid(["name"]);
     let isDescriptionValid = this.isValid(['name', 'description']);
-    let isTimeValid = this.isValid(['name', 'description', 'timestamp'])
-    let isImageValid = this.isValid(['name','description', 'timestamp','imgsrc']);
-    let isMapValid = this.isValid(['name','description', 'timestamp','imgsrc']) && this.isMapValid(); 
+    let isImageValid = this.isValid(['name','description', 'imgsrc']);
+   
+    let isTimeValid = this.isValid(['name', 'description', 'imgsrc']) && this.isTimeValid();
+    let isMapValid = this.isValid(['name','description', 'imgsrc']) && this.isTimeValid() && this.isMapValid(); 
+    
+    let fields = [isNameValid, isDescriptionValid, isImageValid, isTimeValid, isMapValid];
+    
+    var correctCount = 0;
+    for (let field of fields){
+      console.log('field', field);
+      if (field){
+        correctCount++;
+      }
+
+    }
+    console.log('correctCount', correctCount);
     let isFormValid = isMapValid;
 
-    let areaSelected = loc => {
+    let areaSelected = (loc, address) => {
       console.log('alue valittu', loc);
       let location = {lat:loc.lat(), lng: loc.lng()};
       this.state.formstate.location = location;
+      this.state.formstate.address = address;
       this.state.activeKey +=1;
       this.setState(this.state);
-
     };
 
    
     const onSave = () => {
-
     };
     
     let handleSelect = (key) => {
       this.setState({activeKey:key})
     };
     return (
-        
-
         <div className="row">
           <div className="col-md-12"> 
             <label className="control-label">Edistys</label>
-            <ProgressBar now={this.getPercents()} label="%(percent)s%" bsStyle="success" />
+            <ProgressBar now={ Math.round((correctCount / fields.length ) * 100)} label="%(percent)s%" bsStyle="success" />
           </div>
           <div className="col-md-12">
             <Tabs activeKey={this.state.activeKey} onSelect={handleSelect}>
-              <Tab eventKey={1} title="1">
-                  <Input tabIndex="1" type="text" name="name" onBlur={this.handleTextChange} placeholder="Syötä muodossa etunimi sukunimi"
+        
+              <Tab eventKey={1} title="1. Nimi" tabIndex="-1">
+                <div className="wizard-content">
+                <Input tabIndex="1" type="text" name="name" onBlur={this.handleTextChange} placeholder="Syötä muodossa etunimi sukunimi"
                    label="Henkilön nimi" />
+                </div>
               </Tab>
         {isNameValid ?
-          <Tab title="2" eventKey={2}>
-           <Input type="textarea" autoFocus="true" tabIndex="2" placeholder="Kuvaile kadonnutta mahdollisimman tarkasti" name="description" label="Henkilön kuvaus" onBlur={this.handleTextChange}
+          <Tab title="2. Tiedot" tabIndex="-1" eventKey={2}>
+            <div className="wizard-content">
+              <Input type="textarea" autoFocus="true" tabIndex="2" placeholder="Kuvaile kadonnutta mahdollisimman tarkasti" name="description" label="Henkilön kuvaus" onBlur={this.handleTextChange}
                 /> 
+            </div>
+
           </Tab> : ''}
-       {isDescriptionValid ?    
-          <Tab title="3" eventKey={3}>
+       
+        {isDescriptionValid ?     
+          <Tab title="3. Kuva" eventKey={3} tabIndex="-1">
+            <div className="wizard-content">
+            <Input  
+                    type="text" 
+                    onBlur={this.onPasteImage}  label="Kuva henkilöstä" className="form-control" placeholder="Liitä kuva kadonneesta henkilöstä" hasFeedback />
+             {this.state.formstate.imgsrc ?          
+            <img src={this.state.formstate.imgsrc}  className="thumbnail img-responsive" />
+              : ''}
+              </div>
+
+          </Tab>
+          : '' }
+       {isImageValid ?    
+          <Tab title="4. Katoamishetki" eventKey={4} tabIndex="-1">
+            <div className="wizard-content">
             <div className='form-group'>
                 <label className="control-label">Katoamisajankohta</label>
                   <DateTimePicker defaultText="" format="x"  size="sm"
                               inputFormat="D.M.YYYY H:mm"
                               onChange={this.timeChange} /> 
             </div>
-          </Tab>
-          : ''}
-        {isTimeValid ?     
-          <Tab title="4" eventKey={4}>
-            <Input  
-                    type="text" 
-                    bsStyle={isImageValid ? 'success' : ''} 
-                    onBlur={this.onPasteImage}  label="Kuva henkilöstä" className="form-control" placeholder="Liitä kuva kadonneesta henkilöstä" hasFeedback />
-             {this.state.formstate.imgsrc ?          
-            <img src={this.state.formstate.imgsrc}  className="thumbnail img-responsive" />
-              : ''}
-          </Tab>
-          : '' }
-       {isImageValid ?    
-          <Tab title="5" eventKey={5}>
+
+            
+            {isTimeValid ?
+            <div className="form-group">
               <label className="control-label">Viimeisin havainto kartalla</label>
               <Map initialZoom={5} center={{lat: 63.612101,lng: 26.175575}} onArea={areaSelected} />
+            </div>
+            : ''}
+            </div>
           </Tab>
           : ''}
-          {true === true ?
-         <Tab title="Esikatselu" eventKey={6}>
+       
+          {isFormValid ?
+         <Tab title="5. Esikatselu" eventKey={5} tabIndex="-1">
+            <div className="wizard-content">
             <fieldset>
               <legend>Tarkista lomakkeen tiedot</legend>
-             <form className="form-horizontal" id="confirm-form">
+              <form className="form-horizontal" id="confirm-form">
                 <FormControls.Static label="Henkilön nimi" value={this.state.formstate.name} labelClassName="col-md-4"
                                wrapperClassName="col-md-8"/>
                 <FormControls.Static label="Henkilön kuvaus" value={this.state.formstate.description} labelClassName="col-md-4"
                                wrapperClassName="col-md-8"/>
-                <FormControls.Static label="Katoamisajankohta" value={this.state.formstate.timestamp} labelClassName="col-md-4"
+                <div className="form-group">
+                  <label className="control-label col-md-4">
+                   <span>Kuva henkilöstä</span> 
+                  </label>
+                  <div className="col-md-8">
+                    <img className="thumbnail img-responsive" src={this.state.formstate.imgsrc} />
+                  </div>
+
+                </div>
+                <FormControls.Static label="Katoamisajankohta" value={this.formatTime(this.state.formstate.timestamp)} labelClassName="col-md-4"
                                wrapperClassName="col-md-8"/>
-               </form>                
+                <FormControls.Static label="Katoamispaikka" value={this.state.formstate.address} labelClassName="col-md-4"
+                               wrapperClassName="col-md-8"/>
+                 <div className="btn-group pull-right">              
+                  <Button onClick={this.handleSubmit} bsStyle="primary" bsSize="large">Ilmoita</Button>
+                </div>
+        
+                </form>                
                </fieldset>
+              </div>
  
          </Tab> :''}
+
         </Tabs>
         
       </div></div>)
+  }
+
+  formatTime(timestamp){
+    let dt = new Date(timestamp*1);
+    console.log('dt',dt);
+    let time = dt.getDate()+'.'+(dt.getMonth()+1)+'.'+dt.getFullYear()+ ' '+dt.getHours()+':'+dt.getMinutes();
+    return time;
   }
 
 }

@@ -36,11 +36,11 @@ class Map extends React.Component {
     } else if (this.props.center){
       console.log('center');
       mapOptions.center = this.props.center;
-      google.maps.event.addDomListener(window, 'resize', ()  => {
-        this.map.setCenter(this.props.center);
-      });
+      var self = this;
+      self.map = new google.maps.Map(domNode, mapOptions);
+      this.updateArea(this.props.center);
+    
     }
-    this.map = new google.maps.Map(domNode, mapOptions);
     if (this.props.onClick) {
       google.maps.event.addListener(this.map, 'click', event => {
         console.log("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
@@ -53,7 +53,6 @@ class Map extends React.Component {
       google.maps.event.addListener(this.map, 'click', event => {
         this.updateArea(event.latLng);
         this.updateLocation(event.latLng);
-        this.props.onArea(event.latLng);
       }); 
     }
   }
@@ -78,6 +77,9 @@ class Map extends React.Component {
       if (status === google.maps.GeocoderStatus.OK) {
         if (results[0]) {
           this.setState({location: results[0].formatted_address});
+          if (this.props.onArea){
+            this.props.onArea(latlng, results[0].formatted_address);
+          }
         }
       }
     });

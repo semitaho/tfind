@@ -118,6 +118,10 @@ body {
 .img-havainto {
   max-height: 100px;
 }
+.wizard-content {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 .darkened {
   z-index: 1000;
   opacity: 0.3 !important;

@@ -1189,23 +1189,10 @@ var KadonnutForm = (function (_React$Component) {
       this.setFormstate(event.target.name, event.target.value);
     }
   }, {
-    key: 'getPercents',
-    value: function getPercents() {
-      var length = 5;
-      var valids = 0;
-
-      for (var key in this.state.formstate) {
-        if (this.isValid([key])) {
-          valids++;
-        }
-      }
-      return Math.round(valids / length * 100);
-    }
-  }, {
     key: 'setFormstate',
-    value: function setFormstate(key, value) {
+    value: function setFormstate(key, value, interval) {
       this.state.formstate[key] = value;
-      if (value !== null && value.length > 0) {
+      if (value !== null && typeof value === 'string' && value.length > 0) {
         this.increaseIndex();
       }
     }
@@ -1217,7 +1204,7 @@ var KadonnutForm = (function (_React$Component) {
       var content = e.target.value;
       var img = new Image();
       img.onload = function () {
-        _this2.setFormstate('imgsrc', content);
+        _this2.setFormstate('imgsrc', content, 1000);
       };
 
       img.onerror = function () {
@@ -1227,45 +1214,99 @@ var KadonnutForm = (function (_React$Component) {
     }
   }, {
     key: 'increaseIndex',
-    value: function increaseIndex() {
+    value: function increaseIndex(interval) {
+      var _this3 = this;
+
       var activeKey = this.state.activeKey;
       var newActiveIndex = activeKey + 1;
-      this.setState({ activeKey: newActiveIndex });
-      this.setState({ formstate: this.state.formstate });
+      if (interval) {
+        setTimeout(function () {
+          _this3.setState({ activeKey: newActiveIndex, formstate: _this3.state.formstate });
+        }, interval);
+      } else {
+        this.setState({ activeKey: newActiveIndex, formstate: this.state.formstate });
+      }
     }
   }, {
     key: 'timeChange',
     value: function timeChange(e) {
       if (!isNaN(e)) {
-        this.setFormstate('timestamp', e);
+        var fs = this.state.formstate;
+        fs.timestamp = e;
+        this.setState({ formstate: fs });
       } else {
         this.setFormstate('timestamp', null);
       }
     }
   }, {
+    key: 'isTimeValid',
+    value: function isTimeValid() {
+      var time = this.state.formstate.timestamp;
+      if (time && !isNaN(time)) {
+        console.log('time', time);
+        return true;
+      }
+      return false;
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this4 = this;
 
       var isNameValid = this.isValid(["name"]);
       var isDescriptionValid = this.isValid(['name', 'description']);
-      var isTimeValid = this.isValid(['name', 'description', 'timestamp']);
-      var isImageValid = this.isValid(['name', 'description', 'timestamp', 'imgsrc']);
-      var isMapValid = this.isValid(['name', 'description', 'timestamp', 'imgsrc']) && this.isMapValid();
+      var isImageValid = this.isValid(['name', 'description', 'imgsrc']);
+
+      var isTimeValid = this.isValid(['name', 'description', 'imgsrc']) && this.isTimeValid();
+      var isMapValid = this.isValid(['name', 'description', 'imgsrc']) && this.isTimeValid() && this.isMapValid();
+
+      var fields = [isNameValid, isDescriptionValid, isImageValid, isTimeValid, isMapValid];
+
+      var correctCount = 0;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = fields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var field = _step.value;
+
+          console.log('field', field);
+          if (field) {
+            correctCount++;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      console.log('correctCount', correctCount);
       var isFormValid = isMapValid;
 
-      var areaSelected = function areaSelected(loc) {
+      var areaSelected = function areaSelected(loc, address) {
         console.log('alue valittu', loc);
         var location = { lat: loc.lat(), lng: loc.lng() };
-        _this3.state.formstate.location = location;
-        _this3.state.activeKey += 1;
-        _this3.setState(_this3.state);
+        _this4.state.formstate.location = location;
+        _this4.state.formstate.address = address;
+        _this4.state.activeKey += 1;
+        _this4.setState(_this4.state);
       };
 
       var onSave = function onSave() {};
 
       var handleSelect = function handleSelect(key) {
-        _this3.setState({ activeKey: key });
+        _this4.setState({ activeKey: key });
       };
       return _react2['default'].createElement(
         'div',
@@ -1278,7 +1319,7 @@ var KadonnutForm = (function (_React$Component) {
             { className: 'control-label' },
             'Edistys'
           ),
-          _react2['default'].createElement(_reactBootstrap.ProgressBar, { now: this.getPercents(), label: '%(percent)s%', bsStyle: 'success' })
+          _react2['default'].createElement(_reactBootstrap.ProgressBar, { now: Math.round(correctCount / fields.length * 100), label: '%(percent)s%', bsStyle: 'success' })
         ),
         _react2['default'].createElement(
           'div',
@@ -1288,77 +1329,133 @@ var KadonnutForm = (function (_React$Component) {
             { activeKey: this.state.activeKey, onSelect: handleSelect },
             _react2['default'].createElement(
               _reactBootstrap.Tab,
-              { eventKey: 1, title: '1' },
-              _react2['default'].createElement(_reactBootstrap.Input, { tabIndex: '1', type: 'text', name: 'name', onBlur: this.handleTextChange, placeholder: 'Syötä muodossa etunimi sukunimi',
-                label: 'Henkilön nimi' })
+              { eventKey: 1, title: '1. Nimi', tabIndex: '-1' },
+              _react2['default'].createElement(
+                'div',
+                { className: 'wizard-content' },
+                _react2['default'].createElement(_reactBootstrap.Input, { tabIndex: '1', type: 'text', name: 'name', onBlur: this.handleTextChange, placeholder: 'Syötä muodossa etunimi sukunimi',
+                  label: 'Henkilön nimi' })
+              )
             ),
             isNameValid ? _react2['default'].createElement(
               _reactBootstrap.Tab,
-              { title: '2', eventKey: 2 },
-              _react2['default'].createElement(_reactBootstrap.Input, { type: 'textarea', autoFocus: 'true', tabIndex: '2', placeholder: 'Kuvaile kadonnutta mahdollisimman tarkasti', name: 'description', label: 'Henkilön kuvaus', onBlur: this.handleTextChange
-              })
+              { title: '2. Tiedot', tabIndex: '-1', eventKey: 2 },
+              _react2['default'].createElement(
+                'div',
+                { className: 'wizard-content' },
+                _react2['default'].createElement(_reactBootstrap.Input, { type: 'textarea', autoFocus: 'true', tabIndex: '2', placeholder: 'Kuvaile kadonnutta mahdollisimman tarkasti', name: 'description', label: 'Henkilön kuvaus', onBlur: this.handleTextChange
+                })
+              )
             ) : '',
             isDescriptionValid ? _react2['default'].createElement(
               _reactBootstrap.Tab,
-              { title: '3', eventKey: 3 },
+              { title: '3. Kuva', eventKey: 3, tabIndex: '-1' },
               _react2['default'].createElement(
                 'div',
-                { className: 'form-group' },
-                _react2['default'].createElement(
-                  'label',
-                  { className: 'control-label' },
-                  'Katoamisajankohta'
-                ),
-                _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { defaultText: '', format: 'x', size: 'sm',
-                  inputFormat: 'D.M.YYYY H:mm',
-                  onChange: this.timeChange })
+                { className: 'wizard-content' },
+                _react2['default'].createElement(_reactBootstrap.Input, {
+                  type: 'text',
+                  onBlur: this.onPasteImage, label: 'Kuva henkilöstä', className: 'form-control', placeholder: 'Liitä kuva kadonneesta henkilöstä', hasFeedback: true }),
+                this.state.formstate.imgsrc ? _react2['default'].createElement('img', { src: this.state.formstate.imgsrc, className: 'thumbnail img-responsive' }) : ''
               )
-            ) : '',
-            isTimeValid ? _react2['default'].createElement(
-              _reactBootstrap.Tab,
-              { title: '4', eventKey: 4 },
-              _react2['default'].createElement(_reactBootstrap.Input, {
-                type: 'text',
-                bsStyle: isImageValid ? 'success' : '',
-                onBlur: this.onPasteImage, label: 'Kuva henkilöstä', className: 'form-control', placeholder: 'Liitä kuva kadonneesta henkilöstä', hasFeedback: true }),
-              this.state.formstate.imgsrc ? _react2['default'].createElement('img', { src: this.state.formstate.imgsrc, className: 'thumbnail img-responsive' }) : ''
             ) : '',
             isImageValid ? _react2['default'].createElement(
               _reactBootstrap.Tab,
-              { title: '5', eventKey: 5 },
+              { title: '4. Katoamishetki', eventKey: 4, tabIndex: '-1' },
               _react2['default'].createElement(
-                'label',
-                { className: 'control-label' },
-                'Viimeisin havainto kartalla'
-              ),
-              _react2['default'].createElement(_mapJsx2['default'], { initialZoom: 5, center: { lat: 63.612101, lng: 26.175575 }, onArea: areaSelected })
-            ) : '',
-            true === true ? _react2['default'].createElement(
-              _reactBootstrap.Tab,
-              { title: 'Esikatselu', eventKey: 6 },
-              _react2['default'].createElement(
-                'fieldset',
-                null,
+                'div',
+                { className: 'wizard-content' },
                 _react2['default'].createElement(
-                  'legend',
-                  null,
-                  'Tarkista lomakkeen tiedot'
+                  'div',
+                  { className: 'form-group' },
+                  _react2['default'].createElement(
+                    'label',
+                    { className: 'control-label' },
+                    'Katoamisajankohta'
+                  ),
+                  _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { defaultText: '', format: 'x', size: 'sm',
+                    inputFormat: 'D.M.YYYY H:mm',
+                    onChange: this.timeChange })
                 ),
+                isTimeValid ? _react2['default'].createElement(
+                  'div',
+                  { className: 'form-group' },
+                  _react2['default'].createElement(
+                    'label',
+                    { className: 'control-label' },
+                    'Viimeisin havainto kartalla'
+                  ),
+                  _react2['default'].createElement(_mapJsx2['default'], { initialZoom: 5, center: { lat: 63.612101, lng: 26.175575 }, onArea: areaSelected })
+                ) : ''
+              )
+            ) : '',
+            isFormValid ? _react2['default'].createElement(
+              _reactBootstrap.Tab,
+              { title: '5. Esikatselu', eventKey: 5, tabIndex: '-1' },
+              _react2['default'].createElement(
+                'div',
+                { className: 'wizard-content' },
                 _react2['default'].createElement(
-                  'form',
-                  { className: 'form-horizontal', id: 'confirm-form' },
-                  _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön nimi', value: this.state.formstate.name, labelClassName: 'col-md-4',
-                    wrapperClassName: 'col-md-8' }),
-                  _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön kuvaus', value: this.state.formstate.description, labelClassName: 'col-md-4',
-                    wrapperClassName: 'col-md-8' }),
-                  _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Katoamisajankohta', value: this.state.formstate.timestamp, labelClassName: 'col-md-4',
-                    wrapperClassName: 'col-md-8' })
+                  'fieldset',
+                  null,
+                  _react2['default'].createElement(
+                    'legend',
+                    null,
+                    'Tarkista lomakkeen tiedot'
+                  ),
+                  _react2['default'].createElement(
+                    'form',
+                    { className: 'form-horizontal', id: 'confirm-form' },
+                    _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön nimi', value: this.state.formstate.name, labelClassName: 'col-md-4',
+                      wrapperClassName: 'col-md-8' }),
+                    _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön kuvaus', value: this.state.formstate.description, labelClassName: 'col-md-4',
+                      wrapperClassName: 'col-md-8' }),
+                    _react2['default'].createElement(
+                      'div',
+                      { className: 'form-group' },
+                      _react2['default'].createElement(
+                        'label',
+                        { className: 'control-label col-md-4' },
+                        _react2['default'].createElement(
+                          'span',
+                          null,
+                          'Kuva henkilöstä'
+                        )
+                      ),
+                      _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-8' },
+                        _react2['default'].createElement('img', { className: 'thumbnail img-responsive', src: this.state.formstate.imgsrc })
+                      )
+                    ),
+                    _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Katoamisajankohta', value: this.formatTime(this.state.formstate.timestamp), labelClassName: 'col-md-4',
+                      wrapperClassName: 'col-md-8' }),
+                    _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Katoamispaikka', value: this.state.formstate.address, labelClassName: 'col-md-4',
+                      wrapperClassName: 'col-md-8' }),
+                    _react2['default'].createElement(
+                      'div',
+                      { className: 'btn-group pull-right' },
+                      _react2['default'].createElement(
+                        _reactBootstrap.Button,
+                        { onClick: this.handleSubmit, bsStyle: 'primary', bsSize: 'large' },
+                        'Ilmoita'
+                      )
+                    )
+                  )
                 )
               )
             ) : ''
           )
         )
       );
+    }
+  }, {
+    key: 'formatTime',
+    value: function formatTime(timestamp) {
+      var dt = new Date(timestamp * 1);
+      console.log('dt', dt);
+      var time = dt.getDate() + '.' + (dt.getMonth() + 1) + '.' + dt.getFullYear() + ' ' + dt.getHours() + ':' + dt.getMinutes();
+      return time;
     }
   }]);
 
@@ -1570,11 +1667,10 @@ var Map = (function (_React$Component) {
       } else if (this.props.center) {
         console.log('center');
         mapOptions.center = this.props.center;
-        google.maps.event.addDomListener(window, 'resize', function () {
-          _this.map.setCenter(_this.props.center);
-        });
+        var self = this;
+        self.map = new google.maps.Map(domNode, mapOptions);
+        this.updateArea(this.props.center);
       }
-      this.map = new google.maps.Map(domNode, mapOptions);
       if (this.props.onClick) {
         google.maps.event.addListener(this.map, 'click', function (event) {
           console.log("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
@@ -1587,7 +1683,6 @@ var Map = (function (_React$Component) {
         google.maps.event.addListener(this.map, 'click', function (event) {
           _this.updateArea(event.latLng);
           _this.updateLocation(event.latLng);
-          _this.props.onArea(event.latLng);
         });
       }
     }
@@ -1615,6 +1710,9 @@ var Map = (function (_React$Component) {
         if (status === google.maps.GeocoderStatus.OK) {
           if (results[0]) {
             _this2.setState({ location: results[0].formatted_address });
+            if (_this2.props.onArea) {
+              _this2.props.onArea(latlng, results[0].formatted_address);
+            }
           }
         }
       });
