@@ -6,15 +6,13 @@
   "scripts": {
     "test": "node_modules/.bin/jest",
     "postinstall": "node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
-    "start": "babel-node  --presets es2015,react index.js",
-    "babelnode": "babel-node  --presets es2015,react index.js",
-    "prebabelnode" :"node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
-
+    "start": "node_modules/.bin/babel-node  --presets es2015,react index.js",
+    "babelnode": "node_modules/.bin/babel-node  --presets es2015,react index.js",
+    "prebabelnode": "node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
     "build:css": "node_modules/.bin/stylus -u nib stylus/tfind.styl -o public/css/tfind.css",
     "watch:css": "node_modules/.bin/stylus -w -u nib stylus/tfind.styl -o public/css/tfind.css",
     "build": "npm run build:css && node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
     "local": "npm run build && npm run watch:css & npm start",
-
     "watch": "npm run watch:css &  nodemon -e jsx,js,json -w ./index.js -w ./components -w ./resources -w ./client --exec npm run babelnode"
   },
   "jest": {
@@ -61,6 +59,7 @@
   },
   "homepage": "https://github.com/semitaho/tfind",
   "dependencies": {
+    "babel-cli": "^6.2.0",
     "babel-core": "^6.1.21",
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-react": "^6.1.18",
