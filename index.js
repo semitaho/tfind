@@ -14,7 +14,6 @@ import lostsgrid from './components/lostsgrid.jsx';
 import kadonneetlistjsx from './components/kadonneetlist.jsx';
 import kadonnutFormjsx from './components/kadonnutform.jsx';
 import nav from './components/navigation.jsx';
-import content from './resources/content.json';
 
 let app = express();
 let upload = multer({dest: './public/files'});
@@ -42,17 +41,22 @@ var mongoConnection = require('./mongodb.js').mongoConnection;
 mongoConnection.then(db => {
   console.log('mongodb successfully connected...');
   var kadonneetCollection = db.collection('kadonneet'),
-    ukkCollection = db.collection('ukk');
-  var collections = {ukk: ukkCollection, kadonneet: kadonneetCollection};
+  contentCollection = db.collection('content'),
+  ukkCollection = db.collection('ukk');
+  var collections = {ukk: ukkCollection, kadonneet: kadonneetCollection, contents: contentCollection};
   return collections
 }).then(collections => {
   app.get('/', (req, res) => {
-    res.render('index', {
-      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1})),
-      description: content.description,
-      quotetext: content.quotetext,
-      quoteauthor: content.quoteauthor
+    collections.contents.find().toArray((err, docs) => {
+      let content = docs[0];
+      res.render('index', {
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1})),
+        description: content.description,
+        quotetext: content.quotetext,
+        quoteauthor: content.quoteauthor
+      });
     });
+    
   });
 
   app.post('/submitfinding', upload.single('pic'), (req, res) => {
@@ -86,9 +90,6 @@ mongoConnection.then(db => {
       }],
       lost: {timestamp: parseInt(req.body.timestamp, 10)}
     };
-    console.log('body', req.body);
-
-
     collections.kadonneet.insertOne(copy, function (err, result) {
       if (err) {
         res.redirect('/error');
@@ -120,10 +121,7 @@ mongoConnection.then(db => {
       res.render('kadonneet', {
         items: docs,
         navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 0})),
-        losts: ReactDOMServer.renderToString(Losts({items: docs})),
-        description: content.description,
-        quotetext: content.quotetext,
-        quoteauthor: content.quoteauthor
+        losts: ReactDOMServer.renderToString(Losts({items: docs}))
       });
 
     });

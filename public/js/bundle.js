@@ -492,7 +492,6 @@ var GridItem = (function (_React$Component) {
       var item = this.props.item;
       var self = this;
       var formattedDescription = item.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
-      console.log('formatted', formattedDescription);
       return _react2['default'].createElement(
         'div',
         { className: 'thumbnail text-left' },
@@ -1766,6 +1765,12 @@ var Map = (function (_React$Component) {
       return _react2['default'].createElement('div', { ref: 'map', id: 'map-havainnot' });
     }
   }, {
+    key: 'renderMap',
+    value: function renderMap(mapOptions) {
+      var domNode = _reactDom2['default'].findDOMNode(this.refs.map);
+      this.map = new google.maps.Map(domNode, mapOptions);
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       var _this = this;
@@ -1779,19 +1784,17 @@ var Map = (function (_React$Component) {
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         zoom: this.props.initialZoom
       };
-      var domNode = _reactDom2['default'].findDOMNode(this.refs.map);
       console.log('length', this.props.findings);
       if (this.props.findings && this.props.findings.length > 0) {
         var center = this.calculateCenter(this.props.findings);
         mapOptions.center = center;
-        this.map = new google.maps.Map(domNode, mapOptions);
-
+        this.renderMap(mapOptions);
         this.createMarkers();
         this.createRoute();
       } else if (this.props.center) {
         console.log('center');
         mapOptions.center = this.props.center;
-        this.map = new google.maps.Map(domNode, mapOptions);
+        this.renderMap(mapOptions);
         this.updateArea(this.props.center);
       }
 
@@ -1819,9 +1822,9 @@ var Map = (function (_React$Component) {
       this.marker = new google.maps.Marker({
         position: location,
         map: this.map,
+        animation: google.maps.Animation.DROP,
         title: 'Nykyinen sijainti'
       });
-      console.log('marker', this.marker);
       this.map.setCenter(this.marker.getPosition());
       return this.marker.position;
     }
@@ -1870,6 +1873,7 @@ var Map = (function (_React$Component) {
     value: function createFindingMarker(latlng) {
       var markerIcon = {
         scale: 7,
+        animation: google.maps.Animation.DROP,
         path: google.maps.SymbolPath.CIRCLE
       };
 

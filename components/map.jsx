@@ -17,6 +17,11 @@ class Map extends React.Component {
 
   }
 
+  renderMap(mapOptions){
+    var domNode = ReactDOM.findDOMNode(this.refs.map);
+    this.map = new google.maps.Map(domNode, mapOptions);
+  }
+
   componentDidMount() {
     this.geocoder = new google.maps.Geocoder;
 
@@ -27,20 +32,18 @@ class Map extends React.Component {
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom
     };
-    var domNode = ReactDOM.findDOMNode(this.refs.map);
     console.log('length', this.props.findings);
     if (this.props.findings && this.props.findings.length > 0 ){
       let center = this.calculateCenter(this.props.findings);
       mapOptions.center = center;
-      this.map = new google.maps.Map(domNode, mapOptions);
-
+      this.renderMap(mapOptions);
       this.createMarkers();
       this.createRoute();
     }
     else if (this.props.center){
       console.log('center');
       mapOptions.center = this.props.center;
-      this.map = new google.maps.Map(domNode, mapOptions);
+      this.renderMap(mapOptions);
       this.updateArea(this.props.center);
     }
 
@@ -67,9 +70,9 @@ class Map extends React.Component {
     this.marker = new google.maps.Marker({
       position: location,
       map: this.map,
+      animation: google.maps.Animation.DROP,
       title: 'Nykyinen sijainti'
     });
-    console.log('marker', this.marker);
     this.map.setCenter(this.marker.getPosition());
     return this.marker.position;
   }
@@ -114,6 +117,7 @@ class Map extends React.Component {
   createFindingMarker(latlng) {
     var markerIcon = {
       scale: 7,
+      animation: google.maps.Animation.DROP,
       path: google.maps.SymbolPath.CIRCLE
     };
 
