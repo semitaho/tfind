@@ -136,6 +136,11 @@ body {
 .search-modal {
   width: 100%;
 }
+.search-results {
+  bottom: 0;
+  left: 15px;
+  position: absolute;
+}
 .opened {
   position: absolute;
   z-index: 9999;

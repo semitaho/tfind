@@ -141,7 +141,7 @@ class KadonnutForm extends React.Component {
 
             <Tab eventKey={1} title="1. Nimi" tabIndex="-1">
               <div className="wizard-content">
-                <Input tabIndex="1" type="text" name="name" onChange={this.handleTextChange}
+                <Input bsSize="large" tabIndex="1" type="text" name="name" onChange={this.handleTextChange}
                        placeholder="Syötä muodossa etunimi sukunimi"
                        label="Henkilön nimi"/>
                 <Next disabled={!isNameValid} onClick={onClickNext}/>
@@ -150,7 +150,7 @@ class KadonnutForm extends React.Component {
             {isNameValid ?
               <Tab title="2. Tiedot" tabIndex="-1" eventKey={2}>
                 <div className="wizard-content">
-                  <Input type="textarea" autoFocus="true" tabIndex="2"
+                  <Input  bsSize="large" type="textarea" autoFocus="true" tabIndex="2"
                          placeholder="Kuvaile kadonnutta mahdollisimman tarkasti" name="description"
                          label="Henkilön kuvaus" onChange={this.handleTextChange}
                     />
@@ -163,7 +163,7 @@ class KadonnutForm extends React.Component {
               <Tab title="3. Kuva" eventKey={3} tabIndex="-1">
                 <div className="wizard-content">
                   <Input
-                    type="text"
+                    type="text"  bsSize="large"
                     onBlur={this.onPasteImage} label="Kuva henkilöstä" className="form-control"
                     placeholder="Liitä kuva kadonneesta henkilöstä" hasFeedback/>
                   {this.state.formstate.imgsrc ?

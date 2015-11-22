@@ -4,7 +4,6 @@ class Navigation extends React.Component {
 
   constructor(){
     super();
-    console.log('created');
   }
   render() {
     var navitems = this.props.items.map((item, index) => {
@@ -29,7 +28,7 @@ class Navigation extends React.Component {
                 <span className="icon-bar"></span>
                 <span className="icon-bar"></span>
               </button>
-              <a className="navbar-brand pull-left" tabIndex="-1" href="/">tFind</a>
+              <a className="navbar-brand pull-left" tabIndex="-1"  href="/">tFind</a>
             </div>
            
             <div className="collapse  navbar-collapse" id="collapsing">

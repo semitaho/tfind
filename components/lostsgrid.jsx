@@ -1,11 +1,12 @@
 import React from 'react';
 import GridItem from './griditem.jsx';
-import {Navbar, Input} from 'react-bootstrap';
+import {Navbar, Input, Glyphicon} from 'react-bootstrap';
 class LostsGrid extends React.Component {
 
   constructor() {
     super();
     this.state = {search: ''};
+    this.changeSearchCriteria = this.changeSearchCriteria.bind(this);
 
   }
 
@@ -30,13 +31,11 @@ class LostsGrid extends React.Component {
     return filteredItems;
   }
 
+  changeSearchCriteria(event){
+    this.setState({search: event.target.value});
+  }
+
   render() {
-
-    const changeSearchCriteria = event => {
-      console.log('new criteria', event.target.value);
-      this.setState({search: event.target.value});
-    };
-
     let filteredItems = this.filterByCriteria(this.state.search);
 
     var items = filteredItems.map((item, key) => {
@@ -44,15 +43,19 @@ class LostsGrid extends React.Component {
       return (<div key={idkey} className="col-lg-12 col-md-12 col-sm-12">
         <GridItem item={item}/></div>)
     });
-    return (<div className="row">
-      <div className="col-md-12">
-        <form className="navbar-form navbar-right" role="search">
-          <div class="form-group">
-            <input type="text" className="form-control" placeholder="Hae kadonnutta" onChange={changeSearchCriteria}/>
-            <span className="glyphicon glyphicon-search" aria-hidden="true"></span>
 
+    return (<div className="row">
+      <div className="col-md-12 col-sm-12">
+        <div className="row">
+          <div className="col-md-12 col-sm-12">
+            <label className="pull-left search-results">Tuloksia {filteredItems.length} / {this.props.items.length}</label> 
+            <form className="navbar-form navbar-right" role="search">
+            <div className="form-group">
+            <Input type="text" placeholder="Hae kadonnutta"  addonAfter={<Glyphicon glyph="search" />}  onChange={this.changeSearchCriteria}/>
+            </div>
+            </form>
           </div>
-        </form>
+         </div> 
       </div>
       {items}</div>)
   }
