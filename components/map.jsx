@@ -28,19 +28,22 @@ class Map extends React.Component {
       zoom: this.props.initialZoom
     };
     var domNode = ReactDOM.findDOMNode(this.refs.map);
+    console.log('length', this.props.findings);
     if (this.props.findings && this.props.findings.length > 0 ){
       let center = this.calculateCenter(this.props.findings);
       mapOptions.center = center;
+      this.map = new google.maps.Map(domNode, mapOptions);
+
       this.createMarkers();
       this.createRoute();
-    } else if (this.props.center){
+    }
+    else if (this.props.center){
       console.log('center');
       mapOptions.center = this.props.center;
-      var self = this;
-      self.map = new google.maps.Map(domNode, mapOptions);
+      this.map = new google.maps.Map(domNode, mapOptions);
       this.updateArea(this.props.center);
-    
     }
+
     if (this.props.onClick) {
       google.maps.event.addListener(this.map, 'click', event => {
         console.log("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
@@ -144,6 +147,7 @@ class Map extends React.Component {
     };
 
     this.props.findings.forEach(finding => {
+        console.log('findingType', finding.type);
         var markerIcon = null;
         switch (finding.type) {
           case 3:

@@ -1,4 +1,4 @@
-require('babel-core').transform('code', {'presets': ['es2015','react']});
+require('babel-core').transform('code', {'presets': ['es2015', 'react']});
 
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -71,7 +71,32 @@ mongoConnection.then(db => {
       res.redirect('/kadonneet');
     });
   });
+  app.post('/saveilmoita', (req, res) => {
+    var copy = {
+      name: req.body.name,
+      description: req.body.description,
+      imgsrc: req.body.imgsrc,
+      thumbnails: [req.body.imgsrc],
+      findings: [{
+        type: '1',
+        description: 'Viimeisin havainto ennen katoamista',
+        lat: req.body.location.lat,
+        lng: req.body.location.lng,
+        timestamp: parseInt(req.body.timestamp, 10)
+      }],
+      lost: {timestamp: parseInt(req.body.timestamp, 10)}
+    };
+    console.log('body', req.body);
 
+
+    collections.kadonneet.insertOne(copy, function (err, result) {
+      if (err) {
+        res.redirect('/error');
+        return;
+      }
+      res.end('OK');
+    });
+  });
   app.post('/savemarking', (req, res) => {
     console.log('body', req.body);
     var copy = Object.assign({}, req.body);

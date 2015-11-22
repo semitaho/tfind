@@ -90,7 +90,8 @@ class FindingForm extends React.Component {
     var hideSubmitClass = !this.canSubmit() ? 'hide' : '';
     return (
 
-      <MapModal onHide={this.props.onclosemodal} size="large" title={'Ilmoita uusi havainto henkilöstä '+this.props.item.name+'.'}>
+      <MapModal onHide={this.props.onclosemodal} size="large"
+                title={'Ilmoita uusi havainto henkilöstä '+this.props.item.name+'.'}>
         <form method="POST" id="findingForm" action="/submitfinding" noValidate encType="multipart/form-data">
           <Modal.Body>
             {this.state.loading ? <Spinner dimm="findingForm"/> : ''}

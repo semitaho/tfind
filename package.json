@@ -4,15 +4,18 @@
   "description": "Find missing people.",
   "main": "index.js",
   "scripts": {
-    "babel-node": "babel-node --stage 0 --ignore='foo|bar|baz'",
     "test": "node_modules/.bin/jest",
     "postinstall": "node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
-    "start": "babel-node --presets es2015,react index.js",
+    "start": "babel-node  --presets es2015,react index.js",
+    "babelnode": "babel-node  --presets es2015,react index.js",
+    "prebabelnode" :"node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
+
     "build:css": "node_modules/.bin/stylus -u nib stylus/tfind.styl -o public/css/tfind.css",
     "watch:css": "node_modules/.bin/stylus -w -u nib stylus/tfind.styl -o public/css/tfind.css",
     "build": "npm run build:css && node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
     "local": "npm run build && npm run watch:css & npm start",
-    "watch": "nodemon -e jsx,js,json -w ./index.js -w ./components -w ./resources -w ./client -x npm run local"
+
+    "watch": "npm run watch:css &  nodemon -e jsx,js,json -w ./index.js -w ./components -w ./resources -w ./client --exec npm run babelnode"
   },
   "jest": {
     "testDirectoryName": "tests",
@@ -72,10 +75,10 @@
     "multer": "^1.1.0",
     "nib": "1.1.0",
     "nodemon": "^1.8.0",
-    "react": "^0.14.0",
+    "react": "^0.14.3",
     "react-bootstrap": "^0.27.3",
     "react-bootstrap-datetimepicker": "0.0.21",
-    "react-dom": "^0.14.0",
+    "react-dom": "^0.14.3",
     "stylus": "0.52.4"
   },
   "devDependencies": {

@@ -122,7 +122,7 @@ export default class KadonneetSearchMap extends React.Component {
         success: _ => {
           this.setState({saving: false,saveMarking: false});
           this.props.onclose();
-        },
+        }
       });
     };
     return (
