@@ -86,6 +86,7 @@ class GridItem extends React.Component {
   render() {
     var item = this.props.item;
     var self = this;
+    let formattedDescription = item.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
     return <div className="thumbnail text-left">
         {this.state.showmodal ? <LostsModal item={item} onclosemodal={this.onModalClose}/> : ''}
         {this.state.showform ? <FindingForm item={item} onclosemodal={this.onFormClose}/> : ''}
@@ -109,7 +110,7 @@ class GridItem extends React.Component {
             <div className="caption">
               <h3>{item.name}</h3>
 
-              <div dangerouslySetInnerHTML={{__html: item.description}}/>
+              <div dangerouslySetInnerHTML={{__html: formattedDescription}}/>
               <p>
                 <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla
                   ({this.props.item.findings.length})</Button>
