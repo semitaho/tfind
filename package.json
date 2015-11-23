@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/jest",
-    "postinstall": "node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
+    "postinstall": "node_modules/.bin/browserify -t babelify client/main.js | node_modules/.bin/uglifyjs  ./public/js/bundle.js",
     "start": "node_modules/.bin/babel-node  --presets es2015,react index.js",
     "babelnode": "node_modules/.bin/babel-node  --presets es2015,react index.js",
-    "prebabelnode": "node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
+    "prebabelnode": "NODE_ENV=production node_modules/.bin/browserify -t babelify  client/main.js | node_modules/.bin/uglifyjs > ./public/js/bundle.js",
     "build:css": "node_modules/.bin/stylus -u nib stylus/tfind.styl -o public/css/tfind.css",
     "watch:css": "node_modules/.bin/stylus -w -u nib stylus/tfind.styl -o public/css/tfind.css",
     "build": "npm run build:css && node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
@@ -26,6 +26,18 @@
       "es6",
       "jsx"
     ],
+    "browserify": {
+      "transform": [
+        [
+          "babelify",
+          {
+            "stage": [
+              0
+            ]
+          }
+        ]
+      ]
+    },
     "scriptPreprocessor": "preprocessor.js",
     "unmockedModulePathPatterns": [
       "components",
@@ -83,6 +95,7 @@
   "devDependencies": {
     "babel-jest": "*",
     "jest-cli": "*",
-    "react-addons-test-utils": "^0.14.0"
+    "react-addons-test-utils": "^0.14.0",
+    "uglify-js": "^2.6.1"
   }
 }

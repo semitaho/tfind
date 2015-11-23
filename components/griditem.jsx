@@ -1,7 +1,5 @@
 import React from 'react';
-import Carousel from 'react-bootstrap/lib/Carousel';
-import CarouselItem from 'react-bootstrap/lib/CarouselItem';
-import Button from 'react-bootstrap/lib/Button';
+import {Button, Carousel, CarouselItem} from 'react-bootstrap';
 import LostsModal from './lostsmodal.jsx';
 import FindingForm from './findingform.jsx';
 class GridItem extends React.Component {
@@ -78,7 +76,6 @@ class GridItem extends React.Component {
   }
 
   onFormClose() {
-    console.log('roonkeli');
     this.setState({showform: false});
 
   }

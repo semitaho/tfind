@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Input from 'react-bootstrap/lib/Input';
-import Button from 'react-bootstrap/lib/Button';
+import {Input, Button, Modal} from 'react-bootstrap/lib/Input';
 import $ from 'jquery';
-import Modal from 'react-bootstrap/lib/Modal';
 import MapModal from './modals/mapmodal.jsx';
 
 import Map from './map.jsx';

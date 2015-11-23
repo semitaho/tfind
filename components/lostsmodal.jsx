@@ -1,8 +1,7 @@
 import MapModal from './modals/mapmodal.jsx';
 import React from 'react';
-import Image from 'react-bootstrap/lib/Image';
 import Map from './map.jsx';
-import {Modal} from 'react-bootstrap';
+import {Modal, Image} from 'react-bootstrap';
 
 
 export default class LostsModal extends React.Component {

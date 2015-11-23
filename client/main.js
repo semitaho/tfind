@@ -1,8 +1,7 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import LostsGrid from '../components/lostsgrid.jsx';
 import FindingForm from '../components/findingform.jsx';
-import Spinner from '../components/spinner.jsx';
 import KadonnutForm from '../components/kadonnutform.jsx';
 import KadonneetList from '../components/kadonneetlist.jsx';
 

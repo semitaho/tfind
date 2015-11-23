@@ -1,5 +1,3 @@
-require('babel-core').transform('code', {'presets': ['es2015', 'react']});
-
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import express  from 'express';
@@ -7,7 +5,6 @@ import multer from 'multer';
 import bodyParser from 'body-parser';
 import stylus from 'stylus';
 import nib from 'nib';
-import tfindApp from './components/tfindApp.jsx';
 import findingFormJsx from './components/findingform.jsx';
 import ukkformjsx from './components/questionsanswers.jsx';
 import lostsgrid from './components/lostsgrid.jsx';
