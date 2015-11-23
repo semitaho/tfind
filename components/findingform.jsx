@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Input, Button, Modal} from 'react-bootstrap/lib/Input';
+import {Input, Button, Modal} from 'react-bootstrap';
 import $ from 'jquery';
 import MapModal from './modals/mapmodal.jsx';
-
 import Map from './map.jsx';
 import Spinner from './spinner.jsx';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
