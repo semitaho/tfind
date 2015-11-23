@@ -90,12 +90,13 @@
     "react-bootstrap": "^0.27.3",
     "react-bootstrap-datetimepicker": "0.0.21",
     "react-dom": "^0.14.3",
-    "stylus": "0.52.4"
+    "stylus": "0.52.4",
+    "uglify-js": "^2.6.1"
+
   },
   "devDependencies": {
     "babel-jest": "*",
     "jest-cli": "*",
-    "react-addons-test-utils": "^0.14.0",
-    "uglify-js": "^2.6.1"
+    "react-addons-test-utils": "^0.14.0"
   }
 }
