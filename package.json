@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/jest",
-    "postinstall": "node_modules/.bin/browserify -t babelify client/main.js | node_modules/.bin/uglifyjs  ./public/js/bundle.js",
+    "postinstall": "node_modules/.bin/browserify -t babelify client/main.js | node_modules/.bin/uglifyjs > ./public/js/bundle.js",
     "start": "node_modules/.bin/babel-node  --presets es2015,react index.js",
     "babelnode": "node_modules/.bin/babel-node  --presets es2015,react index.js",
     "prebabelnode": "NODE_ENV=production node_modules/.bin/browserify -t babelify  client/main.js | node_modules/.bin/uglifyjs > ./public/js/bundle.js",
