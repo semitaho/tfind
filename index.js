@@ -25,6 +25,7 @@ var Navigation = React.createFactory(nav),
 app.set('port', (process.env.PORT || 8080));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+app.locals.pretty = true;
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 var errorRoute = (req, res) => {
