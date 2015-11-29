@@ -4,10 +4,12 @@ import LostsGrid from '../components/lostsgrid.jsx';
 import FindingForm from '../components/findingform.jsx';
 import KadonnutForm from '../components/kadonnutform.jsx';
 import KadonneetList from '../components/kadonneetlist.jsx';
+import Navigation from '../components/navigation.jsx';
 
 var main = document.getElementById('losts'),
   form = document.getElementById('findingform'),
   kadonnut = document.getElementById('kadonnutform'),
+  nav = document.getElementById('navigation'),
   kadonneetlist = document.getElementById('kadonneetlist');
 
 var losts = [];
@@ -37,6 +39,5 @@ if (kadonnut) {
 
 if (kadonneetlist){
   ReactDOM.render(<KadonneetList items={kadonneetItems} />, kadonneetlist);
-
 }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Carousel, CarouselItem} from 'react-bootstrap';
 import LostsModal from './lostsmodal.jsx';
 import FindingForm from './findingform.jsx';
+import KadonnutNews from './kadonnutNews.jsx';
 class GridItem extends React.Component {
 
   constructor() {
@@ -15,6 +16,9 @@ class GridItem extends React.Component {
     this.onFormClose = this.onFormClose.bind(this);
 
     this.onKadonnutTimeout = this.onKadonnutTimeout.bind(this);
+    this.onNewsOpen = this.onNewsOpen.bind(this);
+    this.onNewsHide = this.onNewsHide.bind(this);
+
   }
 
   componentDidMount() {
@@ -80,44 +84,55 @@ class GridItem extends React.Component {
 
   }
 
+  onNewsOpen() {
+    this.setState({shownews: true});
+
+  }
+
+  onNewsHide() {
+    this.setState({shownews: false});
+  }
+
   render() {
     var item = this.props.item;
     var self = this;
     let formattedDescription = item.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
     return <div className="thumbnail text-left">
-        {this.state.showmodal ? <LostsModal item={item} onclosemodal={this.onModalClose}/> : ''}
-        {this.state.showform ? <FindingForm item={item} onclosemodal={this.onFormClose}/> : ''}
+      {this.state.showmodal ? <LostsModal item={item} onclosemodal={this.onModalClose}/> : ''}
+      {this.state.showform ? <FindingForm item={item} onclosemodal={this.onFormClose}/> : ''}
+      {this.state.shownews ? <KadonnutNews onHide={this.onNewsHide} item={item}/> : ''}
 
-        <div className="row">
-          <div className="col-md-5 col-sm-5">
-            <Carousel indicators={false} controls={true} interval={this.props.interval}>
-              {item.thumbnails.map((src, ind) => {
-                  var clazz = 'img-rounded img-responsive center-block fixed-height';
-                  var keyindex = 'carousel_' + ind;
-                  return (
-                    <CarouselItem key={keyindex}>
-                      <img key={ind} className={clazz} src={src}/>
-                    </CarouselItem>
-                  )
-                }
-              )}
-            </Carousel>
-          </div>
-          <div className="col-md-7 col-sm-7">
-            <div className="caption">
-              <h3>{item.name}</h3>
+      <div className="row">
+        <div className="col-md-5 col-sm-5">
+          <Carousel indicators={false} controls={true} interval={this.props.interval}>
+            {item.thumbnails.map((src, ind) => {
+                var clazz = 'img-rounded img-responsive center-block fixed-height';
+                var keyindex = 'carousel_' + ind;
+                return (
+                  <CarouselItem key={keyindex}>
+                    <img key={ind} className={clazz} src={src}/>
+                  </CarouselItem>
+                )
+              }
+            )}
+          </Carousel>
+        </div>
+        <div className="col-md-7 col-sm-7">
+          <div className="caption">
+            <h3>{item.name}</h3>
 
-              <div dangerouslySetInnerHTML={{__html: formattedDescription}}/>
-              <p>
-                <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla
-                  ({this.props.item.findings.length})</Button>
-                <Button bsStyle="success" onClick={self.onFormOpen}>Ilmoita havainnosta</Button>
-              </p>
-              {self.state.kadonnutTime === 0 ? '' : <p className="text-primary">Kadonneena<br/>{this.getKadonnut()}</p>}
+            <div dangerouslySetInnerHTML={{__html: formattedDescription}}/>
+            <div className="btn-group">
+              <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla
+                ({this.props.item.findings.length})</Button>
+              <Button bsStyle="info" onClick={this.onNewsOpen}>Uutiset henkilöstä {item.name}</Button>
+              <Button bsStyle="success" onClick={self.onFormOpen}>Ilmoita havainnosta</Button>
             </div>
+            {self.state.kadonnutTime === 0 ? '' : <p className="text-primary">Kadonneena<br/>{this.getKadonnut()}</p>}
           </div>
         </div>
       </div>
+    </div>
   }
 
 }
