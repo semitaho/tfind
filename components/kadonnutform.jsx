@@ -7,6 +7,7 @@ import Map from './map.jsx';
 import Spinner from './spinner.jsx';
 import Next from './forms/next.jsx';
 import ConfirmDialog from './modals/confirmDialog.jsx';
+
 class KadonnutForm extends React.Component {
   constructor() {
     super();

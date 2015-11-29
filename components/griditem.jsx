@@ -3,6 +3,7 @@ import {Button, Carousel, CarouselItem} from 'react-bootstrap';
 import LostsModal from './lostsmodal.jsx';
 import FindingForm from './findingform.jsx';
 import KadonnutNews from './kadonnutNews.jsx';
+import TextFormatter from './../utils/textformatter.js';
 class GridItem extends React.Component {
 
   constructor() {
@@ -96,7 +97,7 @@ class GridItem extends React.Component {
   render() {
     var item = this.props.item;
     var self = this;
-    let formattedDescription = item.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
+    let formattedDescription = TextFormatter.formatToHTML(item.description);
     return <div className="thumbnail text-left">
       {this.state.showmodal ? <LostsModal item={item} onclosemodal={this.onModalClose}/> : ''}
       {this.state.showform ? <FindingForm item={item} onclosemodal={this.onFormClose}/> : ''}

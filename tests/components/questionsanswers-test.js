@@ -1,6 +1,3 @@
-
- //jest.dontMock('../../components/questionsanswers.jsx');
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 

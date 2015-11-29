@@ -1,14 +1,25 @@
 @import 'variables'
 @import 'animation'
 
+html
+  min-height 100%
+  position relative
 body
-  background-color backgroundcolor
+  background-image url('../images/forest.jpg')
+  background-repeat no-repeat
+  background-size 100%
+  background-attachment fixed
+  background-color rgba(0,0,0,0.4)
+  margin-bottom 50px
 
 #facebook
   max-height 100%
 
 .content
   animation fadein 1.5s
+  background-color backgroundcolor
+  padding 10px
+
 
 .fadein
   animation fadein 2s
@@ -61,7 +72,7 @@ body
   opacity 0.2
 
 .search-modal
-  width 100%
+  width 95%
 
 .search-results
   bottom 0
@@ -83,5 +94,7 @@ body
   bottom 0 
   right 0
 
-footer .row
+#footer
+  position absolute
+  bottom 0
   background-color #f5f5f5

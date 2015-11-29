@@ -34,8 +34,8 @@ export default class KadonneetSearchMap extends React.Component {
   renderQuestion() {
     return (<div><h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
 
-      <div className="btn-group center-block row">
-        <div className="col-md-10">
+      <div className="center-block row">
+        <div className="col-md-12 btn-group">
           <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
           <button type="button" className="btn btn-success btn-md" onClick={this.markToMap}>Merkitse karttaan</button>
           <button type="button" className="btn btn-primary btn-md" onClick={this.startSearching}>Aloita jäljittäminen

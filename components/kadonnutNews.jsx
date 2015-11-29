@@ -1,5 +1,6 @@
 import React from 'react';
 import {Modal} from 'react-bootstrap';
+import TextFormatter from './../utils/textformatter.js';
 
 class KadonnutNews extends React.Component {
   constructor() {
@@ -15,7 +16,10 @@ class KadonnutNews extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {this.state.data && this.state.data.length > 0 ? <div>{this.state.data.map(dataitem => {
-            return <p><span dangerouslySetInnerHTML={{__html: dataitem.message}} /></p>
+            return <p><dl>
+                      <dt>{TextFormatter.formatTime(new Date(dataitem.created_time).getTime()) }</dt>
+                      <dd dangerouslySetInnerHTML={{__html: TextFormatter.formatToHTML(TextFormatter.formatLinks(dataitem.message))}} />
+                    </dl></p>
           })}</div> : ''}
 
         </Modal.Body>
@@ -34,8 +38,10 @@ class KadonnutNews extends React.Component {
             return false;
           }
           let filteredName = this.props.item.name.toLowerCase();
+          let surname = filteredName.split(' ')[1];
+          console.log('surname', surname);
           let text = item.message.toLowerCase();
-          if (text.indexOf(filteredName) > -1) {
+          if (text.indexOf(filteredName) > -1 || text.indexOf(surname) > -1) {
             return true;
           }
           return false;

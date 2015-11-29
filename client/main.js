@@ -4,12 +4,15 @@ import LostsGrid from '../components/lostsgrid.jsx';
 import FindingForm from '../components/findingform.jsx';
 import KadonnutForm from '../components/kadonnutform.jsx';
 import KadonneetList from '../components/kadonneetlist.jsx';
+import KadonneetKartalla from '../components/kadonneetkartalla.jsx';
+
 import Navigation from '../components/navigation.jsx';
 
 var main = document.getElementById('losts'),
   form = document.getElementById('findingform'),
   kadonnut = document.getElementById('kadonnutform'),
   nav = document.getElementById('navigation'),
+  kadonneetkartalla = document.getElementById('kadonneetkartalla'),
   kadonneetlist = document.getElementById('kadonneetlist');
 
 var losts = [];
@@ -36,6 +39,8 @@ if (form) {
 if (kadonnut) {
   ReactDOM.render(<KadonnutForm />, kadonnut);
 }
+
+ReactDOM.render(<KadonneetKartalla />, kadonneetkartalla);
 
 if (kadonneetlist){
   ReactDOM.render(<KadonneetList items={kadonneetItems} />, kadonneetlist);

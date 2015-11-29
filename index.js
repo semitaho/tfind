@@ -11,6 +11,7 @@ import lostsgrid from './components/lostsgrid.jsx';
 import kadonneetlistjsx from './components/kadonneetlist.jsx';
 import kadonnutFormjsx from './components/kadonnutform.jsx';
 import nav from './components/navigation.jsx';
+import kadonneetkartallajsx from './components/kadonneetkartalla.jsx';
 
 let app = express();
 let upload = multer({dest: './public/files'});
@@ -20,6 +21,7 @@ var Navigation = React.createFactory(nav),
   Findingform = React.createFactory(findingFormJsx),
   KadonnutForm = React.createFactory(kadonnutFormjsx),
   UKKForm = React.createFactory(ukkformjsx),
+  KadonneetKartalla = React.createFactory(kadonneetkartallajsx),
   KadonneetList = React.createFactory(kadonneetlistjsx);
 
 app.set('port', (process.env.PORT || 8080));
@@ -124,18 +126,33 @@ mongoConnection.then(db => {
 
     });
 
+  }).get('/kadonneetkartalla', (req,res) => {
+    collections.kadonneet.find().toArray(function (err, docs) {
+      if (err) {
+        res.error();
+        return;
+      }
+      res.render('kadonneetkartalla', {
+        items: docs,
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
+        kadonneetkartalla: ReactDOMServer.renderToString(KadonneetKartalla({items: docs}))
+      });
+
+    });
+
+
   }).get('/etsi', (req, res) => {
     collections.kadonneet.find({}, {name: 1, imgsrc: 1}).sort({name: 1}).toArray((err, docs) => {
       res.render('etsi', {
         kadonneet: docs,
         kadonneetlist: ReactDOMServer.renderToString(KadonneetList({items: docs})),
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2}))
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 3}))
       });
     });
 
   }).get('/ilmoita', (req, res) => {
     res.render('lisaakadonnut', {
-      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
+      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2})),
       kadonnutform: ReactDOMServer.renderToString(KadonnutForm({}))
     });
   }).get('/ukk', (req, res) => {
@@ -145,7 +162,7 @@ mongoConnection.then(db => {
         return;
       }
       res.render('ukk', {
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 3})),
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 4})),
         ukkform: ReactDOMServer.renderToString(UKKForm({items: docs}))
       });
     });

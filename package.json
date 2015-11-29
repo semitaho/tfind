@@ -16,7 +16,7 @@
     "watch:css": "node_modules/.bin/stylus -w -u nib stylus/tfind.styl -o public/css/tfind.css",
     "build": "npm run build:css && node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
     "local": "npm run build && npm run watch:css & npm start",
-    "watch": "npm run watch:css &  nodemon -e jsx,js,json -w ./index.js -w ./components -w ./resources -w ./client --exec npm run babeldev"
+    "watch": "npm run watch:css &  nodemon -e jsx,js,json -w ./index.js -w utils -w ./components -w ./resources -w ./client --exec npm run babeldev"
   },
   "jest": {
     "testDirectoryName": "tests",
@@ -29,21 +29,11 @@
       "es6",
       "jsx"
     ],
-    "browserify": {
-      "transform": [
-        [
-          "babelify",
-          {
-            "stage": [
-              0
-            ]
-          }
-        ]
-      ]
-    },
+   
     "scriptPreprocessor": "preprocessor.js",
     "unmockedModulePathPatterns": [
       "components",
+      "utils",
       "node_modules/react",
       "node_modules/react-bootstrap",
       "node_modules/react-bootstrap-datetimepicker",
