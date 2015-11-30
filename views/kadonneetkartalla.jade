@@ -1,0 +1,7 @@
+extends ./layout.jade
+block content
+  #kadonneetkartalla.content!= kadonneetkartalla
+  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByzQDlFO3HK8MQmkCMpZ9Wzg-hyECUKNI")
+  script.
+    var items = !{JSON.stringify(items)}
+
