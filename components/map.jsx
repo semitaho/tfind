@@ -12,7 +12,7 @@ class Map extends React.Component {
 
   render() {
     return (
-      <div ref="map" id="map-havainnot"></div>
+      <div ref="map" id={this.props.id}></div>
     );
 
   }
@@ -25,21 +25,26 @@ class Map extends React.Component {
   componentDidMount() {
     this.geocoder = new google.maps.Geocoder;
 
-    console.log('on did mount');
     var mapOptions = {
       draggable: false,
-      scrollwheel: false,
+      scrollwheel: this.props.scrollwheel,
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom
     };
-    console.log('length', this.props.findings);
     if (this.props.findings && this.props.findings.length > 0 ){
       let center = this.calculateCenter(this.props.findings);
       mapOptions.center = center;
       this.renderMap(mapOptions);
-      this.createMarkers();
+      this.createMarkers(this.props.findings);
       this.createRoute();
     }
+
+    else if (this.props.kadonneet && this.props.kadonneet.length > 0){
+      mapOptions.center = {lat: 65.7770391, lng: 27.1159877};
+      this.renderMap(mapOptions);
+      this.createKadonneet();
+    }
+
     else if (this.props.center){
       console.log('center');
       mapOptions.center = this.props.center;
@@ -104,12 +109,13 @@ class Map extends React.Component {
         lng: findings[0].lng
       };
     }
+
     var latSum = findings.reduce((prev, current, index, array) => {
-      return current.lat + prev.lat;
-    });
+      return current.lat + prev;
+    },0);
     var lngSum = findings.reduce((prev, current, index, array) => {
-      return current.lng + prev.lng;
-    });
+      return current.lng + prev;
+    },0);
     var finding = findings[findings.length - 1];
     return {lat: latSum / findings.length, lng: lngSum / findings.length};
   }
@@ -138,7 +144,47 @@ class Map extends React.Component {
     this.createRoute(latlng);
   }
 
-  createMarkers() {
+  createKadonneet(){
+    var infowindow = new google.maps.InfoWindow();
+
+    this.props.kadonneet.forEach(finding => {
+        console.log('findingType', finding.type);
+        var markerIcon = {
+          scale: 7,
+          path: google.maps.SymbolPath.CIRCLE
+        };
+        var coordinates = finding.findings.find(point => point.type === '1');
+        var marker = new google.maps.Marker({
+          draggable: false,
+          icon: markerIcon,
+          position: {
+            lat: coordinates.lat,
+            lng: coordinates.lng
+          },
+          map: this.map
+        });
+        let content= '<div> '+
+                   '   <div>'+
+                   '    <h4>'+finding.name+' <small>Kadonnut 13.11.2015</small></h4>'+
+                   '    '+
+                   '   </div>'+
+                   '     <div class="clearfix content-heading">'+
+                   '     <img class="img-havainto img-span pull-left" src="'+finding.imgsrc+'" />'+
+                   '     <p>'+finding.description+'</p>'+
+                   '   </div>'+
+                   ' </div>';
+        marker.addListener('click', e => {
+          this.map.setCenter({lat: coordinates.lat, lng: coordinates.lng});
+          infowindow.close();
+          infowindow.setContent(content)
+          infowindow.open(this.map, marker);
+        });
+
+      }
+    )
+  }
+
+  createMarkers(findings) {
     var self = this;
 
     var cross = {
@@ -150,7 +196,7 @@ class Map extends React.Component {
       strokeWeight: 3
     };
 
-    this.props.findings.forEach(finding => {
+    findings.forEach(finding => {
         console.log('findingType', finding.type);
         var markerIcon = null;
         switch (finding.type) {
@@ -185,6 +231,8 @@ class Map extends React.Component {
       }
     )
   }
+
+ 
 
   createRoute(latlng) {
     if (this.line) {
@@ -246,5 +294,5 @@ class Map extends React.Component {
 
 }
 
-Map.defaultProps = {initialZoom: 12};
+Map.defaultProps = {id: 'map-havainnot', scrollwheel: false, initialZoom: 12};
 export default Map;

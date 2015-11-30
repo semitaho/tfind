@@ -67,7 +67,7 @@ if (kadonnut) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonnutformJsx2['default'], null), kadonnut);
 }
 
-_reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaJsx2['default'], null), kadonneetkartalla);
+_reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaJsx2['default'], { items: losts }), kadonneetkartalla);
 
 if (kadonneetlist) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetlistJsx2['default'], { items: kadonneetItems }), kadonneetlist);
@@ -1105,7 +1105,7 @@ var KadonneetKartalla = (function (_React$Component) {
   _createClass(KadonneetKartalla, [{
     key: 'render',
     value: function render() {
-      return _react2['default'].createElement(_mapJsx2['default'], null);
+      return _react2['default'].createElement(_mapJsx2['default'], { id: 'map-kadonneet', kadonneet: this.props.items, initialZoom: 4 });
     }
   }]);
 
@@ -1932,7 +1932,7 @@ var Map = (function (_React$Component) {
   _createClass(Map, [{
     key: 'render',
     value: function render() {
-      return _react2['default'].createElement('div', { ref: 'map', id: 'map-havainnot' });
+      return _react2['default'].createElement('div', { ref: 'map', id: this.props.id });
     }
   }, {
     key: 'renderMap',
@@ -1947,20 +1947,22 @@ var Map = (function (_React$Component) {
 
       this.geocoder = new google.maps.Geocoder();
 
-      console.log('on did mount');
       var mapOptions = {
         draggable: false,
-        scrollwheel: false,
+        scrollwheel: this.props.scrollwheel,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         zoom: this.props.initialZoom
       };
-      console.log('length', this.props.findings);
       if (this.props.findings && this.props.findings.length > 0) {
         var center = this.calculateCenter(this.props.findings);
         mapOptions.center = center;
         this.renderMap(mapOptions);
-        this.createMarkers();
+        this.createMarkers(this.props.findings);
         this.createRoute();
+      } else if (this.props.kadonneet && this.props.kadonneet.length > 0) {
+        mapOptions.center = { lat: 65.7770391, lng: 27.1159877 };
+        this.renderMap(mapOptions);
+        this.createKadonneet();
       } else if (this.props.center) {
         console.log('center');
         mapOptions.center = this.props.center;
@@ -2029,12 +2031,13 @@ var Map = (function (_React$Component) {
           lng: findings[0].lng
         };
       }
+
       var latSum = findings.reduce(function (prev, current, index, array) {
-        return current.lat + prev.lat;
-      });
+        return current.lat + prev;
+      }, 0);
       var lngSum = findings.reduce(function (prev, current, index, array) {
-        return current.lng + prev.lng;
-      });
+        return current.lng + prev;
+      }, 0);
       var finding = findings[findings.length - 1];
       return { lat: latSum / findings.length, lng: lngSum / findings.length };
     }
@@ -2064,8 +2067,42 @@ var Map = (function (_React$Component) {
       this.createRoute(latlng);
     }
   }, {
+    key: 'createKadonneet',
+    value: function createKadonneet() {
+      var _this3 = this;
+
+      var infowindow = new google.maps.InfoWindow();
+
+      this.props.kadonneet.forEach(function (finding) {
+        console.log('findingType', finding.type);
+        var markerIcon = {
+          scale: 7,
+          path: google.maps.SymbolPath.CIRCLE
+        };
+        var coordinates = finding.findings.find(function (point) {
+          return point.type === '1';
+        });
+        var marker = new google.maps.Marker({
+          draggable: false,
+          icon: markerIcon,
+          position: {
+            lat: coordinates.lat,
+            lng: coordinates.lng
+          },
+          map: _this3.map
+        });
+        var content = '<div> ' + '   <div>' + '    <h4>' + finding.name + ' <small>Kadonnut 13.11.2015</small></h4>' + '    ' + '   </div>' + '     <div class="clearfix content-heading">' + '     <img class="img-havainto img-span pull-left" src="' + finding.imgsrc + '" />' + '     <p>' + finding.description + '</p>' + '   </div>' + ' </div>';
+        marker.addListener('click', function (e) {
+          _this3.map.setCenter({ lat: coordinates.lat, lng: coordinates.lng });
+          infowindow.close();
+          infowindow.setContent(content);
+          infowindow.open(_this3.map, marker);
+        });
+      });
+    }
+  }, {
     key: 'createMarkers',
-    value: function createMarkers() {
+    value: function createMarkers(findings) {
       var self = this;
 
       var cross = {
@@ -2077,7 +2114,7 @@ var Map = (function (_React$Component) {
         strokeWeight: 3
       };
 
-      this.props.findings.forEach(function (finding) {
+      findings.forEach(function (finding) {
         console.log('findingType', finding.type);
         var markerIcon = null;
         switch (finding.type) {
@@ -2175,7 +2212,7 @@ var Map = (function (_React$Component) {
   return Map;
 })(_react2['default'].Component);
 
-Map.defaultProps = { initialZoom: 12 };
+Map.defaultProps = { id: 'map-havainnot', scrollwheel: false, initialZoom: 12 };
 exports['default'] = Map;
 module.exports = exports['default'];
 
