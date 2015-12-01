@@ -255,7 +255,7 @@ export default class KadonneetSearchMap extends React.Component {
   initMap(coordinates) {
     console.log(coordinates);
     var mapOptions = {
-      draggable: false,
+      draggable: true,
       disableDefaultUI: true,
       scrollwheel: false,
       zoomControl: true,
