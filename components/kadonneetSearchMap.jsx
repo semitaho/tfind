@@ -35,7 +35,7 @@ export default class KadonneetSearchMap extends React.Component {
     return (<div><h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
 
       <div className="center-block row">
-        <div className="col-md-12 btn-group">
+        <div className="col-md-12 btn-toolbar">
           <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
           <button type="button" className="btn btn-success btn-md" onClick={this.markToMap}>Merkitse karttaan</button>
           <button type="button" className="btn btn-primary btn-md" onClick={this.startSearching}>Aloita jäljittäminen
@@ -341,7 +341,7 @@ export default class KadonneetSearchMap extends React.Component {
 
 KadonneetSearchMap.defaultProps = {
   initialZoom: 14,
-  radius: 1000,
+  radius: 500,
   searchResults: [{value: 1, label: 'Ei havaintoa'}, {value: 2, label: 'Löydetty elävänä'}, {
     value: 3,
     label: 'Löydetty kuolleena'

@@ -66,9 +66,9 @@ if (form) {
 if (kadonnut) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonnutformJsx2['default'], null), kadonnut);
 }
-
-_reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaJsx2['default'], { items: losts }), kadonneetkartalla);
-
+if (kadonneetkartalla) {
+  _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaJsx2['default'], { items: losts }), kadonneetkartalla);
+}
 if (kadonneetlist) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetlistJsx2['default'], { items: kadonneetItems }), kadonneetlist);
 }
@@ -206,7 +206,6 @@ var FindingForm = (function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-
       var hideDescriptionClass = this.generateHideClass("tyyppi");
       var hideAjankohtaClass = this.generateHideClass('description');
       var hideMap = this.generateHideClass('timestamp') !== '' ? true : false;
@@ -669,7 +668,7 @@ var KadonneetSearchMap = (function (_React$Component) {
           { className: 'center-block row' },
           _react2['default'].createElement(
             'div',
-            { className: 'col-md-12 btn-group' },
+            { className: 'col-md-12 btn-toolbar' },
             _react2['default'].createElement(
               'button',
               { type: 'button', className: 'btn btn-default btn-md', onClick: this.props.onclose },
@@ -1060,7 +1059,7 @@ exports['default'] = KadonneetSearchMap;
 
 KadonneetSearchMap.defaultProps = {
   initialZoom: 14,
-  radius: 1000,
+  radius: 500,
   searchResults: [{ value: 1, label: 'Ei havaintoa' }, { value: 2, label: 'Löydetty elävänä' }, {
     value: 3,
     label: 'Löydetty kuolleena'

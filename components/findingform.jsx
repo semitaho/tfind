@@ -80,7 +80,6 @@ class FindingForm extends React.Component {
   }
 
   render() {
-
     var hideDescriptionClass = this.generateHideClass("tyyppi");
     var hideAjankohtaClass = this.generateHideClass('description');
     var hideMap = this.generateHideClass('timestamp') !== '' ? true : false;

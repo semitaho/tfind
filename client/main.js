@@ -39,9 +39,9 @@ if (form) {
 if (kadonnut) {
   ReactDOM.render(<KadonnutForm />, kadonnut);
 }
-
-ReactDOM.render(<KadonneetKartalla items={losts} />, kadonneetkartalla);
-
+if (kadonneetkartalla){
+  ReactDOM.render(<KadonneetKartalla items={losts} />, kadonneetkartalla);
+}
 if (kadonneetlist){
   ReactDOM.render(<KadonneetList items={kadonneetItems} />, kadonneetlist);
 }
