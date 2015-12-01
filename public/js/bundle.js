@@ -744,9 +744,18 @@ var KadonneetSearchMap = (function (_React$Component) {
             'div',
             { className: 'col-md-4 col-xs-6' },
             _react2['default'].createElement(
-              'button',
-              { onClick: confirmSaveMarking, className: 'btn btn-primary pull-right' },
-              'Tallenna'
+              'div',
+              { className: 'btn-toolbar pull-right' },
+              _react2['default'].createElement(
+                'button',
+                { onClick: this.props.onclose, className: 'btn btn-default' },
+                'Sulje'
+              ),
+              _react2['default'].createElement(
+                'button',
+                { onClick: confirmSaveMarking, className: 'btn btn-primary' },
+                'Tallenna'
+              )
             )
           )
         )
@@ -958,6 +967,11 @@ var KadonneetSearchMap = (function (_React$Component) {
         draggable: false,
         disableDefaultUI: true,
         scrollwheel: false,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_TOP,
+          style: google.maps.ZoomControlStyle.LARGE
+        },
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         zoom: this.props.initialZoom,
         center: { lat: coordinates.latitude, lng: coordinates.longitude }
@@ -1058,7 +1072,7 @@ var KadonneetSearchMap = (function (_React$Component) {
 exports['default'] = KadonneetSearchMap;
 
 KadonneetSearchMap.defaultProps = {
-  initialZoom: 14,
+  initialZoom: 12,
   radius: 500,
   searchResults: [{ value: 1, label: 'Ei havaintoa' }, { value: 2, label: 'Löydetty elävänä' }, {
     value: 3,
@@ -1947,7 +1961,14 @@ var Map = (function (_React$Component) {
       this.geocoder = new google.maps.Geocoder();
 
       var mapOptions = {
-        draggable: false,
+        draggable: true,
+        scaleControl: false,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_TOP,
+          style: google.maps.ZoomControlStyle.LARGE
+        },
+        disableDefaultUI: true,
         scrollwheel: this.props.scrollwheel,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         zoom: this.props.initialZoom
@@ -2090,7 +2111,8 @@ var Map = (function (_React$Component) {
           },
           map: _this3.map
         });
-        var content = '<div> ' + '   <div>' + '    <h4>' + finding.name + ' <small>Kadonnut 13.11.2015</small></h4>' + '    ' + '   </div>' + '     <div class="clearfix content-heading">' + '     <img class="img-havainto img-span pull-left" src="' + finding.imgsrc + '" />' + '     <p>' + finding.description + '</p>' + '   </div>' + ' </div>';
+        var content = '<div> ' + '   <div>' + '    <h4>' + finding.name + ' <small>Kadonnut 13.11.2015</small></h4>' + '    ' + '   </div>' + '     <div class="clearfix content-heading">' + '     <img class="img-havainto img-span pull-left" src="' + finding.imgsrc + '" />' + '     <p>' + finding.description + '</p>' + '   </div>' + '   <footer><a href="/kadonneet/' + finding._id + '">Avaa profiili</a></footer> ';
+        ' </div>';
         marker.addListener('click', function (e) {
           _this3.map.setCenter({ lat: coordinates.lat, lng: coordinates.lng });
           infowindow.close();

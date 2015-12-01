@@ -26,7 +26,14 @@ class Map extends React.Component {
     this.geocoder = new google.maps.Geocoder;
 
     var mapOptions = {
-      draggable: false,
+      draggable: true,
+      scaleControl: false,
+      zoomControl: true,
+      zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_TOP,
+        style: google.maps.ZoomControlStyle.LARGE
+      },
+      disableDefaultUI: true,
       scrollwheel: this.props.scrollwheel,
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom
@@ -169,9 +176,10 @@ class Map extends React.Component {
                    '    '+
                    '   </div>'+
                    '     <div class="clearfix content-heading">'+
-                   '     <img class="img-havainto img-span pull-left" src="'+finding.imgsrc+'" />'+
-                   '     <p>'+finding.description+'</p>'+
+                     '     <img class="img-havainto img-span pull-left" src="'+finding.imgsrc+'" />'+
+                      '     <p>'+finding.description+'</p>'+
                    '   </div>'+
+                   '   <footer><a href="/kadonneet/'+ finding._id+'">Avaa profiili</a></footer> '
                    ' </div>';
         marker.addListener('click', e => {
           this.map.setCenter({lat: coordinates.lat, lng: coordinates.lng});

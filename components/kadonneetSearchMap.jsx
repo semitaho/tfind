@@ -83,7 +83,10 @@ export default class KadonneetSearchMap extends React.Component {
           Etsitty kohteesta <strong>{this.state.location}</strong> säteellä {this.state.radius} m.
         </div>
         <div className="col-md-4 col-xs-6">
-          <button onClick={confirmSaveMarking} className="btn btn-primary pull-right">Tallenna</button>
+          <div className="btn-toolbar pull-right">
+            <button onClick={this.props.onclose} className="btn btn-default">Sulje</button>
+            <button onClick={confirmSaveMarking} className="btn btn-primary">Tallenna</button>
+          </div>
         </div>
       </div>
     </Modal.Header>)
@@ -255,6 +258,11 @@ export default class KadonneetSearchMap extends React.Component {
       draggable: false,
       disableDefaultUI: true,
       scrollwheel: false,
+      zoomControl: true,
+      zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_TOP,
+        style: google.maps.ZoomControlStyle.LARGE
+      },
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom,
       center: {lat: coordinates.latitude, lng: coordinates.longitude}
@@ -340,7 +348,7 @@ export default class KadonneetSearchMap extends React.Component {
 }
 
 KadonneetSearchMap.defaultProps = {
-  initialZoom: 14,
+  initialZoom: 12,
   radius: 500,
   searchResults: [{value: 1, label: 'Ei havaintoa'}, {value: 2, label: 'Löydetty elävänä'}, {
     value: 3,
