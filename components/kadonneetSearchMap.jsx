@@ -4,8 +4,10 @@ import $ from 'jquery';
 import {Modal,FormControls, Input} from 'react-bootstrap';
 
 import Spinner from './spinner.jsx';
+import ItemUtils from './../utils/itemutils.js';
 import ConfirmDialog from './modals/confirmDialog.jsx';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
+
 
 export default class KadonneetSearchMap extends React.Component {
   constructor() {
@@ -31,9 +33,9 @@ export default class KadonneetSearchMap extends React.Component {
     return (<Spinner dimm={prop}/>)
   }
 
+
   renderQuestion() {
     return (<div><h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
-
       <div className="center-block row">
         <div className="col-md-12 btn-toolbar">
           <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
@@ -293,8 +295,25 @@ export default class KadonneetSearchMap extends React.Component {
     this.updateLocation(this.marker)
   }
 
+  drawKatoamispaikka(){
+    let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
+    let markerIcon = {
+      scale: 7,
+      animation: google.maps.Animation.DROP,
+      path: google.maps.SymbolPath.CIRCLE
+    };
+    this.katoamis = new google.maps.Marker({
+      position: {lat: katoamisLoc.lat, lng: katoamisLoc.lng},
+      map: this.map,
+      animation: google.maps.Animation.DROP,
+      icon: markerIcon
+    });
+  }
+
   markToMap() {
+    this.drawKatoamispaikka();
     this.state.radius = this.props.radius;
+
     this.drawCircle(this.marker.getPosition());
     this.updateLocation((this.marker.getPosition()));
 

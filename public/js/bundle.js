@@ -579,7 +579,7 @@ GridItem.defaultProps = { interval: 0 };
 exports['default'] = GridItem;
 module.exports = exports['default'];
 
-},{"./../utils/textformatter.js":524,"./findingform.jsx":2,"./kadonnutNews.jsx":8,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],5:[function(require,module,exports){
+},{"./../utils/textformatter.js":525,"./findingform.jsx":2,"./kadonnutNews.jsx":8,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -613,6 +613,10 @@ var _reactBootstrap = require('react-bootstrap');
 var _spinnerJsx = require('./spinner.jsx');
 
 var _spinnerJsx2 = _interopRequireDefault(_spinnerJsx);
+
+var _utilsItemutilsJs = require('./../utils/itemutils.js');
+
+var _utilsItemutilsJs2 = _interopRequireDefault(_utilsItemutilsJs);
 
 var _modalsConfirmDialogJsx = require('./modals/confirmDialog.jsx');
 
@@ -964,7 +968,7 @@ var KadonneetSearchMap = (function (_React$Component) {
     value: function initMap(coordinates) {
       console.log(coordinates);
       var mapOptions = {
-        draggable: false,
+        draggable: true,
         disableDefaultUI: true,
         scrollwheel: false,
         zoomControl: true,
@@ -1004,11 +1008,29 @@ var KadonneetSearchMap = (function (_React$Component) {
       this.updateLocation(this.marker);
     }
   }, {
+    key: 'drawKatoamispaikka',
+    value: function drawKatoamispaikka() {
+      var katoamisLoc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(this.props.item);
+      var markerIcon = {
+        scale: 7,
+        animation: google.maps.Animation.DROP,
+        path: google.maps.SymbolPath.CIRCLE
+      };
+      this.katoamis = new google.maps.Marker({
+        position: { lat: katoamisLoc.lat, lng: katoamisLoc.lng },
+        map: this.map,
+        animation: google.maps.Animation.DROP,
+        icon: markerIcon
+      });
+    }
+  }, {
     key: 'markToMap',
     value: function markToMap() {
       var _this3 = this;
 
+      this.drawKatoamispaikka();
       this.state.radius = this.props.radius;
+
       this.drawCircle(this.marker.getPosition());
       this.updateLocation(this.marker.getPosition());
 
@@ -1081,7 +1103,7 @@ KadonneetSearchMap.defaultProps = {
 };
 module.exports = exports['default'];
 
-},{"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],6:[function(require,module,exports){
+},{"./../utils/itemutils.js":524,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1319,7 +1341,7 @@ var KadonnutNews = (function (_React$Component) {
 exports['default'] = KadonnutNews;
 module.exports = exports['default'];
 
-},{"./../utils/textformatter.js":524,"react":523,"react-bootstrap":200}],9:[function(require,module,exports){
+},{"./../utils/textformatter.js":525,"react":523,"react-bootstrap":200}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1930,6 +1952,10 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _utilsItemutilsJs = require('./../utils/itemutils.js');
+
+var _utilsItemutilsJs2 = _interopRequireDefault(_utilsItemutilsJs);
+
 var Map = (function (_React$Component) {
   _inherits(Map, _React$Component);
 
@@ -2099,9 +2125,7 @@ var Map = (function (_React$Component) {
           scale: 7,
           path: google.maps.SymbolPath.CIRCLE
         };
-        var coordinates = finding.findings.find(function (point) {
-          return point.type === '1';
-        });
+        var coordinates = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(finding);
         var marker = new google.maps.Marker({
           draggable: false,
           icon: markerIcon,
@@ -2237,7 +2261,7 @@ Map.defaultProps = { id: 'map-havainnot', scrollwheel: false, initialZoom: 12 };
 exports['default'] = Map;
 module.exports = exports['default'];
 
-},{"react":523,"react-dom":367}],13:[function(require,module,exports){
+},{"./../utils/itemutils.js":524,"react":523,"react-dom":367}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2537,7 +2561,7 @@ var Spinner = (function (_React$Component) {
 exports['default'] = Spinner;
 module.exports = exports['default'];
 
-},{"../vendor/spin.js":525,"jquery":18,"react":523,"react-dom":367}],17:[function(require,module,exports){
+},{"../vendor/spin.js":526,"jquery":18,"react":523,"react-dom":367}],17:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -56314,6 +56338,37 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+var ItemUtils = (function () {
+  function ItemUtils() {
+    _classCallCheck(this, ItemUtils);
+  }
+
+  _createClass(ItemUtils, null, [{
+    key: 'findKatoamispaikkaLoc',
+    value: function findKatoamispaikkaLoc(item) {
+      return item.findings.find(function (point) {
+        return point.type === '1';
+      });
+    }
+  }]);
+
+  return ItemUtils;
+})();
+
+exports['default'] = ItemUtils;
+module.exports = exports['default'];
+
+},{}],525:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
 var TextFormatter = (function () {
   function TextFormatter() {
     _classCallCheck(this, TextFormatter);
@@ -56345,7 +56400,7 @@ var TextFormatter = (function () {
 exports['default'] = TextFormatter;
 module.exports = exports['default'];
 
-},{}],525:[function(require,module,exports){
+},{}],526:[function(require,module,exports){
 /**
  * Copyright (c) 2011-2014 Felix Gnass
  * Licensed under the MIT license

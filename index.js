@@ -142,7 +142,7 @@ mongoConnection.then(db => {
 
 
   }).get('/etsi', (req, res) => {
-    collections.kadonneet.find({}, {name: 1, imgsrc: 1}).sort({name: 1}).toArray((err, docs) => {
+    collections.kadonneet.find().sort({name: 1}).toArray((err, docs) => {
       res.render('etsi', {
         kadonneet: docs,
         kadonneetlist: ReactDOMServer.renderToString(KadonneetList({items: docs})),

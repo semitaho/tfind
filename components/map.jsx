@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import ItemUtils from './../utils/itemutils.js';
 class Map extends React.Component {
 
   constructor() {
@@ -160,7 +160,7 @@ class Map extends React.Component {
           scale: 7,
           path: google.maps.SymbolPath.CIRCLE
         };
-        var coordinates = finding.findings.find(point => point.type === '1');
+        var coordinates = ItemUtils.findKatoamispaikkaLoc(finding); 
         var marker = new google.maps.Marker({
           draggable: false,
           icon: markerIcon,
