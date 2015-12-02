@@ -9,6 +9,11 @@ class TextFormatter {
     return text.replace(exp, "<a href='$1' target='_blank'>$1</a>");
   }
 
+  static formatMeters(distance){
+    return distance.toFixed(2);
+
+  }
+
   static formatTime(timestamp){
     let dt = new Date(timestamp * 1);
     let time = dt.getDate() + '.' + (dt.getMonth() + 1) + '.' + dt.getFullYear() + ' ' + dt.getHours() + ':' + dt.getMinutes();

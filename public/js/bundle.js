@@ -73,7 +73,555 @@ if (kadonneetlist) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetlistJsx2['default'], { items: kadonneetItems }), kadonneetlist);
 }
 
-},{"../components/findingform.jsx":2,"../components/kadonneetkartalla.jsx":6,"../components/kadonneetlist.jsx":7,"../components/kadonnutform.jsx":9,"../components/lostsgrid.jsx":10,"../components/navigation.jsx":15,"react":523,"react-dom":367}],2:[function(require,module,exports){
+},{"../components/findingform.jsx":3,"../components/kadonneetkartalla.jsx":6,"../components/kadonneetlist.jsx":7,"../components/kadonnutform.jsx":9,"../components/lostsgrid.jsx":10,"../components/navigation.jsx":15,"react":523,"react-dom":367}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _reactBootstrap = require('react-bootstrap');
+
+var _spinnerJsx = require('./../spinner.jsx');
+
+var _spinnerJsx2 = _interopRequireDefault(_spinnerJsx);
+
+var _utilsItemutilsJs = require('./../../utils/itemutils.js');
+
+var _utilsItemutilsJs2 = _interopRequireDefault(_utilsItemutilsJs);
+
+var _utilsTextformatterJs = require('./../../utils/textformatter.js');
+
+var _utilsTextformatterJs2 = _interopRequireDefault(_utilsTextformatterJs);
+
+var _modalsConfirmDialogJsx = require('./../modals/confirmDialog.jsx');
+
+var _modalsConfirmDialogJsx2 = _interopRequireDefault(_modalsConfirmDialogJsx);
+
+var _reactBootstrapDatetimepicker = require('react-bootstrap-datetimepicker');
+
+var _reactBootstrapDatetimepicker2 = _interopRequireDefault(_reactBootstrapDatetimepicker);
+
+var KadonneetSearchMap = (function (_React$Component) {
+  _inherits(KadonneetSearchMap, _React$Component);
+
+  function KadonneetSearchMap() {
+    _classCallCheck(this, KadonneetSearchMap);
+
+    _get(Object.getPrototypeOf(KadonneetSearchMap.prototype), 'constructor', this).call(this);
+    this.gotLocation = this.gotLocation.bind(this);
+    this.geocoder = new google.maps.Geocoder();
+
+    this.startSearching = this.startSearching.bind(this);
+    this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
+    this.markToMap = this.markToMap.bind(this);
+    this.cancelConfirmMarking = this.cancelConfirmMarking.bind(this);
+
+    console.log('props', this.props);
+    this.state = { opened: true, loading: true };
+    this.polyline = new google.maps.Polyline({
+      strokeColor: '#000000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+  }
+
+  _createClass(KadonneetSearchMap, [{
+    key: 'renderSpinner',
+    value: function renderSpinner(prop) {
+      return _react2['default'].createElement(_spinnerJsx2['default'], { dimm: prop });
+    }
+  }, {
+    key: 'renderQuestion',
+    value: function renderQuestion() {
+      return _react2['default'].createElement(
+        'div',
+        null,
+        _react2['default'].createElement(
+          'h3',
+          null,
+          'Valitse etsintätapa henkilöstä ',
+          this.props.item.name
+        ),
+        _react2['default'].createElement(
+          'div',
+          { className: 'center-block row' },
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-12 btn-toolbar' },
+            _react2['default'].createElement(
+              'button',
+              { type: 'button', className: 'btn btn-default btn-md', onClick: this.props.onclose },
+              'Sulje'
+            ),
+            _react2['default'].createElement(
+              'button',
+              { type: 'button', className: 'btn btn-success btn-md', onClick: this.markToMap },
+              'Merkitse karttaan'
+            ),
+            _react2['default'].createElement(
+              'button',
+              { type: 'button', className: 'btn btn-primary btn-md', onClick: this.startSearching },
+              'Aloita jäljittäminen (vaatii HTML5 geotunnisteen)'
+            )
+          )
+        )
+      );
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var mapClass = this.state.opened ? 'grayable' : '';
+      return _react2['default'].createElement(
+        _reactBootstrap.Modal,
+        { dialogClassName: 'search-modal', show: true, bsSize: 'large', onHide: this.props.onclose },
+        this.state.opened === false && this.state.started ? this.renderTracking() : '',
+        this.state.opened === false && this.state.marking ? this.renderMarking() : '',
+        _react2['default'].createElement(
+          _reactBootstrap.Modal.Body,
+          null,
+          this.state.opened ? _react2['default'].createElement(
+            'div',
+            { className: 'opened' },
+            this.state.loading ? this.renderSpinner("kadonneet-search-map") : this.renderQuestion()
+          ) : '',
+          this.state.saveMarking ? this.renderMarkingConfirm() : '',
+          _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass })
+        )
+      );
+    }
+  }, {
+    key: 'renderMarking',
+    value: function renderMarking() {
+      var _this = this;
+
+      var confirmSaveMarking = function confirmSaveMarking(_) {
+        var d = new Date();
+        var n = d.getTime();
+        _this.setState({ saveMarking: true, ajankohtaTimestamp: n });
+      };
+
+      return _react2['default'].createElement(
+        _reactBootstrap.Modal.Header,
+        null,
+        _react2['default'].createElement(
+          'div',
+          { className: 'row' },
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-8 col-xs-6 small' },
+            _react2['default'].createElement(
+              'div',
+              null,
+              'Etsitty kohteesta ',
+              _react2['default'].createElement(
+                'strong',
+                null,
+                this.state.location
+              ),
+              ' säteellä ',
+              this.state.radius,
+              ' m.'
+            ),
+            _react2['default'].createElement(
+              'div',
+              null,
+              'Etäisyys katoamiskohteesta ',
+              _react2['default'].createElement(
+                'strong',
+                null,
+                this.state.katoamisdistance,
+                ' m'
+              )
+            )
+          ),
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-4 col-xs-6' },
+            _react2['default'].createElement(
+              'div',
+              { className: 'btn-toolbar pull-right' },
+              _react2['default'].createElement(
+                'button',
+                { onClick: this.props.onclose, className: 'btn btn-default' },
+                'Sulje'
+              ),
+              _react2['default'].createElement(
+                'button',
+                { onClick: confirmSaveMarking, className: 'btn btn-primary' },
+                'Tallenna'
+              )
+            )
+          )
+        )
+      );
+    }
+  }, {
+    key: 'renderMarkingConfirm',
+    value: function renderMarkingConfirm() {
+      var _this2 = this;
+
+      var ajankohtaChange = function ajankohtaChange(val) {
+        _this2.setState({ ajankohtaTimestamp: val });
+      };
+
+      var searchResultChange = function searchResultChange(event) {
+        _this2.setState({ searchResult: event.target.value });
+      };
+
+      var saveMarking = function saveMarking(_) {
+        _this2.setState({ saving: true });
+        var saveobj = {
+          _id: _this2.props.item._id,
+          radius: _this2.state.radius,
+          location: _this2.state.location,
+          searchResult: _this2.state.searchResult,
+          latLng: {
+            lat: _this2.marker.getPosition().lat(),
+            lng: _this2.marker.getPosition().lng()
+          },
+          ajankohtaTimestamp: _this2.state.ajankohtaTimestamp
+        };
+        _jquery2['default'].ajax({
+          type: "POST",
+          contentType: 'application/json; charset=utf-8',
+          url: '/savemarking',
+          data: JSON.stringify(saveobj),
+          success: function success(_) {
+            _this2.setState({ saving: false, saveMarking: false });
+            _this2.props.onclose();
+          }
+        });
+      };
+      return _react2['default'].createElement(
+        _modalsConfirmDialogJsx2['default'],
+        { onHide: this.cancelConfirmMarking, onSave: saveMarking },
+        this.state.saving ? this.renderSpinner('confirm-form') : '',
+        _react2['default'].createElement(
+          'form',
+          { className: 'form-horizontal', id: 'confirm-form' },
+          _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Nimi', value: this.props.item.name, labelClassName: 'col-md-4',
+            wrapperClassName: 'col-md-8' }),
+          _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Etsitty kohteesta', value: this.state.location, labelClassName: 'col-md-4',
+            wrapperClassName: 'col-md-8' }),
+          _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Etsintäsäde', value: this.state.radius + ' m', labelClassName: 'col-md-4',
+            wrapperClassName: 'col-md-8' }),
+          _react2['default'].createElement(
+            'div',
+            { className: 'form-group' },
+            _react2['default'].createElement(
+              'label',
+              { className: 'control-label col-md-4' },
+              'Etsintäajankohta'
+            ),
+            _react2['default'].createElement(
+              'div',
+              { className: 'col-md-8' },
+              _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { format: 'x', ref: 'time',
+                inputFormat: 'D.M.YYYY H:mm',
+                onChange: ajankohtaChange })
+            )
+          ),
+          _react2['default'].createElement(
+            _reactBootstrap.Input,
+            { type: 'select', labelClassName: 'col-md-4', wrapperClassName: 'col-md-8', label: 'Etsinnän tulos',
+              onChange: searchResultChange,
+              placeholder: '1' },
+            this.props.searchResults.map(function (item) {
+              return _react2['default'].createElement(
+                'option',
+                { value: item.value },
+                item.label
+              );
+            })
+          )
+        )
+      );
+    }
+  }, {
+    key: 'cancelConfirmMarking',
+    value: function cancelConfirmMarking() {
+      this.setState({ saveMarking: false });
+    }
+  }, {
+    key: 'renderTracking',
+    value: function renderTracking() {
+      return _react2['default'].createElement(
+        _reactBootstrap.Modal.Header,
+        null,
+        _react2['default'].createElement(
+          'div',
+          { className: 'row' },
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-8 col-xs-6 small' },
+            'Kuljettu matka ',
+            this.state.length,
+            ' m.'
+          ),
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-4 col-xs-6' },
+            _react2['default'].createElement(
+              'div',
+              { className: 'btn-group pull-right' },
+              _react2['default'].createElement(
+                'button',
+                { type: 'button', className: 'btn btn-default btn-sm', onClick: this.props.onclose },
+                'Peruuta etsintä'
+              ),
+              _react2['default'].createElement(
+                'button',
+                { type: 'button', className: 'btn btn-primary btn-sm' },
+                'Tallenna'
+              )
+            )
+          )
+        )
+      );
+    }
+  }, {
+    key: 'gotLocation',
+    value: function gotLocation(latlng) {
+      if (this.state.opened) {
+        this.initMap(latlng.coords);
+      }
+      if (!this.checkLatestPointsDistance(latlng.coords)) {
+        return;
+      }
+
+      var position = this.updateMarker(latlng.coords);
+      this.updateRoute(position);
+      if (this.state.loading) {
+        this.setState({ loading: false });
+      }
+      var length = this.calculateLength();
+      this.setState({ length: length });
+    }
+  }, {
+    key: 'calculateLength',
+    value: function calculateLength() {
+      var length = google.maps.geometry.spherical.computeLength(this.polyline.getPath().getArray());
+      return _utilsTextformatterJs2['default'].formatMeters(length);
+    }
+  }, {
+    key: 'checkLatestPointsDistance',
+    value: function checkLatestPointsDistance(latlng) {
+      var wholePath = this.polyline.getPath();
+      if (wholePath.getArray().length <= 1) {
+        return true;
+      }
+      var wholePath = this.polyline.getPath();
+      var lastPointLng = wholePath.getAt(wholePath.getLength() - 1);
+      var distance = google.maps.geometry.spherical.computeDistanceBetween(lastPointLng, new google.maps.LatLng(latlng.latitude, latlng.longitude));
+      if (distance < 10) {
+        return false;
+      }
+      return true;
+    }
+  }, {
+    key: 'updateMarker',
+    value: function updateMarker(location) {
+      if (this.marker) {
+        this.marker.setMap(null);
+      }
+      var position = { lat: location.latitude, lng: location.longitude };
+      this.marker = new google.maps.Marker({
+        position: position,
+        map: this.map,
+        title: 'Nykyinen sijainti'
+      });
+      this.map.setCenter(this.marker.getPosition());
+      return this.marker.position;
+    }
+  }, {
+    key: 'updateRoute',
+    value: function updateRoute(position) {
+      var path = this.polyline.getPath();
+      path.push(position);
+      console.log('route', this.polyline.getPath().getLength());
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      console.log('did un mount');
+      this.map = null;
+      if (this.watchId) {
+        navigator.geolocation.clearWatch(this.watchId);
+        console.log('watch cleared');
+      }
+    }
+  }, {
+    key: 'initMap',
+    value: function initMap(coordinates) {
+      console.log(coordinates);
+      var mapOptions = {
+        draggable: true,
+        disableDefaultUI: true,
+        scrollwheel: false,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_TOP,
+          style: google.maps.ZoomControlStyle.LARGE
+        },
+        mapTypeId: google.maps.MapTypeId.TERRAIN,
+        zoom: this.props.initialZoom,
+        center: { lat: coordinates.latitude, lng: coordinates.longitude }
+      };
+      var domNode = document.getElementById('kadonneet-search-map');
+      this.map = new google.maps.Map(domNode, mapOptions);
+      this.polyline.setMap(this.map);
+    }
+  }, {
+    key: 'onErrorGeocoding',
+    value: function onErrorGeocoding() {
+      alert('geolocation not supported');
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      };
+      this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
+      console.log('on did mount');
+    }
+  }, {
+    key: 'startSearching',
+    value: function startSearching() {
+      this.setState({ opened: false, started: true });
+      this.updateLocation(this.marker);
+    }
+  }, {
+    key: 'drawKatoamispaikka',
+    value: function drawKatoamispaikka() {
+      var katoamisLoc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(this.props.item);
+      var markerIcon = {
+        scale: 7,
+        animation: google.maps.Animation.DROP,
+        path: google.maps.SymbolPath.CIRCLE
+      };
+      this.katoamis = new google.maps.Marker({
+        position: { lat: katoamisLoc.lat, lng: katoamisLoc.lng },
+        map: this.map,
+        animation: google.maps.Animation.DROP,
+        icon: markerIcon
+      });
+    }
+  }, {
+    key: 'markToMap',
+    value: function markToMap() {
+      var _this3 = this;
+
+      this.drawKatoamispaikka();
+      var katoamisLoc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(this.props.item);
+      this.updateMarker({ latitude: katoamisLoc.lat, longitude: katoamisLoc.lng });
+
+      this.state.radius = this.props.radius;
+
+      this.drawCircle(this.marker.getPosition());
+      this.updateLocation(this.marker.getPosition());
+
+      this.map.addListener('click', function (e) {
+        console.log('e.', e.latLng);
+        _this3.updateMarker({ latitude: e.latLng.lat(), longitude: e.latLng.lng() });
+        _this3.updateLocation(e.latLng);
+        _this3.drawCircle(e.latLng);
+      });
+
+      this.setState({ opened: false, marking: true, radius: this.state.radius });
+    }
+  }, {
+    key: 'updateLocation',
+    value: function updateLocation(latlng) {
+      var _this4 = this;
+
+      this.geocoder.geocode({ 'location': latlng }, function (results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          if (results[0]) {
+            var markerPosition = _this4.katoamis.getPosition();
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(markerPosition.lat(), markerPosition.lng()), new google.maps.LatLng(latlng.lat(), latlng.lng()));
+            console.log('dist', distance);
+            _this4.setState({
+              location: results[0].formatted_address,
+              katoamisdistance: _utilsTextformatterJs2['default'].formatMeters(distance)
+            });
+          }
+        }
+      });
+    }
+  }, {
+    key: 'drawCircle',
+    value: function drawCircle(latlng) {
+      var _this5 = this;
+
+      if (this.cityCircle) {
+        this.cityCircle.setMap(null);
+      }
+      this.cityCircle = new google.maps.Circle({
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        map: this.map,
+        center: latlng,
+        radius: this.state.radius,
+        editable: true,
+        draggable: true
+      });
+      this.cityCircle.addListener('radius_changed', function (_) {
+        console.log('center', _this5.cityCircle.getRadius());
+        _this5.setState({ radius: Math.round(_this5.cityCircle.getRadius()) });
+      });
+      this.cityCircle.addListener('center_changed', function (_) {
+        var center = _this5.cityCircle.getCenter();
+        _this5.updateMarker({ latitude: center.lat(), longitude: center.lng() });
+        _this5.updateLocation(center);
+      });
+    }
+  }]);
+
+  return KadonneetSearchMap;
+})(_react2['default'].Component);
+
+exports['default'] = KadonneetSearchMap;
+
+KadonneetSearchMap.defaultProps = {
+  initialZoom: 12,
+  radius: 500,
+  searchResults: [{ value: 1, label: 'Ei havaintoa' }, { value: 2, label: 'Löydetty elävänä' }, {
+    value: 3,
+    label: 'Löydetty kuolleena'
+  }]
+};
+module.exports = exports['default'];
+
+},{"./../../utils/itemutils.js":524,"./../../utils/textformatter.js":525,"./../modals/confirmDialog.jsx":13,"./../spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -326,7 +874,7 @@ var FindingForm = (function (_React$Component) {
 exports['default'] = FindingForm;
 module.exports = exports['default'];
 
-},{"./map.jsx":12,"./modals/mapmodal.jsx":14,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],3:[function(require,module,exports){
+},{"./map.jsx":12,"./modals/mapmodal.jsx":14,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -357,7 +905,7 @@ var Next = function Next(props) {
 exports['default'] = Next;
 module.exports = exports['default'];
 
-},{"react":523,"react-bootstrap":200}],4:[function(require,module,exports){
+},{"react":523,"react-bootstrap":200}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -579,531 +1127,7 @@ GridItem.defaultProps = { interval: 0 };
 exports['default'] = GridItem;
 module.exports = exports['default'];
 
-},{"./../utils/textformatter.js":525,"./findingform.jsx":2,"./kadonnutNews.jsx":8,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactDom = require('react-dom');
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
-var _jquery = require('jquery');
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-var _reactBootstrap = require('react-bootstrap');
-
-var _spinnerJsx = require('./spinner.jsx');
-
-var _spinnerJsx2 = _interopRequireDefault(_spinnerJsx);
-
-var _utilsItemutilsJs = require('./../utils/itemutils.js');
-
-var _utilsItemutilsJs2 = _interopRequireDefault(_utilsItemutilsJs);
-
-var _modalsConfirmDialogJsx = require('./modals/confirmDialog.jsx');
-
-var _modalsConfirmDialogJsx2 = _interopRequireDefault(_modalsConfirmDialogJsx);
-
-var _reactBootstrapDatetimepicker = require('react-bootstrap-datetimepicker');
-
-var _reactBootstrapDatetimepicker2 = _interopRequireDefault(_reactBootstrapDatetimepicker);
-
-var KadonneetSearchMap = (function (_React$Component) {
-  _inherits(KadonneetSearchMap, _React$Component);
-
-  function KadonneetSearchMap() {
-    _classCallCheck(this, KadonneetSearchMap);
-
-    _get(Object.getPrototypeOf(KadonneetSearchMap.prototype), 'constructor', this).call(this);
-    this.gotLocation = this.gotLocation.bind(this);
-    this.geocoder = new google.maps.Geocoder();
-
-    this.startSearching = this.startSearching.bind(this);
-    this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
-    this.markToMap = this.markToMap.bind(this);
-    this.cancelConfirmMarking = this.cancelConfirmMarking.bind(this);
-
-    console.log('props', this.props);
-    this.state = { opened: true, loading: true };
-    this.polyline = new google.maps.Polyline({
-      strokeColor: '#000000',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    });
-  }
-
-  _createClass(KadonneetSearchMap, [{
-    key: 'renderSpinner',
-    value: function renderSpinner(prop) {
-      return _react2['default'].createElement(_spinnerJsx2['default'], { dimm: prop });
-    }
-  }, {
-    key: 'renderQuestion',
-    value: function renderQuestion() {
-      return _react2['default'].createElement(
-        'div',
-        null,
-        _react2['default'].createElement(
-          'h3',
-          null,
-          'Valitse etsintätapa henkilöstä ',
-          this.props.item.name
-        ),
-        _react2['default'].createElement(
-          'div',
-          { className: 'center-block row' },
-          _react2['default'].createElement(
-            'div',
-            { className: 'col-md-12 btn-toolbar' },
-            _react2['default'].createElement(
-              'button',
-              { type: 'button', className: 'btn btn-default btn-md', onClick: this.props.onclose },
-              'Sulje'
-            ),
-            _react2['default'].createElement(
-              'button',
-              { type: 'button', className: 'btn btn-success btn-md', onClick: this.markToMap },
-              'Merkitse karttaan'
-            ),
-            _react2['default'].createElement(
-              'button',
-              { type: 'button', className: 'btn btn-primary btn-md', onClick: this.startSearching },
-              'Aloita jäljittäminen (vaatii HTML5 geotunnisteen)'
-            )
-          )
-        )
-      );
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var mapClass = this.state.opened ? 'grayable' : '';
-      return _react2['default'].createElement(
-        _reactBootstrap.Modal,
-        { dialogClassName: 'search-modal', show: true, bsSize: 'large', onHide: this.props.onclose },
-        this.state.opened === false && this.state.started ? this.renderTracking() : '',
-        this.state.opened === false && this.state.marking ? this.renderMarking() : '',
-        _react2['default'].createElement(
-          _reactBootstrap.Modal.Body,
-          null,
-          this.state.opened ? _react2['default'].createElement(
-            'div',
-            { className: 'opened' },
-            this.state.loading ? this.renderSpinner("kadonneet-search-map") : this.renderQuestion()
-          ) : '',
-          this.state.saveMarking ? this.renderMarkingConfirm() : '',
-          _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass })
-        )
-      );
-    }
-  }, {
-    key: 'renderMarking',
-    value: function renderMarking() {
-      var _this = this;
-
-      var confirmSaveMarking = function confirmSaveMarking(_) {
-        var d = new Date();
-        var n = d.getTime();
-        _this.setState({ saveMarking: true, ajankohtaTimestamp: n });
-      };
-
-      return _react2['default'].createElement(
-        _reactBootstrap.Modal.Header,
-        null,
-        _react2['default'].createElement(
-          'div',
-          { className: 'row' },
-          _react2['default'].createElement(
-            'div',
-            { className: 'col-md-8 col-xs-6 small' },
-            'Etsitty kohteesta ',
-            _react2['default'].createElement(
-              'strong',
-              null,
-              this.state.location
-            ),
-            ' säteellä ',
-            this.state.radius,
-            ' m.'
-          ),
-          _react2['default'].createElement(
-            'div',
-            { className: 'col-md-4 col-xs-6' },
-            _react2['default'].createElement(
-              'div',
-              { className: 'btn-toolbar pull-right' },
-              _react2['default'].createElement(
-                'button',
-                { onClick: this.props.onclose, className: 'btn btn-default' },
-                'Sulje'
-              ),
-              _react2['default'].createElement(
-                'button',
-                { onClick: confirmSaveMarking, className: 'btn btn-primary' },
-                'Tallenna'
-              )
-            )
-          )
-        )
-      );
-    }
-  }, {
-    key: 'renderMarkingConfirm',
-    value: function renderMarkingConfirm() {
-      var _this2 = this;
-
-      var ajankohtaChange = function ajankohtaChange(val) {
-        console.log('vali is', val);
-        _this2.setState({ ajankohtaTimestamp: val });
-      };
-
-      var searchResultChange = function searchResultChange(event) {
-        _this2.setState({ searchResult: event.target.value });
-      };
-
-      var saveMarking = function saveMarking(_) {
-        _this2.setState({ saving: true });
-        var saveobj = {
-          _id: _this2.props.item._id,
-          radius: _this2.state.radius,
-          location: _this2.state.location,
-          searchResult: _this2.state.searchResult,
-          latLng: {
-            lat: _this2.marker.getPosition().lat(),
-            lng: _this2.marker.getPosition().lng()
-          },
-          ajankohtaTimestamp: _this2.state.ajankohtaTimestamp
-        };
-        _jquery2['default'].ajax({
-          type: "POST",
-          contentType: 'application/json; charset=utf-8',
-          url: '/savemarking',
-          data: JSON.stringify(saveobj),
-          success: function success(_) {
-            _this2.setState({ saving: false, saveMarking: false });
-            _this2.props.onclose();
-          }
-        });
-      };
-      return _react2['default'].createElement(
-        _modalsConfirmDialogJsx2['default'],
-        { onHide: this.cancelConfirmMarking, onSave: saveMarking },
-        this.state.saving ? this.renderSpinner('confirm-form') : '',
-        _react2['default'].createElement(
-          'form',
-          { className: 'form-horizontal', id: 'confirm-form' },
-          _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Nimi', value: this.props.item.name, labelClassName: 'col-md-4',
-            wrapperClassName: 'col-md-8' }),
-          _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Etsitty kohteesta', value: this.state.location, labelClassName: 'col-md-4',
-            wrapperClassName: 'col-md-8' }),
-          _react2['default'].createElement(_reactBootstrap.FormControls.Static, { label: 'Etsintäsäde', value: this.state.radius + ' m', labelClassName: 'col-md-4',
-            wrapperClassName: 'col-md-8' }),
-          _react2['default'].createElement(
-            'div',
-            { className: 'form-group' },
-            _react2['default'].createElement(
-              'label',
-              { className: 'control-label col-md-4' },
-              'Etsintäajankohta'
-            ),
-            _react2['default'].createElement(
-              'div',
-              { className: 'col-md-8' },
-              _react2['default'].createElement(_reactBootstrapDatetimepicker2['default'], { format: 'x', ref: 'time',
-                inputFormat: 'D.M.YYYY H:mm',
-                onChange: ajankohtaChange })
-            )
-          ),
-          _react2['default'].createElement(
-            _reactBootstrap.Input,
-            { type: 'select', labelClassName: 'col-md-4', wrapperClassName: 'col-md-8', label: 'Etsinnän tulos',
-              onChange: searchResultChange,
-              placeholder: '1' },
-            this.props.searchResults.map(function (item) {
-              return _react2['default'].createElement(
-                'option',
-                { value: item.value },
-                item.label
-              );
-            })
-          )
-        )
-      );
-    }
-  }, {
-    key: 'cancelConfirmMarking',
-    value: function cancelConfirmMarking() {
-      this.setState({ saveMarking: false });
-    }
-  }, {
-    key: 'renderTracking',
-    value: function renderTracking() {
-      return _react2['default'].createElement(
-        _reactBootstrap.Modal.Header,
-        null,
-        _react2['default'].createElement(
-          'div',
-          { className: 'row' },
-          _react2['default'].createElement(
-            'div',
-            { className: 'col-md-8 col-xs-6 small' },
-            'Kuljettu matka ',
-            this.state.length,
-            ' m.'
-          ),
-          _react2['default'].createElement(
-            'div',
-            { className: 'col-md-4 col-xs-6' },
-            _react2['default'].createElement(
-              'div',
-              { className: 'btn-group pull-right' },
-              _react2['default'].createElement(
-                'button',
-                { type: 'button', className: 'btn btn-default btn-sm', onClick: this.props.onclose },
-                'Peruuta etsintä'
-              ),
-              _react2['default'].createElement(
-                'button',
-                { type: 'button', className: 'btn btn-primary btn-sm' },
-                'Tallenna'
-              )
-            )
-          )
-        )
-      );
-    }
-  }, {
-    key: 'gotLocation',
-    value: function gotLocation(latlng) {
-      if (this.state.opened) {
-        this.initMap(latlng.coords);
-      }
-      if (!this.checkLatestPointsDistance(latlng.coords)) {
-        return;
-      }
-
-      var position = this.updateMarker(latlng.coords);
-      this.updateRoute(position);
-      if (this.state.loading) {
-        this.setState({ loading: false });
-      }
-      var length = this.calculateLength();
-      this.setState({ length: length });
-    }
-  }, {
-    key: 'calculateLength',
-    value: function calculateLength() {
-      var length = google.maps.geometry.spherical.computeLength(this.polyline.getPath().getArray());
-      return length.toFixed(2);
-    }
-  }, {
-    key: 'checkLatestPointsDistance',
-    value: function checkLatestPointsDistance(latlng) {
-      var wholePath = this.polyline.getPath();
-      if (wholePath.getArray().length <= 1) {
-        return true;
-      }
-      var wholePath = this.polyline.getPath();
-      var lastPointLng = wholePath.getAt(wholePath.getLength() - 1);
-      var distance = google.maps.geometry.spherical.computeDistanceBetween(lastPointLng, new google.maps.LatLng(latlng.latitude, latlng.longitude));
-      console.log('distance', distance);
-      if (distance < 10) {
-        return false;
-      }
-      return true;
-    }
-  }, {
-    key: 'updateMarker',
-    value: function updateMarker(location) {
-      if (this.marker) {
-        this.marker.setMap(null);
-      }
-      var position = { lat: location.latitude, lng: location.longitude };
-      this.marker = new google.maps.Marker({
-        position: position,
-        map: this.map,
-        title: 'Nykyinen sijainti'
-      });
-      console.log('marker', this.marker);
-      this.map.setCenter(this.marker.getPosition());
-      return this.marker.position;
-    }
-  }, {
-    key: 'updateRoute',
-    value: function updateRoute(position) {
-      var path = this.polyline.getPath();
-      path.push(position);
-      console.log('route', this.polyline.getPath().getLength());
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      console.log('did un mount');
-      this.map = null;
-      if (this.watchId) {
-        navigator.geolocation.clearWatch(this.watchId);
-        console.log('watch cleared');
-      }
-    }
-  }, {
-    key: 'initMap',
-    value: function initMap(coordinates) {
-      console.log(coordinates);
-      var mapOptions = {
-        draggable: true,
-        disableDefaultUI: true,
-        scrollwheel: false,
-        zoomControl: true,
-        zoomControlOptions: {
-          position: google.maps.ControlPosition.RIGHT_TOP,
-          style: google.maps.ZoomControlStyle.LARGE
-        },
-        mapTypeId: google.maps.MapTypeId.TERRAIN,
-        zoom: this.props.initialZoom,
-        center: { lat: coordinates.latitude, lng: coordinates.longitude }
-      };
-      var domNode = document.getElementById('kadonneet-search-map');
-      this.map = new google.maps.Map(domNode, mapOptions);
-      this.polyline.setMap(this.map);
-      console.log('pathlength initmap', this.polyline.getPath().getLength());
-    }
-  }, {
-    key: 'onErrorGeocoding',
-    value: function onErrorGeocoding() {
-      alert('geolocation not supported');
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var options = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      };
-      this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
-      console.log('on did mount');
-    }
-  }, {
-    key: 'startSearching',
-    value: function startSearching() {
-      this.setState({ opened: false, started: true });
-      this.updateLocation(this.marker);
-    }
-  }, {
-    key: 'drawKatoamispaikka',
-    value: function drawKatoamispaikka() {
-      var katoamisLoc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(this.props.item);
-      var markerIcon = {
-        scale: 7,
-        animation: google.maps.Animation.DROP,
-        path: google.maps.SymbolPath.CIRCLE
-      };
-      this.katoamis = new google.maps.Marker({
-        position: { lat: katoamisLoc.lat, lng: katoamisLoc.lng },
-        map: this.map,
-        animation: google.maps.Animation.DROP,
-        icon: markerIcon
-      });
-    }
-  }, {
-    key: 'markToMap',
-    value: function markToMap() {
-      var _this3 = this;
-
-      this.drawKatoamispaikka();
-      this.state.radius = this.props.radius;
-
-      this.drawCircle(this.marker.getPosition());
-      this.updateLocation(this.marker.getPosition());
-
-      this.map.addListener('click', function (e) {
-        console.log('e.', e.latLng);
-        _this3.updateMarker({ latitude: e.latLng.lat(), longitude: e.latLng.lng() });
-        _this3.updateLocation(e.latLng);
-        _this3.drawCircle(e.latLng);
-      });
-
-      this.setState({ opened: false, marking: true, radius: this.state.radius });
-    }
-  }, {
-    key: 'updateLocation',
-    value: function updateLocation(latlng) {
-      var _this4 = this;
-
-      this.geocoder.geocode({ 'location': latlng }, function (results, status) {
-        if (status === google.maps.GeocoderStatus.OK) {
-          if (results[0]) {
-            _this4.setState({ location: results[0].formatted_address });
-          }
-        }
-      });
-    }
-  }, {
-    key: 'drawCircle',
-    value: function drawCircle(latlng) {
-      var _this5 = this;
-
-      if (this.cityCircle) {
-        this.cityCircle.setMap(null);
-      }
-      this.cityCircle = new google.maps.Circle({
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        map: this.map,
-        center: latlng,
-        radius: this.state.radius,
-        editable: true,
-        draggable: true
-      });
-      this.cityCircle.addListener('radius_changed', function (_) {
-        console.log('center', _this5.cityCircle.getRadius());
-        _this5.setState({ radius: Math.round(_this5.cityCircle.getRadius()) });
-      });
-      this.cityCircle.addListener('center_changed', function (_) {
-        var center = _this5.cityCircle.getCenter();
-        _this5.updateMarker({ latitude: center.lat(), longitude: center.lng() });
-        _this5.updateLocation(center);
-      });
-    }
-  }]);
-
-  return KadonneetSearchMap;
-})(_react2['default'].Component);
-
-exports['default'] = KadonneetSearchMap;
-
-KadonneetSearchMap.defaultProps = {
-  initialZoom: 12,
-  radius: 500,
-  searchResults: [{ value: 1, label: 'Ei havaintoa' }, { value: 2, label: 'Löydetty elävänä' }, {
-    value: 3,
-    label: 'Löydetty kuolleena'
-  }]
-};
-module.exports = exports['default'];
-
-},{"./../utils/itemutils.js":524,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],6:[function(require,module,exports){
+},{"./../utils/textformatter.js":525,"./findingform.jsx":3,"./kadonnutNews.jsx":8,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1171,9 +1195,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _kadonneetSearchMapJsx = require('./kadonneetSearchMap.jsx');
+var _etsiKadonneetSearchMapJsx = require('./etsi/kadonneetSearchMap.jsx');
 
-var _kadonneetSearchMapJsx2 = _interopRequireDefault(_kadonneetSearchMapJsx);
+var _etsiKadonneetSearchMapJsx2 = _interopRequireDefault(_etsiKadonneetSearchMapJsx);
 
 var KadonneetList = (function (_React$Component) {
   _inherits(KadonneetList, _React$Component);
@@ -1217,7 +1241,7 @@ var KadonneetList = (function (_React$Component) {
             );
           })
         ),
-        this.state.item !== null ? _react2['default'].createElement(_kadonneetSearchMapJsx2['default'], { item: this.state.item, onclose: this.closeMap }) : ''
+        this.state.item !== null ? _react2['default'].createElement(_etsiKadonneetSearchMapJsx2['default'], { item: this.state.item, onclose: this.closeMap }) : ''
       );
     }
   }]);
@@ -1228,7 +1252,7 @@ var KadonneetList = (function (_React$Component) {
 exports['default'] = KadonneetList;
 module.exports = exports['default'];
 
-},{"./kadonneetSearchMap.jsx":5,"react":523}],8:[function(require,module,exports){
+},{"./etsi/kadonneetSearchMap.jsx":2,"react":523}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1734,7 +1758,7 @@ KadonnutForm.defaultProps = { tilanteet: [{ value: 1, label: 'Kadonnut' }] };
 exports['default'] = KadonnutForm;
 module.exports = exports['default'];
 
-},{"./forms/next.jsx":3,"./map.jsx":12,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],10:[function(require,module,exports){
+},{"./forms/next.jsx":4,"./map.jsx":12,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1859,7 +1883,7 @@ LostsGrid.propTypes = {
 exports['default'] = LostsGrid;
 module.exports = exports['default'];
 
-},{"./griditem.jsx":4,"react":523,"react-bootstrap":200}],11:[function(require,module,exports){
+},{"./griditem.jsx":5,"react":523,"react-bootstrap":200}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -32311,50 +32335,61 @@ exports["default"] = function (obj, keys) {
 exports.__esModule = true;
 },{}],223:[function(require,module,exports){
 arguments[4][41][0].apply(exports,arguments)
-},{"../../modules/$.core":231,"../../modules/es6.object.assign":244,"dup":41}],224:[function(require,module,exports){
+},{"../../modules/$.core":232,"../../modules/es6.object.assign":244,"dup":41}],224:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
-},{"../../modules/$":239,"dup":42}],225:[function(require,module,exports){
+},{"../../modules/$":240,"dup":42}],225:[function(require,module,exports){
 require('../../modules/es6.object.is-frozen');
 module.exports = require('../../modules/$.core').Object.isFrozen;
-},{"../../modules/$.core":231,"../../modules/es6.object.is-frozen":245}],226:[function(require,module,exports){
+},{"../../modules/$.core":232,"../../modules/es6.object.is-frozen":245}],226:[function(require,module,exports){
 arguments[4][45][0].apply(exports,arguments)
-},{"../../modules/$.core":231,"../../modules/es6.object.keys":246,"dup":45}],227:[function(require,module,exports){
+},{"../../modules/$.core":232,"../../modules/es6.object.keys":246,"dup":45}],227:[function(require,module,exports){
 arguments[4][46][0].apply(exports,arguments)
-},{"../../modules/$.core":231,"../../modules/es6.object.set-prototype-of":247,"dup":46}],228:[function(require,module,exports){
+},{"../../modules/$.core":232,"../../modules/es6.object.set-prototype-of":247,"dup":46}],228:[function(require,module,exports){
 arguments[4][47][0].apply(exports,arguments)
 },{"dup":47}],229:[function(require,module,exports){
 arguments[4][48][0].apply(exports,arguments)
-},{"./$.is-object":238,"dup":48}],230:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"dup":49}],231:[function(require,module,exports){
-arguments[4][50][0].apply(exports,arguments)
-},{"dup":50}],232:[function(require,module,exports){
-arguments[4][51][0].apply(exports,arguments)
-},{"./$.a-function":228,"dup":51}],233:[function(require,module,exports){
-arguments[4][52][0].apply(exports,arguments)
-},{"./$.core":231,"./$.global":236,"dup":52}],234:[function(require,module,exports){
-arguments[4][53][0].apply(exports,arguments)
-},{"dup":53}],235:[function(require,module,exports){
-arguments[4][54][0].apply(exports,arguments)
-},{"dup":54}],236:[function(require,module,exports){
-arguments[4][55][0].apply(exports,arguments)
-},{"dup":55}],237:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"./$.cof":230,"dup":56}],238:[function(require,module,exports){
-arguments[4][57][0].apply(exports,arguments)
-},{"dup":57}],239:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"dup":58}],240:[function(require,module,exports){
+},{"./$.is-object":239,"dup":48}],230:[function(require,module,exports){
 arguments[4][59][0].apply(exports,arguments)
-},{"./$":239,"./$.fails":235,"./$.iobject":237,"./$.to-object":243,"dup":59}],241:[function(require,module,exports){
-arguments[4][60][0].apply(exports,arguments)
-},{"./$.core":231,"./$.def":233,"./$.fails":235,"dup":60}],242:[function(require,module,exports){
+},{"./$":240,"./$.fails":236,"./$.iobject":238,"./$.to-object":243,"dup":59}],231:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"dup":49}],232:[function(require,module,exports){
+var core = module.exports = {version: '1.2.3'};
+if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+},{}],233:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"./$.a-function":228,"dup":51}],234:[function(require,module,exports){
+arguments[4][52][0].apply(exports,arguments)
+},{"./$.core":232,"./$.global":237,"dup":52}],235:[function(require,module,exports){
+arguments[4][53][0].apply(exports,arguments)
+},{"dup":53}],236:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"dup":54}],237:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],238:[function(require,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"./$.cof":231,"dup":56}],239:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"dup":57}],240:[function(require,module,exports){
+arguments[4][58][0].apply(exports,arguments)
+},{"dup":58}],241:[function(require,module,exports){
+// most Object methods by ES6 should accept primitives
+module.exports = function(KEY, exec){
+  var $def = require('./$.def')
+    , fn   = (require('./$.core').Object || {})[KEY] || Object[KEY]
+    , exp  = {};
+  exp[KEY] = exec(fn);
+  $def($def.S + $def.F * require('./$.fails')(function(){ fn(1); }), 'Object', exp);
+};
+},{"./$.core":232,"./$.def":234,"./$.fails":236}],242:[function(require,module,exports){
 arguments[4][61][0].apply(exports,arguments)
-},{"./$":239,"./$.an-object":229,"./$.ctx":232,"./$.is-object":238,"dup":61}],243:[function(require,module,exports){
+},{"./$":240,"./$.an-object":229,"./$.ctx":233,"./$.is-object":239,"dup":61}],243:[function(require,module,exports){
 arguments[4][63][0].apply(exports,arguments)
-},{"./$.defined":234,"dup":63}],244:[function(require,module,exports){
-arguments[4][64][0].apply(exports,arguments)
-},{"./$.def":233,"./$.object-assign":240,"dup":64}],245:[function(require,module,exports){
+},{"./$.defined":235,"dup":63}],244:[function(require,module,exports){
+// 19.1.3.1 Object.assign(target, source)
+var $def = require('./$.def');
+
+$def($def.S + $def.F, 'Object', {assign: require('./$.assign')});
+},{"./$.assign":230,"./$.def":234}],245:[function(require,module,exports){
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = require('./$.is-object');
 
@@ -32363,11 +32398,11 @@ require('./$.object-sap')('isFrozen', function($isFrozen){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
-},{"./$.is-object":238,"./$.object-sap":241}],246:[function(require,module,exports){
+},{"./$.is-object":239,"./$.object-sap":241}],246:[function(require,module,exports){
 arguments[4][66][0].apply(exports,arguments)
 },{"./$.object-sap":241,"./$.to-object":243,"dup":66}],247:[function(require,module,exports){
 arguments[4][67][0].apply(exports,arguments)
-},{"./$.def":233,"./$.set-proto":242,"dup":67}],248:[function(require,module,exports){
+},{"./$.def":234,"./$.set-proto":242,"dup":67}],248:[function(require,module,exports){
 arguments[4][68][0].apply(exports,arguments)
 },{"dup":68}],249:[function(require,module,exports){
 'use strict';
@@ -40668,6 +40703,7 @@ var HTMLDOMPropertyConfig = {
     multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     name: null,
+    nonce: MUST_USE_ATTRIBUTE,
     noValidate: HAS_BOOLEAN_VALUE,
     open: HAS_BOOLEAN_VALUE,
     optimum: null,
@@ -40679,6 +40715,7 @@ var HTMLDOMPropertyConfig = {
     readOnly: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     rel: null,
     required: HAS_BOOLEAN_VALUE,
+    reversed: HAS_BOOLEAN_VALUE,
     role: MUST_USE_ATTRIBUTE,
     rows: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
     rowSpan: null,
@@ -41124,6 +41161,7 @@ assign(React, {
 });
 
 React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
+React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
 },{"./Object.assign":389,"./ReactDOM":402,"./ReactDOMServer":412,"./ReactIsomorphic":430,"./deprecated":473}],392:[function(require,module,exports){
@@ -51332,7 +51370,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.2';
+module.exports = '0.14.3';
 },{}],452:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -56384,6 +56422,11 @@ var TextFormatter = (function () {
     value: function formatLinks(text) {
       var exp = /(\b(https?|ftp|file):\/\/([-A-Z0-9+&@#%?=~_|!:,.;]*)([-A-Z0-9+&@#%?\/=~_|!:,.;]*)[-A-Z0-9+&@#\/%=~_|])/ig;
       return text.replace(exp, "<a href='$1' target='_blank'>$1</a>");
+    }
+  }, {
+    key: 'formatMeters',
+    value: function formatMeters(distance) {
+      return distance.toFixed(2);
     }
   }, {
     key: 'formatTime',

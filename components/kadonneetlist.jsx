@@ -1,5 +1,5 @@
 import React from 'react';
-import KadonneetMap from './kadonneetSearchMap.jsx';
+import KadonneetMap from './etsi/kadonneetSearchMap.jsx';
 
 class KadonneetList extends React.Component{
   constructor(){

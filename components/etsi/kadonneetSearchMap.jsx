@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import {Modal,FormControls, Input} from 'react-bootstrap';
 
-import Spinner from './spinner.jsx';
-import ItemUtils from './../utils/itemutils.js';
-import ConfirmDialog from './modals/confirmDialog.jsx';
+import Spinner from './../spinner.jsx';
+import ItemUtils from './../../utils/itemutils.js';
+import TextFormatter from './../../utils/textformatter.js';
+import ConfirmDialog from './../modals/confirmDialog.jsx';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
 
 
@@ -33,18 +34,18 @@ export default class KadonneetSearchMap extends React.Component {
     return (<Spinner dimm={prop}/>)
   }
 
-
   renderQuestion() {
     return (<div><h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
+
       <div className="center-block row">
         <div className="col-md-12 btn-toolbar">
           <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
           <button type="button" className="btn btn-success btn-md" onClick={this.markToMap}>Merkitse karttaan</button>
           <button type="button" className="btn btn-primary btn-md" onClick={this.startSearching}>Aloita jäljittäminen
             (vaatii HTML5 geotunnisteen)
-        </button>
+          </button>
         </div>
-        
+
       </div>
     </div>)
 
@@ -82,7 +83,8 @@ export default class KadonneetSearchMap extends React.Component {
     return (<Modal.Header>
       <div className="row">
         <div className="col-md-8 col-xs-6 small">
-          Etsitty kohteesta <strong>{this.state.location}</strong> säteellä {this.state.radius} m.
+          <div>Etsitty kohteesta <strong>{this.state.location}</strong> säteellä {this.state.radius} m.</div>
+          <div>Etäisyys katoamiskohteesta <strong>{this.state.katoamisdistance} m</strong></div>
         </div>
         <div className="col-md-4 col-xs-6">
           <div className="btn-toolbar pull-right">
@@ -97,9 +99,7 @@ export default class KadonneetSearchMap extends React.Component {
   renderMarkingConfirm() {
 
     let ajankohtaChange = (val) => {
-      console.log('vali is', val);
       this.setState({ajankohtaTimestamp: val});
-
     };
 
     let searchResultChange = (event) => {
@@ -125,7 +125,7 @@ export default class KadonneetSearchMap extends React.Component {
         url: '/savemarking',
         data: JSON.stringify(saveobj),
         success: _ => {
-          this.setState({saving: false,saveMarking: false});
+          this.setState({saving: false, saveMarking: false});
           this.props.onclose();
         }
       });
@@ -206,7 +206,7 @@ export default class KadonneetSearchMap extends React.Component {
 
   calculateLength() {
     var length = google.maps.geometry.spherical.computeLength(this.polyline.getPath().getArray());
-    return length.toFixed(2);
+    return TextFormatter.formatMeters(length);
   }
 
   checkLatestPointsDistance(latlng) {
@@ -217,7 +217,6 @@ export default class KadonneetSearchMap extends React.Component {
     var wholePath = this.polyline.getPath();
     var lastPointLng = wholePath.getAt(wholePath.getLength() - 1);
     let distance = google.maps.geometry.spherical.computeDistanceBetween(lastPointLng, new google.maps.LatLng(latlng.latitude, latlng.longitude));
-    console.log('distance', distance);
     if (distance < 10) {
       return false;
     }
@@ -234,7 +233,6 @@ export default class KadonneetSearchMap extends React.Component {
       map: this.map,
       title: 'Nykyinen sijainti'
     });
-    console.log('marker', this.marker);
     this.map.setCenter(this.marker.getPosition());
     return this.marker.position;
   }
@@ -272,7 +270,6 @@ export default class KadonneetSearchMap extends React.Component {
     var domNode = document.getElementById('kadonneet-search-map');
     this.map = new google.maps.Map(domNode, mapOptions);
     this.polyline.setMap(this.map);
-    console.log('pathlength initmap', this.polyline.getPath().getLength());
 
   }
 
@@ -295,7 +292,7 @@ export default class KadonneetSearchMap extends React.Component {
     this.updateLocation(this.marker)
   }
 
-  drawKatoamispaikka(){
+  drawKatoamispaikka() {
     let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
     let markerIcon = {
       scale: 7,
@@ -312,6 +309,9 @@ export default class KadonneetSearchMap extends React.Component {
 
   markToMap() {
     this.drawKatoamispaikka();
+    let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
+    this.updateMarker({latitude: katoamisLoc.lat, longitude: katoamisLoc.lng});
+
     this.state.radius = this.props.radius;
 
     this.drawCircle(this.marker.getPosition());
@@ -332,7 +332,13 @@ export default class KadonneetSearchMap extends React.Component {
     this.geocoder.geocode({'location': latlng}, (results, status) => {
       if (status === google.maps.GeocoderStatus.OK) {
         if (results[0]) {
-          this.setState({location: results[0].formatted_address});
+          let markerPosition = this.katoamis.getPosition();
+          let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(markerPosition.lat(), markerPosition.lng()), new google.maps.LatLng(latlng.lat(), latlng.lng()));
+          console.log('dist', distance);
+          this.setState({
+            location: results[0].formatted_address,
+            katoamisdistance: TextFormatter.formatMeters(distance)
+          });
         }
       }
     });
