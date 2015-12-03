@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import $ from 'jquery';
 import ItemUtils from './../utils/itemutils.js';
 class Map extends React.Component {
 
@@ -38,6 +39,7 @@ class Map extends React.Component {
       mapTypeId: google.maps.MapTypeId.TERRAIN,
       zoom: this.props.initialZoom
     };
+
     if (this.props.findings && this.props.findings.length > 0 ){
       let center = this.calculateCenter(this.props.findings);
       mapOptions.center = center;
@@ -47,8 +49,27 @@ class Map extends React.Component {
     }
 
     else if (this.props.kadonneet && this.props.kadonneet.length > 0){
+
+      const calcHeight = () => {
+        let h = $(window).height();
+        let mapElement = $('#'+this.props.id); 
+        let mapY = mapElement.offset().top;
+        let footerHeight = $('#footer').height();
+        $('#'+this.props.id).height(h-mapY-footerHeight);
+       
+      };
+      const load =  () => {
+        calcHeight();
+      };
+
+      const resize = () => {
+        calcHeight();
+        this.map.setCenter({lat: 65.7770391, lng: 27.1159877});
+      };
       mapOptions.center = {lat: 65.7770391, lng: 27.1159877};
+      load();
       this.renderMap(mapOptions);
+      google.maps.event.addDomListener(window, "resize", resize);    
       this.createKadonneet();
     }
 
