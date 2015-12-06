@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import LostsGrid from '../components/lostsgrid.jsx';
+import LostsGrid from '../components/listakadonneista/lostsgrid.jsx';
 import FindingForm from '../components/findingform.jsx';
 import KadonnutForm from '../components/kadonnutform.jsx';
 import KadonneetList from '../components/kadonneetlist.jsx';
-import KadonneetKartalla from '../components/kadonneetkartalla.jsx';
+import KadonneetKartalla from '../components/kadonneetkartalla/kadonneetkartalla.jsx';
 
 import Navigation from '../components/navigation.jsx';
 

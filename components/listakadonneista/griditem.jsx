@@ -1,9 +1,9 @@
 import React from 'react';
 import {Button, Carousel, CarouselItem} from 'react-bootstrap';
-import LostsModal from './lostsmodal.jsx';
-import FindingForm from './findingform.jsx';
-import KadonnutNews from './kadonnutNews.jsx';
-import TextFormatter from './../utils/textformatter.js';
+import LostsModal from './../lostsmodal.jsx';
+import FindingForm from './../findingform.jsx';
+import KadonnutNews from './../kadonnutNews.jsx';
+import TextFormatter from './../../utils/textformatter.js';
 class GridItem extends React.Component {
 
   constructor() {

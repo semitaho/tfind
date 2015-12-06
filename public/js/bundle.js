@@ -11,9 +11,9 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _componentsLostsgridJsx = require('../components/lostsgrid.jsx');
+var _componentsListakadonneistaLostsgridJsx = require('../components/listakadonneista/lostsgrid.jsx');
 
-var _componentsLostsgridJsx2 = _interopRequireDefault(_componentsLostsgridJsx);
+var _componentsListakadonneistaLostsgridJsx2 = _interopRequireDefault(_componentsListakadonneistaLostsgridJsx);
 
 var _componentsFindingformJsx = require('../components/findingform.jsx');
 
@@ -27,9 +27,9 @@ var _componentsKadonneetlistJsx = require('../components/kadonneetlist.jsx');
 
 var _componentsKadonneetlistJsx2 = _interopRequireDefault(_componentsKadonneetlistJsx);
 
-var _componentsKadonneetkartallaJsx = require('../components/kadonneetkartalla.jsx');
+var _componentsKadonneetkartallaKadonneetkartallaJsx = require('../components/kadonneetkartalla/kadonneetkartalla.jsx');
 
-var _componentsKadonneetkartallaJsx2 = _interopRequireDefault(_componentsKadonneetkartallaJsx);
+var _componentsKadonneetkartallaKadonneetkartallaJsx2 = _interopRequireDefault(_componentsKadonneetkartallaKadonneetkartallaJsx);
 
 var _componentsNavigationJsx = require('../components/navigation.jsx');
 
@@ -57,7 +57,7 @@ if (typeof finding !== 'undefined') {
   lost = finding;
 }
 if (main) {
-  _reactDom2['default'].render(_react2['default'].createElement(_componentsLostsgridJsx2['default'], { items: losts }), main);
+  _reactDom2['default'].render(_react2['default'].createElement(_componentsListakadonneistaLostsgridJsx2['default'], { items: losts }), main);
 }
 if (form) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsFindingformJsx2['default'], { item: lost }), form);
@@ -67,13 +67,13 @@ if (kadonnut) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonnutformJsx2['default'], null), kadonnut);
 }
 if (kadonneetkartalla) {
-  _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaJsx2['default'], { items: losts }), kadonneetkartalla);
+  _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaKadonneetkartallaJsx2['default'], { items: losts }), kadonneetkartalla);
 }
 if (kadonneetlist) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetlistJsx2['default'], { items: kadonneetItems }), kadonneetlist);
 }
 
-},{"../components/findingform.jsx":3,"../components/kadonneetkartalla.jsx":6,"../components/kadonneetlist.jsx":7,"../components/kadonnutform.jsx":9,"../components/lostsgrid.jsx":10,"../components/navigation.jsx":15,"react":523,"react-dom":367}],2:[function(require,module,exports){
+},{"../components/findingform.jsx":3,"../components/kadonneetkartalla/kadonneetkartalla.jsx":5,"../components/kadonneetlist.jsx":6,"../components/kadonnutform.jsx":8,"../components/listakadonneista/lostsgrid.jsx":10,"../components/navigation.jsx":15,"react":523,"react-dom":367}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -926,229 +926,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactBootstrap = require('react-bootstrap');
-
-var _lostsmodalJsx = require('./lostsmodal.jsx');
-
-var _lostsmodalJsx2 = _interopRequireDefault(_lostsmodalJsx);
-
-var _findingformJsx = require('./findingform.jsx');
-
-var _findingformJsx2 = _interopRequireDefault(_findingformJsx);
-
-var _kadonnutNewsJsx = require('./kadonnutNews.jsx');
-
-var _kadonnutNewsJsx2 = _interopRequireDefault(_kadonnutNewsJsx);
-
-var _utilsTextformatterJs = require('./../utils/textformatter.js');
-
-var _utilsTextformatterJs2 = _interopRequireDefault(_utilsTextformatterJs);
-
-var GridItem = (function (_React$Component) {
-  _inherits(GridItem, _React$Component);
-
-  function GridItem() {
-    _classCallCheck(this, GridItem);
-
-    _get(Object.getPrototypeOf(GridItem.prototype), 'constructor', this).call(this);
-    this.state = { current: 0, kadonnutTime: 0, showmodal: false };
-    this.onTimeout = this.onTimeout.bind(this);
-    this.onModalOpen = this.onModalOpen.bind(this);
-    this.onFormOpen = this.onFormOpen.bind(this);
-
-    this.onModalClose = this.onModalClose.bind(this);
-    this.onFormClose = this.onFormClose.bind(this);
-
-    this.onKadonnutTimeout = this.onKadonnutTimeout.bind(this);
-    this.onNewsOpen = this.onNewsOpen.bind(this);
-    this.onNewsHide = this.onNewsHide.bind(this);
-  }
-
-  _createClass(GridItem, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.imageInterval = setInterval(this.onTimeout, this.props.interval);
-      if (this.props.item && this.props.item.lost) {
-        this.kadonnutInterval = setInterval(this.onKadonnutTimeout, 1000);
-      }
-    }
-  }, {
-    key: 'formatToTime',
-    value: function formatToTime(milliseconds) {
-      var seconds = Math.round(milliseconds / 1000.0);
-      var daysDivide = 3600 * 24;
-      var days = ~ ~(seconds / daysDivide);
-      var hrs = ~ ~(seconds % daysDivide / 3600);
-      var minutes = ~ ~(seconds % 3600 / 60);
-      var secs = seconds % 60;
-      var toDays = milliseconds / (1000 * 60 * 60 * 24);
-      var strBuilder = days + ' päivää, ' + hrs + ' tuntia, ' + minutes + " minuuttia, " + secs + " sekuntia.";
-      return strBuilder;
-    }
-  }, {
-    key: 'onKadonnutTimeout',
-    value: function onKadonnutTimeout() {
-      var kadonnutTime = new Date().getTime() - this.props.item.lost.timestamp;
-      this.setState({ kadonnutTime: this.formatToTime(kadonnutTime) });
-    }
-  }, {
-    key: 'onTimeout',
-    value: function onTimeout() {
-      var currentIndex = this.state.current;
-      currentIndex += 1;
-      if (currentIndex >= this.props.item.thumbnails.length) {
-        currentIndex = 0;
-      }
-
-      this.setState({ current: currentIndex });
-    }
-  }, {
-    key: 'getKadonnut',
-    value: function getKadonnut() {
-      if (this.state.kadonnutTime === 0) {
-        return '';
-      }
-      return this.state.kadonnutTime;
-    }
-  }, {
-    key: 'onModalOpen',
-    value: function onModalOpen() {
-      this.setState({ showmodal: true });
-    }
-  }, {
-    key: 'onFormOpen',
-    value: function onFormOpen() {
-      this.setState({ showform: true });
-    }
-  }, {
-    key: 'onModalClose',
-    value: function onModalClose() {
-      this.setState({ showmodal: false });
-    }
-  }, {
-    key: 'onFormClose',
-    value: function onFormClose() {
-      this.setState({ showform: false });
-    }
-  }, {
-    key: 'onNewsOpen',
-    value: function onNewsOpen() {
-      this.setState({ shownews: true });
-    }
-  }, {
-    key: 'onNewsHide',
-    value: function onNewsHide() {
-      this.setState({ shownews: false });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var item = this.props.item;
-      var self = this;
-      var formattedDescription = _utilsTextformatterJs2['default'].formatToHTML(item.description);
-      return _react2['default'].createElement(
-        'div',
-        { className: 'thumbnail text-left' },
-        this.state.showmodal ? _react2['default'].createElement(_lostsmodalJsx2['default'], { item: item, onclosemodal: this.onModalClose }) : '',
-        this.state.showform ? _react2['default'].createElement(_findingformJsx2['default'], { item: item, onclosemodal: this.onFormClose }) : '',
-        this.state.shownews ? _react2['default'].createElement(_kadonnutNewsJsx2['default'], { onHide: this.onNewsHide, item: item }) : '',
-        _react2['default'].createElement(
-          'div',
-          { className: 'row' },
-          _react2['default'].createElement(
-            'div',
-            { className: 'col-md-5 col-sm-5' },
-            _react2['default'].createElement(
-              _reactBootstrap.Carousel,
-              { indicators: false, controls: true, interval: this.props.interval },
-              item.thumbnails.map(function (src, ind) {
-                var clazz = 'img-rounded img-responsive center-block fixed-height';
-                var keyindex = 'carousel_' + ind;
-                return _react2['default'].createElement(
-                  _reactBootstrap.CarouselItem,
-                  { key: keyindex },
-                  _react2['default'].createElement('img', { key: ind, className: clazz, src: src })
-                );
-              })
-            )
-          ),
-          _react2['default'].createElement(
-            'div',
-            { className: 'col-md-7 col-sm-7' },
-            _react2['default'].createElement(
-              'div',
-              { className: 'caption' },
-              _react2['default'].createElement(
-                'h3',
-                null,
-                item.name
-              ),
-              _react2['default'].createElement('div', { dangerouslySetInnerHTML: { __html: formattedDescription } }),
-              _react2['default'].createElement(
-                'div',
-                { className: 'btn-group' },
-                _react2['default'].createElement(
-                  _reactBootstrap.Button,
-                  { bsStyle: 'info', onClick: self.onModalOpen },
-                  'Havainnot kartalla (',
-                  this.props.item.findings.length,
-                  ')'
-                ),
-                _react2['default'].createElement(
-                  _reactBootstrap.Button,
-                  { bsStyle: 'info', onClick: this.onNewsOpen },
-                  'Uutiset henkilöstä ',
-                  item.name
-                ),
-                _react2['default'].createElement(
-                  _reactBootstrap.Button,
-                  { bsStyle: 'success', onClick: self.onFormOpen },
-                  'Ilmoita havainnosta'
-                )
-              ),
-              self.state.kadonnutTime === 0 ? '' : _react2['default'].createElement(
-                'p',
-                { className: 'text-primary' },
-                'Kadonneena',
-                _react2['default'].createElement('br', null),
-                this.getKadonnut()
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return GridItem;
-})(_react2['default'].Component);
-
-GridItem.defaultProps = { interval: 0 };
-exports['default'] = GridItem;
-module.exports = exports['default'];
-
-},{"./../utils/textformatter.js":525,"./findingform.jsx":3,"./kadonnutNews.jsx":8,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],6:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _mapJsx = require('./map.jsx');
+var _mapJsx = require('./../map.jsx');
 
 var _mapJsx2 = _interopRequireDefault(_mapJsx);
 
@@ -1174,7 +952,7 @@ var KadonneetKartalla = (function (_React$Component) {
 exports['default'] = KadonneetKartalla;
 module.exports = exports['default'];
 
-},{"./map.jsx":12,"react":523}],7:[function(require,module,exports){
+},{"./../map.jsx":12,"react":523}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1252,7 +1030,7 @@ var KadonneetList = (function (_React$Component) {
 exports['default'] = KadonneetList;
 module.exports = exports['default'];
 
-},{"./etsi/kadonneetSearchMap.jsx":2,"react":523}],8:[function(require,module,exports){
+},{"./etsi/kadonneetSearchMap.jsx":2,"react":523}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1365,7 +1143,7 @@ var KadonnutNews = (function (_React$Component) {
 exports['default'] = KadonnutNews;
 module.exports = exports['default'];
 
-},{"./../utils/textformatter.js":525,"react":523,"react-bootstrap":200}],9:[function(require,module,exports){
+},{"./../utils/textformatter.js":525,"react":523,"react-bootstrap":200}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1758,7 +1536,229 @@ KadonnutForm.defaultProps = { tilanteet: [{ value: 1, label: 'Kadonnut' }] };
 exports['default'] = KadonnutForm;
 module.exports = exports['default'];
 
-},{"./forms/next.jsx":4,"./map.jsx":12,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],10:[function(require,module,exports){
+},{"./forms/next.jsx":4,"./map.jsx":12,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],9:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactBootstrap = require('react-bootstrap');
+
+var _lostsmodalJsx = require('./../lostsmodal.jsx');
+
+var _lostsmodalJsx2 = _interopRequireDefault(_lostsmodalJsx);
+
+var _findingformJsx = require('./../findingform.jsx');
+
+var _findingformJsx2 = _interopRequireDefault(_findingformJsx);
+
+var _kadonnutNewsJsx = require('./../kadonnutNews.jsx');
+
+var _kadonnutNewsJsx2 = _interopRequireDefault(_kadonnutNewsJsx);
+
+var _utilsTextformatterJs = require('./../../utils/textformatter.js');
+
+var _utilsTextformatterJs2 = _interopRequireDefault(_utilsTextformatterJs);
+
+var GridItem = (function (_React$Component) {
+  _inherits(GridItem, _React$Component);
+
+  function GridItem() {
+    _classCallCheck(this, GridItem);
+
+    _get(Object.getPrototypeOf(GridItem.prototype), 'constructor', this).call(this);
+    this.state = { current: 0, kadonnutTime: 0, showmodal: false };
+    this.onTimeout = this.onTimeout.bind(this);
+    this.onModalOpen = this.onModalOpen.bind(this);
+    this.onFormOpen = this.onFormOpen.bind(this);
+
+    this.onModalClose = this.onModalClose.bind(this);
+    this.onFormClose = this.onFormClose.bind(this);
+
+    this.onKadonnutTimeout = this.onKadonnutTimeout.bind(this);
+    this.onNewsOpen = this.onNewsOpen.bind(this);
+    this.onNewsHide = this.onNewsHide.bind(this);
+  }
+
+  _createClass(GridItem, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.imageInterval = setInterval(this.onTimeout, this.props.interval);
+      if (this.props.item && this.props.item.lost) {
+        this.kadonnutInterval = setInterval(this.onKadonnutTimeout, 1000);
+      }
+    }
+  }, {
+    key: 'formatToTime',
+    value: function formatToTime(milliseconds) {
+      var seconds = Math.round(milliseconds / 1000.0);
+      var daysDivide = 3600 * 24;
+      var days = ~ ~(seconds / daysDivide);
+      var hrs = ~ ~(seconds % daysDivide / 3600);
+      var minutes = ~ ~(seconds % 3600 / 60);
+      var secs = seconds % 60;
+      var toDays = milliseconds / (1000 * 60 * 60 * 24);
+      var strBuilder = days + ' päivää, ' + hrs + ' tuntia, ' + minutes + " minuuttia, " + secs + " sekuntia.";
+      return strBuilder;
+    }
+  }, {
+    key: 'onKadonnutTimeout',
+    value: function onKadonnutTimeout() {
+      var kadonnutTime = new Date().getTime() - this.props.item.lost.timestamp;
+      this.setState({ kadonnutTime: this.formatToTime(kadonnutTime) });
+    }
+  }, {
+    key: 'onTimeout',
+    value: function onTimeout() {
+      var currentIndex = this.state.current;
+      currentIndex += 1;
+      if (currentIndex >= this.props.item.thumbnails.length) {
+        currentIndex = 0;
+      }
+
+      this.setState({ current: currentIndex });
+    }
+  }, {
+    key: 'getKadonnut',
+    value: function getKadonnut() {
+      if (this.state.kadonnutTime === 0) {
+        return '';
+      }
+      return this.state.kadonnutTime;
+    }
+  }, {
+    key: 'onModalOpen',
+    value: function onModalOpen() {
+      this.setState({ showmodal: true });
+    }
+  }, {
+    key: 'onFormOpen',
+    value: function onFormOpen() {
+      this.setState({ showform: true });
+    }
+  }, {
+    key: 'onModalClose',
+    value: function onModalClose() {
+      this.setState({ showmodal: false });
+    }
+  }, {
+    key: 'onFormClose',
+    value: function onFormClose() {
+      this.setState({ showform: false });
+    }
+  }, {
+    key: 'onNewsOpen',
+    value: function onNewsOpen() {
+      this.setState({ shownews: true });
+    }
+  }, {
+    key: 'onNewsHide',
+    value: function onNewsHide() {
+      this.setState({ shownews: false });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var item = this.props.item;
+      var self = this;
+      var formattedDescription = _utilsTextformatterJs2['default'].formatToHTML(item.description);
+      return _react2['default'].createElement(
+        'div',
+        { className: 'thumbnail text-left' },
+        this.state.showmodal ? _react2['default'].createElement(_lostsmodalJsx2['default'], { item: item, onclosemodal: this.onModalClose }) : '',
+        this.state.showform ? _react2['default'].createElement(_findingformJsx2['default'], { item: item, onclosemodal: this.onFormClose }) : '',
+        this.state.shownews ? _react2['default'].createElement(_kadonnutNewsJsx2['default'], { onHide: this.onNewsHide, item: item }) : '',
+        _react2['default'].createElement(
+          'div',
+          { className: 'row' },
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-5 col-sm-5' },
+            _react2['default'].createElement(
+              _reactBootstrap.Carousel,
+              { indicators: false, controls: true, interval: this.props.interval },
+              item.thumbnails.map(function (src, ind) {
+                var clazz = 'img-rounded img-responsive center-block fixed-height';
+                var keyindex = 'carousel_' + ind;
+                return _react2['default'].createElement(
+                  _reactBootstrap.CarouselItem,
+                  { key: keyindex },
+                  _react2['default'].createElement('img', { key: ind, className: clazz, src: src })
+                );
+              })
+            )
+          ),
+          _react2['default'].createElement(
+            'div',
+            { className: 'col-md-7 col-sm-7' },
+            _react2['default'].createElement(
+              'div',
+              { className: 'caption' },
+              _react2['default'].createElement(
+                'h3',
+                null,
+                item.name
+              ),
+              _react2['default'].createElement('div', { dangerouslySetInnerHTML: { __html: formattedDescription } }),
+              _react2['default'].createElement(
+                'div',
+                { className: 'btn-group' },
+                _react2['default'].createElement(
+                  _reactBootstrap.Button,
+                  { bsStyle: 'info', onClick: self.onModalOpen },
+                  'Havainnot kartalla (',
+                  this.props.item.findings.length,
+                  ')'
+                ),
+                _react2['default'].createElement(
+                  _reactBootstrap.Button,
+                  { bsStyle: 'info', onClick: this.onNewsOpen },
+                  'Uutiset henkilöstä ',
+                  item.name
+                ),
+                _react2['default'].createElement(
+                  _reactBootstrap.Button,
+                  { bsStyle: 'success', onClick: self.onFormOpen },
+                  'Ilmoita havainnosta'
+                )
+              ),
+              self.state.kadonnutTime === 0 ? '' : _react2['default'].createElement(
+                'p',
+                { className: 'text-primary' },
+                'Kadonneena',
+                _react2['default'].createElement('br', null),
+                this.getKadonnut()
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return GridItem;
+})(_react2['default'].Component);
+
+GridItem.defaultProps = { interval: 0 };
+exports['default'] = GridItem;
+module.exports = exports['default'];
+
+},{"./../../utils/textformatter.js":525,"./../findingform.jsx":3,"./../kadonnutNews.jsx":7,"./../lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1883,7 +1883,7 @@ LostsGrid.propTypes = {
 exports['default'] = LostsGrid;
 module.exports = exports['default'];
 
-},{"./griditem.jsx":5,"react":523,"react-bootstrap":200}],11:[function(require,module,exports){
+},{"./griditem.jsx":9,"react":523,"react-bootstrap":200}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1976,6 +1976,10 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
 var _utilsItemutilsJs = require('./../utils/itemutils.js');
 
 var _utilsItemutilsJs2 = _interopRequireDefault(_utilsItemutilsJs);
@@ -2023,6 +2027,7 @@ var Map = (function (_React$Component) {
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         zoom: this.props.initialZoom
       };
+
       if (this.props.findings && this.props.findings.length > 0) {
         var center = this.calculateCenter(this.props.findings);
         mapOptions.center = center;
@@ -2030,9 +2035,30 @@ var Map = (function (_React$Component) {
         this.createMarkers(this.props.findings);
         this.createRoute();
       } else if (this.props.kadonneet && this.props.kadonneet.length > 0) {
-        mapOptions.center = { lat: 65.7770391, lng: 27.1159877 };
-        this.renderMap(mapOptions);
-        this.createKadonneet();
+        (function () {
+
+          var calcHeight = function calcHeight() {
+            var h = (0, _jquery2['default'])(window).height();
+            var mapElement = (0, _jquery2['default'])('#' + _this.props.id);
+            var mapY = mapElement.offset().top;
+            var footerHeight = (0, _jquery2['default'])('#footer').height();
+            (0, _jquery2['default'])('#' + _this.props.id).height(h - mapY - 30);
+          };
+          mapOptions.center = { lat: 65.7770391, lng: 27.1159877 };
+
+          var load = function load() {
+            calcHeight();
+            _this.renderMap(mapOptions);
+            _this.createKadonneet();
+          };
+
+          var resize = function resize() {
+            calcHeight();
+            _this.map.setCenter({ lat: 65.7770391, lng: 27.1159877 });
+          };
+          google.maps.event.addDomListener(window, "load", load);
+          google.maps.event.addDomListener(window, "resize", resize);
+        })();
       } else if (this.props.center) {
         console.log('center');
         mapOptions.center = this.props.center;
@@ -2285,7 +2311,7 @@ Map.defaultProps = { id: 'map-havainnot', scrollwheel: false, initialZoom: 12 };
 exports['default'] = Map;
 module.exports = exports['default'];
 
-},{"./../utils/itemutils.js":524,"react":523,"react-dom":367}],13:[function(require,module,exports){
+},{"./../utils/itemutils.js":524,"jquery":18,"react":523,"react-dom":367}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

@@ -55,22 +55,23 @@ class Map extends React.Component {
         let mapElement = $('#'+this.props.id); 
         let mapY = mapElement.offset().top;
         let footerHeight = $('#footer').height();
-        $('#'+this.props.id).height(h-mapY-footerHeight);
+        $('#'+this.props.id).height(h-mapY-30);
        
       };
+      mapOptions.center = {lat: 65.7770391, lng: 27.1159877};
+
       const load =  () => {
         calcHeight();
+        this.renderMap(mapOptions);
+        this.createKadonneet();
       };
 
       const resize = () => {
         calcHeight();
         this.map.setCenter({lat: 65.7770391, lng: 27.1159877});
       };
-      mapOptions.center = {lat: 65.7770391, lng: 27.1159877};
-      load();
-      this.renderMap(mapOptions);
+      google.maps.event.addDomListener(window, "load", load);
       google.maps.event.addDomListener(window, "resize", resize);    
-      this.createKadonneet();
     }
 
     else if (this.props.center){

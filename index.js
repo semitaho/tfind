@@ -7,11 +7,11 @@ import stylus from 'stylus';
 import nib from 'nib';
 import findingFormJsx from './components/findingform.jsx';
 import ukkformjsx from './components/questionsanswers.jsx';
-import lostsgrid from './components/lostsgrid.jsx';
+import lostsgrid from './components/listakadonneista/lostsgrid.jsx';
 import kadonneetlistjsx from './components/kadonneetlist.jsx';
 import kadonnutFormjsx from './components/kadonnutform.jsx';
 import nav from './components/navigation.jsx';
-import kadonneetkartallajsx from './components/kadonneetkartalla.jsx';
+import kadonneetkartallajsx from './components/kadonneetkartalla/kadonneetkartalla.jsx';
 
 let app = express();
 let upload = multer({dest: './public/files'});
