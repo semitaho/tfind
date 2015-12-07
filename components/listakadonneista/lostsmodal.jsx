@@ -1,6 +1,6 @@
-import MapModal from './modals/mapmodal.jsx';
+import MapModal from './../modals/mapmodal.jsx';
 import React from 'react';
-import Map from './map.jsx';
+import Map from './../map.jsx';
 import {Modal, Image} from 'react-bootstrap';
 
 

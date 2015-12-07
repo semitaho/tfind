@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import ItemUtils from './../utils/itemutils.js';
+import UIUtils from './../utils/uiutils.js';
+
 class Map extends React.Component {
 
   constructor() {
@@ -18,7 +20,7 @@ class Map extends React.Component {
 
   }
 
-  renderMap(mapOptions){
+  renderMap(mapOptions) {
     var domNode = ReactDOM.findDOMNode(this.refs.map);
     this.map = new google.maps.Map(domNode, mapOptions);
   }
@@ -40,27 +42,30 @@ class Map extends React.Component {
       zoom: this.props.initialZoom
     };
 
-    if (this.props.findings && this.props.findings.length > 0 ){
+    const calcHeight = () => {
+      let h = $(window).height();
+      let mapElement = $('#' + this.props.id);
+      let mapY = mapElement.offset().top;
+      let footerHeight = $('#footer').height();
+      $('#' + this.props.id).height(h - mapY - 10);
+
+    };
+    if (this.props.findings && this.props.findings.length > 0) {
+      UIUtils.calculateModalMapHeight(this.props.id);
+      this.createMarkers(this.props.findings);
+      this.createRoute();
       let center = this.calculateCenter(this.props.findings);
       mapOptions.center = center;
       this.renderMap(mapOptions);
-      this.createMarkers(this.props.findings);
-      this.createRoute();
+
+      // google.maps.event.addDomListener(window, "resize", resize);
     }
 
-    else if (this.props.kadonneet && this.props.kadonneet.length > 0){
+    else if (this.props.kadonneet && this.props.kadonneet.length > 0) {
 
-      const calcHeight = () => {
-        let h = $(window).height();
-        let mapElement = $('#'+this.props.id); 
-        let mapY = mapElement.offset().top;
-        let footerHeight = $('#footer').height();
-        $('#'+this.props.id).height(h-mapY-30);
-       
-      };
       mapOptions.center = {lat: 65.7770391, lng: 27.1159877};
 
-      const load =  () => {
+      const load = () => {
         calcHeight();
         this.renderMap(mapOptions);
         this.createKadonneet();
@@ -71,10 +76,10 @@ class Map extends React.Component {
         this.map.setCenter({lat: 65.7770391, lng: 27.1159877});
       };
       google.maps.event.addDomListener(window, "load", load);
-      google.maps.event.addDomListener(window, "resize", resize);    
+      google.maps.event.addDomListener(window, "resize", resize);
     }
 
-    else if (this.props.center){
+    else if (this.props.center) {
       console.log('center');
       mapOptions.center = this.props.center;
       this.renderMap(mapOptions);
@@ -89,11 +94,12 @@ class Map extends React.Component {
       });
     }
 
-    if (this.props.onArea){
+    if (this.props.onArea) {
+
       google.maps.event.addListener(this.map, 'click', event => {
         this.updateArea(event.latLng);
         this.updateLocation(event.latLng);
-      }); 
+      });
     }
   }
 
@@ -111,13 +117,12 @@ class Map extends React.Component {
     return this.marker.position;
   }
 
-
   updateLocation(latlng) {
     this.geocoder.geocode({'location': latlng}, (results, status) => {
       if (status === google.maps.GeocoderStatus.OK) {
         if (results[0]) {
           this.setState({location: results[0].formatted_address});
-          if (this.props.onArea){
+          if (this.props.onArea) {
             this.props.onArea(latlng, results[0].formatted_address);
           }
         }
@@ -141,10 +146,10 @@ class Map extends React.Component {
 
     var latSum = findings.reduce((prev, current, index, array) => {
       return current.lat + prev;
-    },0);
+    }, 0);
     var lngSum = findings.reduce((prev, current, index, array) => {
       return current.lng + prev;
-    },0);
+    }, 0);
     var finding = findings[findings.length - 1];
     return {lat: latSum / findings.length, lng: lngSum / findings.length};
   }
@@ -173,7 +178,7 @@ class Map extends React.Component {
     this.createRoute(latlng);
   }
 
-  createKadonneet(){
+  createKadonneet() {
     var infowindow = new google.maps.InfoWindow();
 
     this.props.kadonneet.forEach(finding => {
@@ -182,7 +187,7 @@ class Map extends React.Component {
           scale: 7,
           path: google.maps.SymbolPath.CIRCLE
         };
-        var coordinates = ItemUtils.findKatoamispaikkaLoc(finding); 
+        var coordinates = ItemUtils.findKatoamispaikkaLoc(finding);
         var marker = new google.maps.Marker({
           draggable: false,
           icon: markerIcon,
@@ -192,17 +197,17 @@ class Map extends React.Component {
           },
           map: this.map
         });
-        let content= '<div> '+
-                   '   <div>'+
-                   '    <h4>'+finding.name+' <small>Kadonnut 13.11.2015</small></h4>'+
-                   '    '+
-                   '   </div>'+
-                   '     <div class="clearfix content-heading">'+
-                     '     <img class="img-havainto img-span pull-left" src="'+finding.imgsrc+'" />'+
-                      '     <p>'+finding.description+'</p>'+
-                   '   </div>'+
-                   '   <footer><a href="/kadonneet/'+ finding._id+'">Avaa profiili</a></footer> '
-                   ' </div>';
+        let content = '<div> ' +
+          '   <div>' +
+          '    <h4>' + finding.name + ' <small>Kadonnut 13.11.2015</small></h4>' +
+          '    ' +
+          '   </div>' +
+          '     <div class="clearfix content-heading">' +
+          '     <img class="img-havainto img-span pull-left" src="' + finding.imgsrc + '" />' +
+          '     <p>' + finding.description + '</p>' +
+          '   </div>' +
+          '   <footer><a href="/kadonneet/' + finding._id + '">Avaa profiili</a></footer> '
+        ' </div>';
         marker.addListener('click', e => {
           this.map.setCenter({lat: coordinates.lat, lng: coordinates.lng});
           infowindow.close();
@@ -261,8 +266,6 @@ class Map extends React.Component {
       }
     )
   }
-
- 
 
   createRoute(latlng) {
     if (this.line) {

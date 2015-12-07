@@ -1559,7 +1559,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = require('react-bootstrap');
 
-var _lostsmodalJsx = require('./../lostsmodal.jsx');
+var _lostsmodalJsx = require('./lostsmodal.jsx');
 
 var _lostsmodalJsx2 = _interopRequireDefault(_lostsmodalJsx);
 
@@ -1758,7 +1758,7 @@ GridItem.defaultProps = { interval: 0 };
 exports['default'] = GridItem;
 module.exports = exports['default'];
 
-},{"./../../utils/textformatter.js":525,"./../findingform.jsx":3,"./../kadonnutNews.jsx":7,"./../lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],10:[function(require,module,exports){
+},{"./../../utils/textformatter.js":525,"./../findingform.jsx":3,"./../kadonnutNews.jsx":7,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1900,7 +1900,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _modalsMapmodalJsx = require('./modals/mapmodal.jsx');
+var _modalsMapmodalJsx = require('./../modals/mapmodal.jsx');
 
 var _modalsMapmodalJsx2 = _interopRequireDefault(_modalsMapmodalJsx);
 
@@ -1908,7 +1908,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _mapJsx = require('./map.jsx');
+var _mapJsx = require('./../map.jsx');
 
 var _mapJsx2 = _interopRequireDefault(_mapJsx);
 
@@ -1951,7 +1951,7 @@ var LostsModal = (function (_React$Component) {
 exports['default'] = LostsModal;
 module.exports = exports['default'];
 
-},{"./map.jsx":12,"./modals/mapmodal.jsx":14,"react":523,"react-bootstrap":200}],12:[function(require,module,exports){
+},{"./../map.jsx":12,"./../modals/mapmodal.jsx":14,"react":523,"react-bootstrap":200}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1983,6 +1983,10 @@ var _jquery2 = _interopRequireDefault(_jquery);
 var _utilsItemutilsJs = require('./../utils/itemutils.js');
 
 var _utilsItemutilsJs2 = _interopRequireDefault(_utilsItemutilsJs);
+
+var _utilsUiutilsJs = require('./../utils/uiutils.js');
+
+var _utilsUiutilsJs2 = _interopRequireDefault(_utilsUiutilsJs);
 
 var Map = (function (_React$Component) {
   _inherits(Map, _React$Component);
@@ -2028,22 +2032,24 @@ var Map = (function (_React$Component) {
         zoom: this.props.initialZoom
       };
 
+      var calcHeight = function calcHeight() {
+        var h = (0, _jquery2['default'])(window).height();
+        var mapElement = (0, _jquery2['default'])('#' + _this.props.id);
+        var mapY = mapElement.offset().top;
+        var footerHeight = (0, _jquery2['default'])('#footer').height();
+        (0, _jquery2['default'])('#' + _this.props.id).height(h - mapY - 10);
+      };
       if (this.props.findings && this.props.findings.length > 0) {
+        _utilsUiutilsJs2['default'].calculateModalMapHeight(this.props.id);
+        this.createMarkers(this.props.findings);
+        this.createRoute();
         var center = this.calculateCenter(this.props.findings);
         mapOptions.center = center;
         this.renderMap(mapOptions);
-        this.createMarkers(this.props.findings);
-        this.createRoute();
-      } else if (this.props.kadonneet && this.props.kadonneet.length > 0) {
-        (function () {
 
-          var calcHeight = function calcHeight() {
-            var h = (0, _jquery2['default'])(window).height();
-            var mapElement = (0, _jquery2['default'])('#' + _this.props.id);
-            var mapY = mapElement.offset().top;
-            var footerHeight = (0, _jquery2['default'])('#footer').height();
-            (0, _jquery2['default'])('#' + _this.props.id).height(h - mapY - 30);
-          };
+        // google.maps.event.addDomListener(window, "resize", resize);
+      } else if (this.props.kadonneet && this.props.kadonneet.length > 0) {
+
           mapOptions.center = { lat: 65.7770391, lng: 27.1159877 };
 
           var load = function load() {
@@ -2058,13 +2064,12 @@ var Map = (function (_React$Component) {
           };
           google.maps.event.addDomListener(window, "load", load);
           google.maps.event.addDomListener(window, "resize", resize);
-        })();
-      } else if (this.props.center) {
-        console.log('center');
-        mapOptions.center = this.props.center;
-        this.renderMap(mapOptions);
-        this.updateArea(this.props.center);
-      }
+        } else if (this.props.center) {
+          console.log('center');
+          mapOptions.center = this.props.center;
+          this.renderMap(mapOptions);
+          this.updateArea(this.props.center);
+        }
 
       if (this.props.onClick) {
         google.maps.event.addListener(this.map, 'click', function (event) {
@@ -2075,6 +2080,7 @@ var Map = (function (_React$Component) {
       }
 
       if (this.props.onArea) {
+
         google.maps.event.addListener(this.map, 'click', function (event) {
           _this.updateArea(event.latLng);
           _this.updateLocation(event.latLng);
@@ -2311,7 +2317,7 @@ Map.defaultProps = { id: 'map-havainnot', scrollwheel: false, initialZoom: 12 };
 exports['default'] = Map;
 module.exports = exports['default'];
 
-},{"./../utils/itemutils.js":524,"jquery":18,"react":523,"react-dom":367}],13:[function(require,module,exports){
+},{"./../utils/itemutils.js":524,"./../utils/uiutils.js":526,"jquery":18,"react":523,"react-dom":367}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2396,7 +2402,15 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _react = require('react');
 
@@ -2404,19 +2418,45 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = require('react-bootstrap');
 
-var MapModal = function MapModal(props) {
+var MapModal = (function (_React$Component) {
+  _inherits(MapModal, _React$Component);
 
-  return _react2['default'].createElement(
-    _reactBootstrap.Modal,
-    { onHide: props.onHide, id: 'modal', bsSize: props.size ? props.size : 'medium', show: true },
-    _react2['default'].createElement(
-      _reactBootstrap.Modal.Header,
-      { closeButton: true },
-      props.title
-    ),
-    props.children
-  );
-};
+  function MapModal() {
+    _classCallCheck(this, MapModal);
+
+    _get(Object.getPrototypeOf(MapModal.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  _createClass(MapModal, [{
+    key: 'render',
+    value: function render() {
+      var props = this.props;
+      return _react2['default'].createElement(
+        _reactBootstrap.Modal,
+        { onHide: props.onHide, id: 'modal', bsSize: props.size ? props.size : 'medium', show: true },
+        _react2['default'].createElement(
+          _reactBootstrap.Modal.Header,
+          { closeButton: true },
+          props.title
+        ),
+        props.children
+      );
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      console.log('map modal did mount');
+      var h = $(window).height();
+      var id = '#modal';
+      var modalElement = $(id);
+      var mapY = modalElement.offset().top;
+      var footerHeight = $('#footer').height();
+      $(id).height(h - mapY - 30);
+    }
+  }]);
+
+  return MapModal;
+})(_react2['default'].Component);
 
 exports['default'] = MapModal;
 module.exports = exports['default'];
@@ -2611,7 +2651,7 @@ var Spinner = (function (_React$Component) {
 exports['default'] = Spinner;
 module.exports = exports['default'];
 
-},{"../vendor/spin.js":526,"jquery":18,"react":523,"react-dom":367}],17:[function(require,module,exports){
+},{"../vendor/spin.js":527,"jquery":18,"react":523,"react-dom":367}],17:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -56470,6 +56510,35 @@ exports['default'] = TextFormatter;
 module.exports = exports['default'];
 
 },{}],526:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var UIUtils = (function () {
+  function UIUtils() {
+    _classCallCheck(this, UIUtils);
+  }
+
+  _createClass(UIUtils, null, [{
+    key: 'calculateModalMapHeight',
+    value: function calculateModalMapHeight(id) {
+      $('#' + id).height(150);
+    }
+  }]);
+
+  return UIUtils;
+})();
+
+exports['default'] = UIUtils;
+module.exports = exports['default'];
+
+},{}],527:[function(require,module,exports){
 /**
  * Copyright (c) 2011-2014 Felix Gnass
  * Licensed under the MIT license
