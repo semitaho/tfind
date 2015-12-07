@@ -2037,15 +2037,20 @@ var Map = (function (_React$Component) {
         var mapElement = (0, _jquery2['default'])('#' + _this.props.id);
         var mapY = mapElement.offset().top;
         var footerHeight = (0, _jquery2['default'])('#footer').height();
-        (0, _jquery2['default'])('#' + _this.props.id).height(h - mapY - 10);
+        (0, _jquery2['default'])('#' + _this.props.id).height(h - mapY - footerHeight - 10);
       };
       if (this.props.findings && this.props.findings.length > 0) {
         _utilsUiutilsJs2['default'].calculateModalMapHeight(this.props.id);
-        this.createMarkers(this.props.findings);
-        this.createRoute();
         var center = this.calculateCenter(this.props.findings);
         mapOptions.center = center;
         this.renderMap(mapOptions);
+        this.createMarkers(this.props.findings);
+        this.createRoute();
+
+        google.maps.event.addDomListener(window, "resize", function () {
+          _utilsUiutilsJs2['default'].calculateModalMapHeight(_this.props.id);
+          _this.map.setCenter(_this.calculateCenter(_this.props.findings));
+        });
 
         // google.maps.event.addDomListener(window, "resize", resize);
       } else if (this.props.kadonneet && this.props.kadonneet.length > 0) {
@@ -32401,61 +32406,50 @@ exports["default"] = function (obj, keys) {
 exports.__esModule = true;
 },{}],223:[function(require,module,exports){
 arguments[4][41][0].apply(exports,arguments)
-},{"../../modules/$.core":232,"../../modules/es6.object.assign":244,"dup":41}],224:[function(require,module,exports){
+},{"../../modules/$.core":231,"../../modules/es6.object.assign":244,"dup":41}],224:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
-},{"../../modules/$":240,"dup":42}],225:[function(require,module,exports){
+},{"../../modules/$":239,"dup":42}],225:[function(require,module,exports){
 require('../../modules/es6.object.is-frozen');
 module.exports = require('../../modules/$.core').Object.isFrozen;
-},{"../../modules/$.core":232,"../../modules/es6.object.is-frozen":245}],226:[function(require,module,exports){
+},{"../../modules/$.core":231,"../../modules/es6.object.is-frozen":245}],226:[function(require,module,exports){
 arguments[4][45][0].apply(exports,arguments)
-},{"../../modules/$.core":232,"../../modules/es6.object.keys":246,"dup":45}],227:[function(require,module,exports){
+},{"../../modules/$.core":231,"../../modules/es6.object.keys":246,"dup":45}],227:[function(require,module,exports){
 arguments[4][46][0].apply(exports,arguments)
-},{"../../modules/$.core":232,"../../modules/es6.object.set-prototype-of":247,"dup":46}],228:[function(require,module,exports){
+},{"../../modules/$.core":231,"../../modules/es6.object.set-prototype-of":247,"dup":46}],228:[function(require,module,exports){
 arguments[4][47][0].apply(exports,arguments)
 },{"dup":47}],229:[function(require,module,exports){
 arguments[4][48][0].apply(exports,arguments)
-},{"./$.is-object":239,"dup":48}],230:[function(require,module,exports){
-arguments[4][59][0].apply(exports,arguments)
-},{"./$":240,"./$.fails":236,"./$.iobject":238,"./$.to-object":243,"dup":59}],231:[function(require,module,exports){
+},{"./$.is-object":238,"dup":48}],230:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
-},{"dup":49}],232:[function(require,module,exports){
-var core = module.exports = {version: '1.2.3'};
-if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],233:[function(require,module,exports){
+},{"dup":49}],231:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"dup":50}],232:[function(require,module,exports){
 arguments[4][51][0].apply(exports,arguments)
-},{"./$.a-function":228,"dup":51}],234:[function(require,module,exports){
+},{"./$.a-function":228,"dup":51}],233:[function(require,module,exports){
 arguments[4][52][0].apply(exports,arguments)
-},{"./$.core":232,"./$.global":237,"dup":52}],235:[function(require,module,exports){
+},{"./$.core":231,"./$.global":236,"dup":52}],234:[function(require,module,exports){
 arguments[4][53][0].apply(exports,arguments)
-},{"dup":53}],236:[function(require,module,exports){
+},{"dup":53}],235:[function(require,module,exports){
 arguments[4][54][0].apply(exports,arguments)
-},{"dup":54}],237:[function(require,module,exports){
+},{"dup":54}],236:[function(require,module,exports){
 arguments[4][55][0].apply(exports,arguments)
-},{"dup":55}],238:[function(require,module,exports){
+},{"dup":55}],237:[function(require,module,exports){
 arguments[4][56][0].apply(exports,arguments)
-},{"./$.cof":231,"dup":56}],239:[function(require,module,exports){
+},{"./$.cof":230,"dup":56}],238:[function(require,module,exports){
 arguments[4][57][0].apply(exports,arguments)
-},{"dup":57}],240:[function(require,module,exports){
+},{"dup":57}],239:[function(require,module,exports){
 arguments[4][58][0].apply(exports,arguments)
-},{"dup":58}],241:[function(require,module,exports){
-// most Object methods by ES6 should accept primitives
-module.exports = function(KEY, exec){
-  var $def = require('./$.def')
-    , fn   = (require('./$.core').Object || {})[KEY] || Object[KEY]
-    , exp  = {};
-  exp[KEY] = exec(fn);
-  $def($def.S + $def.F * require('./$.fails')(function(){ fn(1); }), 'Object', exp);
-};
-},{"./$.core":232,"./$.def":234,"./$.fails":236}],242:[function(require,module,exports){
+},{"dup":58}],240:[function(require,module,exports){
+arguments[4][59][0].apply(exports,arguments)
+},{"./$":239,"./$.fails":235,"./$.iobject":237,"./$.to-object":243,"dup":59}],241:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"./$.core":231,"./$.def":233,"./$.fails":235,"dup":60}],242:[function(require,module,exports){
 arguments[4][61][0].apply(exports,arguments)
-},{"./$":240,"./$.an-object":229,"./$.ctx":233,"./$.is-object":239,"dup":61}],243:[function(require,module,exports){
+},{"./$":239,"./$.an-object":229,"./$.ctx":232,"./$.is-object":238,"dup":61}],243:[function(require,module,exports){
 arguments[4][63][0].apply(exports,arguments)
-},{"./$.defined":235,"dup":63}],244:[function(require,module,exports){
-// 19.1.3.1 Object.assign(target, source)
-var $def = require('./$.def');
-
-$def($def.S + $def.F, 'Object', {assign: require('./$.assign')});
-},{"./$.assign":230,"./$.def":234}],245:[function(require,module,exports){
+},{"./$.defined":234,"dup":63}],244:[function(require,module,exports){
+arguments[4][64][0].apply(exports,arguments)
+},{"./$.def":233,"./$.object-assign":240,"dup":64}],245:[function(require,module,exports){
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = require('./$.is-object');
 
@@ -32464,11 +32458,11 @@ require('./$.object-sap')('isFrozen', function($isFrozen){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
-},{"./$.is-object":239,"./$.object-sap":241}],246:[function(require,module,exports){
+},{"./$.is-object":238,"./$.object-sap":241}],246:[function(require,module,exports){
 arguments[4][66][0].apply(exports,arguments)
 },{"./$.object-sap":241,"./$.to-object":243,"dup":66}],247:[function(require,module,exports){
 arguments[4][67][0].apply(exports,arguments)
-},{"./$.def":234,"./$.set-proto":242,"dup":67}],248:[function(require,module,exports){
+},{"./$.def":233,"./$.set-proto":242,"dup":67}],248:[function(require,module,exports){
 arguments[4][68][0].apply(exports,arguments)
 },{"dup":68}],249:[function(require,module,exports){
 'use strict';
@@ -40769,7 +40763,6 @@ var HTMLDOMPropertyConfig = {
     multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     name: null,
-    nonce: MUST_USE_ATTRIBUTE,
     noValidate: HAS_BOOLEAN_VALUE,
     open: HAS_BOOLEAN_VALUE,
     optimum: null,
@@ -40781,7 +40774,6 @@ var HTMLDOMPropertyConfig = {
     readOnly: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     rel: null,
     required: HAS_BOOLEAN_VALUE,
-    reversed: HAS_BOOLEAN_VALUE,
     role: MUST_USE_ATTRIBUTE,
     rows: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
     rowSpan: null,
@@ -41227,7 +41219,6 @@ assign(React, {
 });
 
 React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
-React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
 },{"./Object.assign":389,"./ReactDOM":402,"./ReactDOMServer":412,"./ReactIsomorphic":430,"./deprecated":473}],392:[function(require,module,exports){
@@ -51436,7 +51427,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.3';
+module.exports = '0.14.2';
 },{}],452:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -56528,7 +56519,16 @@ var UIUtils = (function () {
   _createClass(UIUtils, null, [{
     key: 'calculateModalMapHeight',
     value: function calculateModalMapHeight(id) {
-      $('#' + id).height(150);
+
+      var h = $(window).height();
+      console.log('id', id);
+      console.log('height', h);
+      var offsetY = $('.modal-body').position().top;
+
+      var footerHeight = $('#footer').height();
+      console.log('footer', footerHeight);
+      var headerHeight = $('.modal-header').height();
+      $('#' + id).height(h - offsetY - footerHeight - 50);
     }
   }]);
 

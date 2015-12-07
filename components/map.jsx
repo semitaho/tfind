@@ -17,7 +17,6 @@ class Map extends React.Component {
     return (
       <div ref="map" id={this.props.id}></div>
     );
-
   }
 
   renderMap(mapOptions) {
@@ -47,16 +46,21 @@ class Map extends React.Component {
       let mapElement = $('#' + this.props.id);
       let mapY = mapElement.offset().top;
       let footerHeight = $('#footer').height();
-      $('#' + this.props.id).height(h - mapY - 10);
+      $('#' + this.props.id).height(h - mapY - footerHeight - 10);
 
     };
     if (this.props.findings && this.props.findings.length > 0) {
       UIUtils.calculateModalMapHeight(this.props.id);
-      this.createMarkers(this.props.findings);
-      this.createRoute();
       let center = this.calculateCenter(this.props.findings);
       mapOptions.center = center;
       this.renderMap(mapOptions);
+      this.createMarkers(this.props.findings);
+      this.createRoute();
+    
+      google.maps.event.addDomListener(window, "resize", () => {
+        UIUtils.calculateModalMapHeight(this.props.id);
+        this.map.setCenter(this.calculateCenter(this.props.findings));
+      });
 
       // google.maps.event.addDomListener(window, "resize", resize);
     }
