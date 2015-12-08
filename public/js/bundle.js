@@ -23,9 +23,9 @@ var _componentsKadonnutformJsx = require('../components/kadonnutform.jsx');
 
 var _componentsKadonnutformJsx2 = _interopRequireDefault(_componentsKadonnutformJsx);
 
-var _componentsKadonneetlistJsx = require('../components/kadonneetlist.jsx');
+var _componentsEtsiKadonneetlistJsx = require('../components/etsi/kadonneetlist.jsx');
 
-var _componentsKadonneetlistJsx2 = _interopRequireDefault(_componentsKadonneetlistJsx);
+var _componentsEtsiKadonneetlistJsx2 = _interopRequireDefault(_componentsEtsiKadonneetlistJsx);
 
 var _componentsKadonneetkartallaKadonneetkartallaJsx = require('../components/kadonneetkartalla/kadonneetkartalla.jsx');
 
@@ -70,10 +70,10 @@ if (kadonneetkartalla) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaKadonneetkartallaJsx2['default'], { items: losts }), kadonneetkartalla);
 }
 if (kadonneetlist) {
-  _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetlistJsx2['default'], { items: kadonneetItems }), kadonneetlist);
+  _reactDom2['default'].render(_react2['default'].createElement(_componentsEtsiKadonneetlistJsx2['default'], { items: kadonneetItems }), kadonneetlist);
 }
 
-},{"../components/findingform.jsx":3,"../components/kadonneetkartalla/kadonneetkartalla.jsx":5,"../components/kadonneetlist.jsx":6,"../components/kadonnutform.jsx":8,"../components/listakadonneista/lostsgrid.jsx":10,"../components/navigation.jsx":15,"react":523,"react-dom":367}],2:[function(require,module,exports){
+},{"../components/etsi/kadonneetlist.jsx":3,"../components/findingform.jsx":4,"../components/kadonneetkartalla/kadonneetkartalla.jsx":6,"../components/kadonnutform.jsx":8,"../components/listakadonneista/lostsgrid.jsx":10,"../components/navigation.jsx":15,"react":523,"react-dom":367}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -124,6 +124,10 @@ var _reactBootstrapDatetimepicker = require('react-bootstrap-datetimepicker');
 
 var _reactBootstrapDatetimepicker2 = _interopRequireDefault(_reactBootstrapDatetimepicker);
 
+var _utilsUiutilsJs = require('./../../utils/uiutils.js');
+
+var _utilsUiutilsJs2 = _interopRequireDefault(_utilsUiutilsJs);
+
 var KadonneetSearchMap = (function (_React$Component) {
   _inherits(KadonneetSearchMap, _React$Component);
 
@@ -139,8 +143,7 @@ var KadonneetSearchMap = (function (_React$Component) {
     this.markToMap = this.markToMap.bind(this);
     this.cancelConfirmMarking = this.cancelConfirmMarking.bind(this);
 
-    console.log('props', this.props);
-    this.state = { opened: true, loading: true };
+    this.state = { opened: true, loading: false };
     this.polyline = new google.maps.Polyline({
       strokeColor: '#000000',
       strokeOpacity: 1.0,
@@ -193,22 +196,23 @@ var KadonneetSearchMap = (function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var mapClass = this.state.opened ? 'grayable' : '';
+      var mapClass = this.state.opened === true ? 'grayable' : '';
       return _react2['default'].createElement(
         _reactBootstrap.Modal,
         { dialogClassName: 'search-modal', show: true, bsSize: 'large', onHide: this.props.onclose },
-        this.state.opened === false && this.state.started ? this.renderTracking() : '',
+        this.state.opened === false && this.state.started === true ? this.renderTracking() : '',
         this.state.opened === false && this.state.marking ? this.renderMarking() : '',
         _react2['default'].createElement(
           _reactBootstrap.Modal.Body,
           null,
-          this.state.opened ? _react2['default'].createElement(
+          this.state.opened === true ? _react2['default'].createElement(
             'div',
             { className: 'opened' },
-            this.state.loading ? this.renderSpinner("kadonneet-search-map") : this.renderQuestion()
+            this.renderQuestion()
           ) : '',
           this.state.saveMarking ? this.renderMarkingConfirm() : '',
-          _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass })
+          _react2['default'].createElement('div', { id: 'kadonneet-search-map', className: mapClass }),
+          this.state.loading ? this.renderSpinner("kadonneet-search-map") : ''
         )
       );
     }
@@ -405,18 +409,12 @@ var KadonneetSearchMap = (function (_React$Component) {
   }, {
     key: 'gotLocation',
     value: function gotLocation(latlng) {
-      if (this.state.opened) {
-        this.initMap(latlng.coords);
-      }
+      this.setState({ started: true, loading: false });
       if (!this.checkLatestPointsDistance(latlng.coords)) {
         return;
       }
-
       var position = this.updateMarker(latlng.coords);
       this.updateRoute(position);
-      if (this.state.loading) {
-        this.setState({ loading: false });
-      }
       var length = this.calculateLength();
       this.setState({ length: length });
     }
@@ -467,6 +465,7 @@ var KadonneetSearchMap = (function (_React$Component) {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       console.log('did un mount');
+      google.maps.event.removeListener(this.resizeListener);
       this.map = null;
       if (this.watchId) {
         navigator.geolocation.clearWatch(this.watchId);
@@ -476,7 +475,7 @@ var KadonneetSearchMap = (function (_React$Component) {
   }, {
     key: 'initMap',
     value: function initMap(coordinates) {
-      console.log(coordinates);
+      var mapId = 'kadonneet-search-map';
       var mapOptions = {
         draggable: true,
         disableDefaultUI: true,
@@ -490,7 +489,9 @@ var KadonneetSearchMap = (function (_React$Component) {
         zoom: this.props.initialZoom,
         center: { lat: coordinates.latitude, lng: coordinates.longitude }
       };
-      var domNode = document.getElementById('kadonneet-search-map');
+      _utilsUiutilsJs2['default'].calculateModalMapHeight(mapId);
+
+      var domNode = document.getElementById(mapId);
       this.map = new google.maps.Map(domNode, mapOptions);
       this.polyline.setMap(this.map);
     }
@@ -502,19 +503,28 @@ var KadonneetSearchMap = (function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var _this3 = this;
+
+      var loc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(this.props.item);
+      this.initMap({ latitude: loc.lat, longitude: loc.lng });
+      this.resizeListener = google.maps.event.addDomListener(window, "resize", function () {
+        var mapId = 'kadonneet-search-map';
+        _utilsUiutilsJs2['default'].calculateModalMapHeight(mapId);
+        var center = _this3.map.getCenter();
+        var loc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(_this3.props.item);
+        _this3.map.setCenter({ lat: loc.lat, lng: loc.lng });
+      });
+    }
+  }, {
+    key: 'startSearching',
+    value: function startSearching() {
       var options = {
         enableHighAccuracy: true,
         timeout: 5000,
         maximumAge: 0
       };
       this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
-      console.log('on did mount');
-    }
-  }, {
-    key: 'startSearching',
-    value: function startSearching() {
-      this.setState({ opened: false, started: true });
-      this.updateLocation(this.marker);
+      this.setState({ opened: false, loading: true });
     }
   }, {
     key: 'drawKatoamispaikka',
@@ -535,7 +545,7 @@ var KadonneetSearchMap = (function (_React$Component) {
   }, {
     key: 'markToMap',
     value: function markToMap() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.drawKatoamispaikka();
       var katoamisLoc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(this.props.item);
@@ -548,25 +558,31 @@ var KadonneetSearchMap = (function (_React$Component) {
 
       this.map.addListener('click', function (e) {
         console.log('e.', e.latLng);
-        _this3.updateMarker({ latitude: e.latLng.lat(), longitude: e.latLng.lng() });
-        _this3.updateLocation(e.latLng);
-        _this3.drawCircle(e.latLng);
+        _this4.updateMarker({ latitude: e.latLng.lat(), longitude: e.latLng.lng() });
+        _this4.updateLocation(e.latLng);
+        _this4.drawCircle(e.latLng);
       });
 
       this.setState({ opened: false, marking: true, radius: this.state.radius });
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      console.log('cdu');
+      _utilsUiutilsJs2['default'].calculateModalMapHeight('kadonneet-search-map');
+    }
+  }, {
     key: 'updateLocation',
     value: function updateLocation(latlng) {
-      var _this4 = this;
+      var _this5 = this;
 
       this.geocoder.geocode({ 'location': latlng }, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
           if (results[0]) {
-            var markerPosition = _this4.katoamis.getPosition();
+            var markerPosition = _this5.katoamis.getPosition();
             var distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(markerPosition.lat(), markerPosition.lng()), new google.maps.LatLng(latlng.lat(), latlng.lng()));
             console.log('dist', distance);
-            _this4.setState({
+            _this5.setState({
               location: results[0].formatted_address,
               katoamisdistance: _utilsTextformatterJs2['default'].formatMeters(distance)
             });
@@ -577,7 +593,7 @@ var KadonneetSearchMap = (function (_React$Component) {
   }, {
     key: 'drawCircle',
     value: function drawCircle(latlng) {
-      var _this5 = this;
+      var _this6 = this;
 
       if (this.cityCircle) {
         this.cityCircle.setMap(null);
@@ -595,13 +611,13 @@ var KadonneetSearchMap = (function (_React$Component) {
         draggable: true
       });
       this.cityCircle.addListener('radius_changed', function (_) {
-        console.log('center', _this5.cityCircle.getRadius());
-        _this5.setState({ radius: Math.round(_this5.cityCircle.getRadius()) });
+        console.log('center', _this6.cityCircle.getRadius());
+        _this6.setState({ radius: Math.round(_this6.cityCircle.getRadius()) });
       });
       this.cityCircle.addListener('center_changed', function (_) {
-        var center = _this5.cityCircle.getCenter();
-        _this5.updateMarker({ latitude: center.lat(), longitude: center.lng() });
-        _this5.updateLocation(center);
+        var center = _this6.cityCircle.getCenter();
+        _this6.updateMarker({ latitude: center.lat(), longitude: center.lng() });
+        _this6.updateLocation(center);
       });
     }
   }]);
@@ -621,7 +637,86 @@ KadonneetSearchMap.defaultProps = {
 };
 module.exports = exports['default'];
 
-},{"./../../utils/itemutils.js":524,"./../../utils/textformatter.js":525,"./../modals/confirmDialog.jsx":13,"./../spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],3:[function(require,module,exports){
+},{"./../../utils/itemutils.js":524,"./../../utils/textformatter.js":525,"./../../utils/uiutils.js":526,"./../modals/confirmDialog.jsx":13,"./../spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],3:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _kadonneetSearchMapJsx = require('./kadonneetSearchMap.jsx');
+
+var _kadonneetSearchMapJsx2 = _interopRequireDefault(_kadonneetSearchMapJsx);
+
+var KadonneetList = (function (_React$Component) {
+  _inherits(KadonneetList, _React$Component);
+
+  function KadonneetList() {
+    _classCallCheck(this, KadonneetList);
+
+    _get(Object.getPrototypeOf(KadonneetList.prototype), 'constructor', this).call(this);
+    this.state = { item: null };
+    this.closeMap = this.closeMap.bind(this);
+  }
+
+  _createClass(KadonneetList, [{
+    key: 'clickButton',
+    value: function clickButton(item) {
+      console.log('item', item);
+      this.setState({ item: item });
+    }
+  }, {
+    key: 'closeMap',
+    value: function closeMap() {
+      this.setState({ item: null });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this = this;
+
+      return _react2['default'].createElement(
+        'div',
+        null,
+        _react2['default'].createElement(
+          'div',
+          { className: 'list-group' },
+          this.props.items.map(function (item, key) {
+            return _react2['default'].createElement(
+              'button',
+              { key: 'search_' + key, className: 'list-group-item', onClick: _this.clickButton.bind(_this, item) },
+              '  ',
+              item.name,
+              _react2['default'].createElement('span', { className: 'pull-right glyphicon glyphicon-menu-right', 'aria-hidden': 'true' })
+            );
+          })
+        ),
+        this.state.item !== null ? _react2['default'].createElement(_kadonneetSearchMapJsx2['default'], { item: this.state.item, onclose: this.closeMap }) : ''
+      );
+    }
+  }]);
+
+  return KadonneetList;
+})(_react2['default'].Component);
+
+exports['default'] = KadonneetList;
+module.exports = exports['default'];
+
+},{"./kadonneetSearchMap.jsx":2,"react":523}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -874,7 +969,7 @@ var FindingForm = (function (_React$Component) {
 exports['default'] = FindingForm;
 module.exports = exports['default'];
 
-},{"./map.jsx":12,"./modals/mapmodal.jsx":14,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],4:[function(require,module,exports){
+},{"./map.jsx":12,"./modals/mapmodal.jsx":14,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -905,7 +1000,7 @@ var Next = function Next(props) {
 exports['default'] = Next;
 module.exports = exports['default'];
 
-},{"react":523,"react-bootstrap":200}],5:[function(require,module,exports){
+},{"react":523,"react-bootstrap":200}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -952,85 +1047,7 @@ var KadonneetKartalla = (function (_React$Component) {
 exports['default'] = KadonneetKartalla;
 module.exports = exports['default'];
 
-},{"./../map.jsx":12,"react":523}],6:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _etsiKadonneetSearchMapJsx = require('./etsi/kadonneetSearchMap.jsx');
-
-var _etsiKadonneetSearchMapJsx2 = _interopRequireDefault(_etsiKadonneetSearchMapJsx);
-
-var KadonneetList = (function (_React$Component) {
-  _inherits(KadonneetList, _React$Component);
-
-  function KadonneetList() {
-    _classCallCheck(this, KadonneetList);
-
-    _get(Object.getPrototypeOf(KadonneetList.prototype), 'constructor', this).call(this);
-    this.state = { item: null };
-    this.closeMap = this.closeMap.bind(this);
-  }
-
-  _createClass(KadonneetList, [{
-    key: 'clickButton',
-    value: function clickButton(item) {
-      this.setState({ item: item });
-    }
-  }, {
-    key: 'closeMap',
-    value: function closeMap() {
-      this.setState({ item: null });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this = this;
-
-      return _react2['default'].createElement(
-        'div',
-        null,
-        _react2['default'].createElement(
-          'div',
-          { className: 'list-group' },
-          this.props.items.map(function (item, key) {
-            return _react2['default'].createElement(
-              'button',
-              { key: 'search_' + key, className: 'list-group-item', onClick: _this.clickButton.bind(_this, item) },
-              '  ',
-              item.name,
-              _react2['default'].createElement('span', { className: 'pull-right glyphicon glyphicon-menu-right', 'aria-hidden': 'true' })
-            );
-          })
-        ),
-        this.state.item !== null ? _react2['default'].createElement(_etsiKadonneetSearchMapJsx2['default'], { item: this.state.item, onclose: this.closeMap }) : ''
-      );
-    }
-  }]);
-
-  return KadonneetList;
-})(_react2['default'].Component);
-
-exports['default'] = KadonneetList;
-module.exports = exports['default'];
-
-},{"./etsi/kadonneetSearchMap.jsx":2,"react":523}],7:[function(require,module,exports){
+},{"./../map.jsx":12,"react":523}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1536,7 +1553,7 @@ KadonnutForm.defaultProps = { tilanteet: [{ value: 1, label: 'Kadonnut' }] };
 exports['default'] = KadonnutForm;
 module.exports = exports['default'];
 
-},{"./forms/next.jsx":4,"./map.jsx":12,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],9:[function(require,module,exports){
+},{"./forms/next.jsx":5,"./map.jsx":12,"./modals/confirmDialog.jsx":13,"./spinner.jsx":16,"jquery":18,"react":523,"react-bootstrap":200,"react-bootstrap-datetimepicker":20,"react-dom":367}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1758,7 +1775,7 @@ GridItem.defaultProps = { interval: 0 };
 exports['default'] = GridItem;
 module.exports = exports['default'];
 
-},{"./../../utils/textformatter.js":525,"./../findingform.jsx":3,"./../kadonnutNews.jsx":7,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],10:[function(require,module,exports){
+},{"./../../utils/textformatter.js":525,"./../findingform.jsx":4,"./../kadonnutNews.jsx":7,"./lostsmodal.jsx":11,"react":523,"react-bootstrap":200}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2647,6 +2664,12 @@ var Spinner = (function (_React$Component) {
         jht = (0, _jquery2['default'])('body');
       }
       jht.addClass('darkened');
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      var jht = (0, _jquery2['default'])('#' + this.props.dimm);
+      jht.removeClass('darkened');
     }
   }]);
 
@@ -56519,12 +56542,8 @@ var UIUtils = (function () {
   _createClass(UIUtils, null, [{
     key: 'calculateModalMapHeight',
     value: function calculateModalMapHeight(id) {
-
       var h = $(window).height();
-      console.log('id', id);
-      console.log('height', h);
       var offsetY = $('.modal-body').position().top;
-
       var footerHeight = $('#footer').height();
       console.log('footer', footerHeight);
       var headerHeight = $('.modal-header').height();

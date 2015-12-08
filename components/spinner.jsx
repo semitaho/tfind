@@ -22,6 +22,12 @@ class Spinner extends React.Component {
     jht.addClass('darkened');
   }
 
+  componentWillUnmount() {
+    var jht = $('#' + this.props.dimm);
+    jht.removeClass('darkened');
+  }
+
+
 }
 
 export default Spinner;

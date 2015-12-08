@@ -8,6 +8,7 @@ import ItemUtils from './../../utils/itemutils.js';
 import TextFormatter from './../../utils/textformatter.js';
 import ConfirmDialog from './../modals/confirmDialog.jsx';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
+import UIUtils from './../../utils/uiutils.js';
 
 
 export default class KadonneetSearchMap extends React.Component {
@@ -21,8 +22,7 @@ export default class KadonneetSearchMap extends React.Component {
     this.markToMap = this.markToMap.bind(this);
     this.cancelConfirmMarking = this.cancelConfirmMarking.bind(this);
 
-    console.log('props', this.props);
-    this.state = {opened: true, loading: true};
+    this.state = {opened: true, loading: false};
     this.polyline = new google.maps.Polyline({
       strokeColor: '#000000',
       strokeOpacity: 1.0,
@@ -35,41 +35,40 @@ export default class KadonneetSearchMap extends React.Component {
   }
 
   renderQuestion() {
-    return (<div><h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
-
-      <div className="center-block row">
-        <div className="col-md-12 btn-toolbar">
-          <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
-          <button type="button" className="btn btn-success btn-md" onClick={this.markToMap}>Merkitse karttaan</button>
-          <button type="button" className="btn btn-primary btn-md" onClick={this.startSearching}>Aloita jäljittäminen
-            (vaatii HTML5 geotunnisteen)
-          </button>
-        </div>
-
-      </div>
-    </div>)
+    return (<div>
+              <h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
+              <div className="center-block row">
+                <div className="col-md-12 btn-toolbar">
+                  <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
+                  <button type="button" className="btn btn-success btn-md" onClick={this.markToMap}>Merkitse karttaan</button>
+                  <button type="button" className="btn btn-primary btn-md" onClick={this.startSearching}>Aloita jäljittäminen
+                    (vaatii HTML5 geotunnisteen)
+                  </button>
+                </div>
+              </div>
+            </div>)
 
   }
 
   render() {
-    var mapClass = this.state.opened ? 'grayable' : '';
+    var mapClass = this.state.opened === true ? 'grayable' : '';
     return (<Modal dialogClassName="search-modal" show={true} bsSize="large" onHide={this.props.onclose}>
-      {this.state.opened === false && this.state.started ?
+   
+      {this.state.opened === false && this.state.started === true?
         this.renderTracking() : ''}
+   
       {this.state.opened === false && this.state.marking ?
         this.renderMarking() : ''}
       <Modal.Body>
-        {this.state.opened ? <div className="opened">
-          {this.state.loading ? this.renderSpinner("kadonneet-search-map") : this.renderQuestion()}
-        </div> : ''}
+        {this.state.opened === true ? <div className="opened">{this.renderQuestion()}</div> : ''}
         {
           this.state.saveMarking ? this.renderMarkingConfirm() : ''
         }
         <div id="kadonneet-search-map" className={mapClass}>
 
         </div>
+        {this.state.loading ? this.renderSpinner("kadonneet-search-map") : ''}
       </Modal.Body>
-
     </Modal>)
   }
 
@@ -188,20 +187,15 @@ export default class KadonneetSearchMap extends React.Component {
   }
 
   gotLocation(latlng) {
-    if (this.state.opened) {
-      this.initMap(latlng.coords);
-    }
+    this.setState({started: true, loading: false});
     if (!this.checkLatestPointsDistance(latlng.coords)) {
       return;
     }
-
     var position = this.updateMarker(latlng.coords);
     this.updateRoute(position);
-    if (this.state.loading) {
-      this.setState({loading: false});
-    }
     var length = this.calculateLength();
     this.setState({length: length});
+
   }
 
   calculateLength() {
@@ -245,6 +239,7 @@ export default class KadonneetSearchMap extends React.Component {
 
   componentWillUnmount() {
     console.log('did un mount');
+    google.maps.event.removeListener(this.resizeListener);
     this.map = null;
     if (this.watchId) {
       navigator.geolocation.clearWatch(this.watchId);
@@ -253,7 +248,7 @@ export default class KadonneetSearchMap extends React.Component {
   }
 
   initMap(coordinates) {
-    console.log(coordinates);
+    let mapId = 'kadonneet-search-map';
     var mapOptions = {
       draggable: true,
       disableDefaultUI: true,
@@ -267,10 +262,11 @@ export default class KadonneetSearchMap extends React.Component {
       zoom: this.props.initialZoom,
       center: {lat: coordinates.latitude, lng: coordinates.longitude}
     };
-    var domNode = document.getElementById('kadonneet-search-map');
+    UIUtils.calculateModalMapHeight(mapId);
+
+    var domNode = document.getElementById(mapId);
     this.map = new google.maps.Map(domNode, mapOptions);
     this.polyline.setMap(this.map);
-
   }
 
   onErrorGeocoding() {
@@ -278,18 +274,26 @@ export default class KadonneetSearchMap extends React.Component {
   }
 
   componentDidMount() {
+    let loc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
+    this.initMap({latitude: loc.lat, longitude: loc.lng});
+    this.resizeListener = google.maps.event.addDomListener(window, "resize", () => {
+        let mapId = 'kadonneet-search-map';
+        UIUtils.calculateModalMapHeight(mapId);
+        let center = this.map.getCenter();
+        let loc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
+        this.map.setCenter({lat: loc.lat, lng: loc.lng});
+      });
+ 
+  }
+
+  startSearching() {
     var options = {
       enableHighAccuracy: true,
       timeout: 5000,
       maximumAge: 0
     };
     this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
-    console.log('on did mount');
-  }
-
-  startSearching() {
-    this.setState({opened: false, started: true});
-    this.updateLocation(this.marker)
+    this.setState({opened: false, loading: true});
   }
 
   drawKatoamispaikka() {
@@ -326,6 +330,11 @@ export default class KadonneetSearchMap extends React.Component {
 
     this.setState({opened: false, marking: true, radius: this.state.radius});
 
+  }
+
+  componentDidUpdate(){
+    console.log('cdu');
+    UIUtils.calculateModalMapHeight('kadonneet-search-map');
   }
 
   updateLocation(latlng) {
