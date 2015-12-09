@@ -61,7 +61,6 @@ export default class KadonneetSearchMap extends React.Component {
         {this.state.opened === true ? <div className="opened">{this.renderQuestion()}</div> : ''}
         
         <div id="kadonneet-search-map" className={mapClass}>
-
         </div>
         {this.state.loading ? this.renderSpinner("kadonneet-search-map") : ''}
       </Modal.Body>
@@ -229,7 +228,6 @@ export default class KadonneetSearchMap extends React.Component {
         if (results[0]) {
           let markerPosition = this.katoamis.getPosition();
           let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(markerPosition.lat(), markerPosition.lng()), new google.maps.LatLng(latlng.lat(), latlng.lng()));
-          console.log('dist', distance);
           this.setState({
             location: results[0].formatted_address,
             katoamisdistance: TextFormatter.formatMeters(distance)
@@ -256,7 +254,6 @@ export default class KadonneetSearchMap extends React.Component {
       draggable: true
     });
     this.cityCircle.addListener('radius_changed', _ => {
-      console.log('center', this.cityCircle.getRadius());
       this.setState({radius: Math.round(this.cityCircle.getRadius())});
     });
     this.cityCircle.addListener('center_changed', _ => {
