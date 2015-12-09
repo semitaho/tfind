@@ -10,7 +10,7 @@ class TextFormatter {
   }
 
   static formatMeters(distance){
-    return distance.toFixed(2);
+    return distance.toFixed(2).replace('.', ',');
 
   }
 
