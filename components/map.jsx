@@ -26,6 +26,7 @@ class Map extends React.Component {
 
   componentDidMount() {
     this.geocoder = new google.maps.Geocoder;
+    UIUtils.calculateModalMapHeight(this.props.id);
 
     var mapOptions = {
       draggable: true,
@@ -49,26 +50,25 @@ class Map extends React.Component {
       $('#' + this.props.id).height(h - mapY - footerHeight - 10);
 
     };
-    UIUtils.calculateModalMapHeight(this.props.id);
     this.renderMap(mapOptions);
-
     if (this.props.katoamispaikka) {
       console.log('has katoamispaikka', this.props.katoamispaikka);
       let markerIcon = {
-        scale: 7,
-        animation: google.maps.Animation.DROP,
-        path: google.maps.SymbolPath.CIRCLE
+          scale: 7,
+          animation: google.maps.Animation.DROP,
+          path: google.maps.SymbolPath.CIRCLE
       };
       this.katoamis = new google.maps.Marker({
-        position: {lat: this.props.katoamispaikka.lat, lng: this.props.katoamispaikka.lng},
-        map: this.map,
-        animation: google.maps.Animation.DROP,
-        icon: markerIcon
+          position: {lat: this.props.katoamispaikka.lat, lng: this.props.katoamispaikka.lng},
+          map: this.map,
+          animation: google.maps.Animation.DROP,
+          icon: markerIcon
       });
+      this.map.setCenter({lat: this.props.katoamispaikka.lat, lng: this.props.katoamispaikka.lng});
+      
     }
 
-    if (this.props.circle) {
-      console.log('circle is ', this.map);
+    const drawCircle = position => {
       if (this.cityCircle) {
         this.cityCircle.setMap(null);
       }
@@ -79,11 +79,30 @@ class Map extends React.Component {
         fillColor: '#FF0000',
         fillOpacity: 0.35,
         map: this.map,
-        center: this.props.circle,
-        radius: 600,
+        center: {lat: position.lat, lng: position.lng},
+        radius: this.props.radius,
         editable: true,
         draggable: true
       });
+      if (this.props.radiuschanged){
+        this.cityCircle.addListener('radius_changed', _ => this.props.radiuschanged(this.cityCircle.getRadius())); 
+      }
+    };
+    if (this.props.circle) {
+      drawCircle(this.props.circle); 
+      this.updateMarker({latitude: this.props.circle.lat, longitude: this.props.circle.lng});
+      
+
+      if (this.props.circlechanged){
+        google.maps.event.addListener(this.map, 'click', e => {
+          let position = {lat: e.latLng.lat(), lng: e.latLng.lng()};
+          this.updateMarker({latitude: position.lat, longitude: position.lng});
+          drawCircle(position);
+          this.props.circlechanged({current:position, original: this.props.circle});
+        });
+      }
+     
+      
     }
 
     if (this.props.findings && this.props.findings.length > 0) {
@@ -153,6 +172,19 @@ class Map extends React.Component {
       map: this.map,
       animation: google.maps.Animation.DROP,
       title: 'Nykyinen sijainti'
+    });
+    this.map.setCenter(this.marker.getPosition());
+    return this.marker.position;
+  }
+
+  updateMarker(location) {
+    if (this.marker) {
+      this.marker.setMap(null);
+    }
+    var position = {lat: location.latitude, lng: location.longitude};
+    this.marker = new google.maps.Marker({
+      position: position,
+      map: this.map,
     });
     this.map.setCenter(this.marker.getPosition());
     return this.marker.position;
@@ -361,13 +393,11 @@ class Map extends React.Component {
 
   componentWillUnmount(){
     console.log('unmounting....');
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // center: {lat: this.props.findings[0].lat, lng: this.props.findings[0].lon}
-    // this.map.setCenter
-    // this.map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
-
+    if (this.katoamis){
+      this.katoamis.setMap(null);
+    }
+    this.katoamis = null;
+    this.map = null;
   }
 
 }

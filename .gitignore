@@ -3,4 +3,5 @@ node_modules
 public/files
 build
 bundle.js
+bundle.js.map
 public/js/bundle.js

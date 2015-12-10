@@ -366,8 +366,10 @@ var KadonneetSearchMap = (function (_React$Component) {
     this.startSearching = this.startSearching.bind(this);
     this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
     this.markToMap = this.markToMap.bind(this);
+    this.radiuschanged = this.radiuschanged.bind(this);
+    this.circlechanged = this.circlechanged.bind(this);
 
-    this.state = { opened: true, loading: false };
+    this.state = { opened: true, loading: false, katoamisdistance: 0 };
     this.polyline = new google.maps.Polyline({
       strokeColor: '#000000',
       strokeOpacity: 1.0,
@@ -429,14 +431,21 @@ var KadonneetSearchMap = (function (_React$Component) {
         _react2['default'].createElement(
           _reactBootstrap.Modal.Body,
           null,
-          this.state.opened === false && this.state.marking ? _react2['default'].createElement(_mapJsx2['default'], { id: 'kadonneet-search-map', circle: { lat: this.state.katoamispaikka.lat, lng: this.state.katoamispaikka.lng }, katoamispaikka: this.state.katoamispaikka }) : '',
           this.state.opened === true ? _react2['default'].createElement(
             'div',
-            { className: 'opened' },
-            this.renderQuestion(),
-            _react2['default'].createElement(_mapJsx2['default'], { id: 'kadonneet-search-map', className: mapClass, katoamispaikka: this.state.katoamispaikka })
+            null,
+            _react2['default'].createElement(
+              'div',
+              { className: 'opened' },
+              this.renderQuestion()
+            ),
+            _react2['default'].createElement(_mapJsx2['default'], { id: 'kadonneet-search-map', className: mapClass, katoamispaikka: this.getKatoamispaikka() })
           ) : '',
-          this.state.loading ? this.renderSpinner("kadonneet-search-map") : ''
+          this.state.loading ? this.renderSpinner("kadonneet-search-map") : '',
+          this.state.opened === false && this.state.marking ? _react2['default'].createElement(_mapJsx2['default'], { id: 'kadonneet-marker-map', className: '', radius: this.state.radius, radiuschanged: this.radiuschanged,
+            circle: { lat: this.getKatoamispaikka().lat, lng: this.getKatoamispaikka().lng },
+            circlechanged: this.circlechanged,
+            katoamispaikka: this.getKatoamispaikka() }) : ''
         )
       );
     }
@@ -575,7 +584,7 @@ var KadonneetSearchMap = (function (_React$Component) {
     key: 'markToMap',
     value: function markToMap() {
       var katoamisLoc = _utilsItemutilsJs2['default'].findKatoamispaikkaLoc(this.props.item);
-      this.setState({ opened: false, marking: true, radius: this.state.radius, katoamispaikka: katoamisLoc });
+      this.setState({ opened: false, marking: true, radius: this.props.radius, katoamispaikka: katoamisLoc });
       /*
       this.drawKatoamispaikka();
       this.updateMarker({latitude: katoamisLoc.lat, longitude: katoamisLoc.lng});
@@ -584,7 +593,6 @@ var KadonneetSearchMap = (function (_React$Component) {
       this.updateLocation((this.marker.getPosition()));
        this.map.addListener('click', e => {
         console.log('e.', e.latLng);
-        this.updateMarker({latitude: e.latLng.lat(), longitude: e.latLng.lng()});
         this.updateLocation(e.latLng);
         this.drawCircle(e.latLng);
       });
@@ -601,11 +609,10 @@ var KadonneetSearchMap = (function (_React$Component) {
     value: function updateLocation(latlng) {
       var _this2 = this;
 
-      this.geocoder.geocode({ 'location': latlng }, function (results, status) {
+      this.geocoder.geocode({ 'location': latlng.current }, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
           if (results[0]) {
-            var markerPosition = _this2.katoamis.getPosition();
-            var distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(markerPosition.lat(), markerPosition.lng()), new google.maps.LatLng(latlng.lat(), latlng.lng()));
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(latlng.original.lat, latlng.original.lng), new google.maps.LatLng(latlng.current.lat, latlng.current.lng));
             _this2.setState({
               location: results[0].formatted_address,
               katoamisdistance: _utilsTextformatterJs2['default'].formatMeters(distance)
@@ -615,33 +622,14 @@ var KadonneetSearchMap = (function (_React$Component) {
       });
     }
   }, {
-    key: 'drawCircle',
-    value: function drawCircle(latlng) {
-      var _this3 = this;
-
-      if (this.cityCircle) {
-        this.cityCircle.setMap(null);
-      }
-      this.cityCircle = new google.maps.Circle({
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        map: this.map,
-        center: latlng,
-        radius: this.state.radius,
-        editable: true,
-        draggable: true
-      });
-      this.cityCircle.addListener('radius_changed', function (_) {
-        _this3.setState({ radius: Math.round(_this3.cityCircle.getRadius()) });
-      });
-      this.cityCircle.addListener('center_changed', function (_) {
-        var center = _this3.cityCircle.getCenter();
-        _this3.updateMarker({ latitude: center.lat(), longitude: center.lng() });
-        _this3.updateLocation(center);
-      });
+    key: 'radiuschanged',
+    value: function radiuschanged(radius) {
+      this.setState({ radius: Math.round(radius) });
+    }
+  }, {
+    key: 'circlechanged',
+    value: function circlechanged(center) {
+      this.updateLocation(center);
     }
   }]);
 
@@ -2130,6 +2118,7 @@ var Map = (function (_React$Component) {
       var _this = this;
 
       this.geocoder = new google.maps.Geocoder();
+      _utilsUiutilsJs2['default'].calculateModalMapHeight(this.props.id);
 
       var mapOptions = {
         draggable: true,
@@ -2152,9 +2141,7 @@ var Map = (function (_React$Component) {
         var footerHeight = (0, _jquery2['default'])('#footer').height();
         (0, _jquery2['default'])('#' + _this.props.id).height(h - mapY - footerHeight - 10);
       };
-      _utilsUiutilsJs2['default'].calculateModalMapHeight(this.props.id);
       this.renderMap(mapOptions);
-
       if (this.props.katoamispaikka) {
         console.log('has katoamispaikka', this.props.katoamispaikka);
         var markerIcon = {
@@ -2168,25 +2155,43 @@ var Map = (function (_React$Component) {
           animation: google.maps.Animation.DROP,
           icon: markerIcon
         });
+        this.map.setCenter({ lat: this.props.katoamispaikka.lat, lng: this.props.katoamispaikka.lng });
       }
 
-      if (this.props.circle) {
-        console.log('circle is ', this.map);
-        if (this.cityCircle) {
-          this.cityCircle.setMap(null);
+      var drawCircle = function drawCircle(position) {
+        if (_this.cityCircle) {
+          _this.cityCircle.setMap(null);
         }
-        this.cityCircle = new google.maps.Circle({
+        _this.cityCircle = new google.maps.Circle({
           strokeColor: '#FF0000',
           strokeOpacity: 0.8,
           strokeWeight: 2,
           fillColor: '#FF0000',
           fillOpacity: 0.35,
-          map: this.map,
-          center: this.props.circle,
-          radius: 600,
+          map: _this.map,
+          center: { lat: position.lat, lng: position.lng },
+          radius: _this.props.radius,
           editable: true,
           draggable: true
         });
+        if (_this.props.radiuschanged) {
+          _this.cityCircle.addListener('radius_changed', function (_) {
+            return _this.props.radiuschanged(_this.cityCircle.getRadius());
+          });
+        }
+      };
+      if (this.props.circle) {
+        drawCircle(this.props.circle);
+        this.updateMarker({ latitude: this.props.circle.lat, longitude: this.props.circle.lng });
+
+        if (this.props.circlechanged) {
+          google.maps.event.addListener(this.map, 'click', function (e) {
+            var position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+            _this.updateMarker({ latitude: position.lat, longitude: position.lng });
+            drawCircle(position);
+            _this.props.circlechanged({ current: position, original: _this.props.circle });
+          });
+        }
       }
 
       if (this.props.findings && this.props.findings.length > 0) {
@@ -2253,6 +2258,20 @@ var Map = (function (_React$Component) {
         map: this.map,
         animation: google.maps.Animation.DROP,
         title: 'Nykyinen sijainti'
+      });
+      this.map.setCenter(this.marker.getPosition());
+      return this.marker.position;
+    }
+  }, {
+    key: 'updateMarker',
+    value: function updateMarker(location) {
+      if (this.marker) {
+        this.marker.setMap(null);
+      }
+      var position = { lat: location.latitude, lng: location.longitude };
+      this.marker = new google.maps.Marker({
+        position: position,
+        map: this.map
       });
       this.map.setCenter(this.marker.getPosition());
       return this.marker.position;
@@ -2459,14 +2478,11 @@ var Map = (function (_React$Component) {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       console.log('unmounting....');
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps, prevState) {
-      // center: {lat: this.props.findings[0].lat, lng: this.props.findings[0].lon}
-      // this.map.setCenter
-      // this.map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
-
+      if (this.katoamis) {
+        this.katoamis.setMap(null);
+      }
+      this.katoamis = null;
+      this.map = null;
     }
   }]);
 
@@ -32567,61 +32583,50 @@ exports["default"] = function (obj, keys) {
 exports.__esModule = true;
 },{}],225:[function(require,module,exports){
 arguments[4][43][0].apply(exports,arguments)
-},{"../../modules/$.core":234,"../../modules/es6.object.assign":246,"dup":43}],226:[function(require,module,exports){
+},{"../../modules/$.core":233,"../../modules/es6.object.assign":246,"dup":43}],226:[function(require,module,exports){
 arguments[4][44][0].apply(exports,arguments)
-},{"../../modules/$":242,"dup":44}],227:[function(require,module,exports){
+},{"../../modules/$":241,"dup":44}],227:[function(require,module,exports){
 require('../../modules/es6.object.is-frozen');
 module.exports = require('../../modules/$.core').Object.isFrozen;
-},{"../../modules/$.core":234,"../../modules/es6.object.is-frozen":247}],228:[function(require,module,exports){
+},{"../../modules/$.core":233,"../../modules/es6.object.is-frozen":247}],228:[function(require,module,exports){
 arguments[4][47][0].apply(exports,arguments)
-},{"../../modules/$.core":234,"../../modules/es6.object.keys":248,"dup":47}],229:[function(require,module,exports){
+},{"../../modules/$.core":233,"../../modules/es6.object.keys":248,"dup":47}],229:[function(require,module,exports){
 arguments[4][48][0].apply(exports,arguments)
-},{"../../modules/$.core":234,"../../modules/es6.object.set-prototype-of":249,"dup":48}],230:[function(require,module,exports){
+},{"../../modules/$.core":233,"../../modules/es6.object.set-prototype-of":249,"dup":48}],230:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
 },{"dup":49}],231:[function(require,module,exports){
 arguments[4][50][0].apply(exports,arguments)
-},{"./$.is-object":241,"dup":50}],232:[function(require,module,exports){
-arguments[4][61][0].apply(exports,arguments)
-},{"./$":242,"./$.fails":238,"./$.iobject":240,"./$.to-object":245,"dup":61}],233:[function(require,module,exports){
+},{"./$.is-object":240,"dup":50}],232:[function(require,module,exports){
 arguments[4][51][0].apply(exports,arguments)
-},{"dup":51}],234:[function(require,module,exports){
-var core = module.exports = {version: '1.2.3'};
-if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],235:[function(require,module,exports){
+},{"dup":51}],233:[function(require,module,exports){
+arguments[4][52][0].apply(exports,arguments)
+},{"dup":52}],234:[function(require,module,exports){
 arguments[4][53][0].apply(exports,arguments)
-},{"./$.a-function":230,"dup":53}],236:[function(require,module,exports){
+},{"./$.a-function":230,"dup":53}],235:[function(require,module,exports){
 arguments[4][54][0].apply(exports,arguments)
-},{"./$.core":234,"./$.global":239,"dup":54}],237:[function(require,module,exports){
+},{"./$.core":233,"./$.global":238,"dup":54}],236:[function(require,module,exports){
 arguments[4][55][0].apply(exports,arguments)
-},{"dup":55}],238:[function(require,module,exports){
+},{"dup":55}],237:[function(require,module,exports){
 arguments[4][56][0].apply(exports,arguments)
-},{"dup":56}],239:[function(require,module,exports){
+},{"dup":56}],238:[function(require,module,exports){
 arguments[4][57][0].apply(exports,arguments)
-},{"dup":57}],240:[function(require,module,exports){
+},{"dup":57}],239:[function(require,module,exports){
 arguments[4][58][0].apply(exports,arguments)
-},{"./$.cof":233,"dup":58}],241:[function(require,module,exports){
+},{"./$.cof":232,"dup":58}],240:[function(require,module,exports){
 arguments[4][59][0].apply(exports,arguments)
-},{"dup":59}],242:[function(require,module,exports){
+},{"dup":59}],241:[function(require,module,exports){
 arguments[4][60][0].apply(exports,arguments)
-},{"dup":60}],243:[function(require,module,exports){
-// most Object methods by ES6 should accept primitives
-module.exports = function(KEY, exec){
-  var $def = require('./$.def')
-    , fn   = (require('./$.core').Object || {})[KEY] || Object[KEY]
-    , exp  = {};
-  exp[KEY] = exec(fn);
-  $def($def.S + $def.F * require('./$.fails')(function(){ fn(1); }), 'Object', exp);
-};
-},{"./$.core":234,"./$.def":236,"./$.fails":238}],244:[function(require,module,exports){
+},{"dup":60}],242:[function(require,module,exports){
+arguments[4][61][0].apply(exports,arguments)
+},{"./$":241,"./$.fails":237,"./$.iobject":239,"./$.to-object":245,"dup":61}],243:[function(require,module,exports){
+arguments[4][62][0].apply(exports,arguments)
+},{"./$.core":233,"./$.def":235,"./$.fails":237,"dup":62}],244:[function(require,module,exports){
 arguments[4][63][0].apply(exports,arguments)
-},{"./$":242,"./$.an-object":231,"./$.ctx":235,"./$.is-object":241,"dup":63}],245:[function(require,module,exports){
+},{"./$":241,"./$.an-object":231,"./$.ctx":234,"./$.is-object":240,"dup":63}],245:[function(require,module,exports){
 arguments[4][65][0].apply(exports,arguments)
-},{"./$.defined":237,"dup":65}],246:[function(require,module,exports){
-// 19.1.3.1 Object.assign(target, source)
-var $def = require('./$.def');
-
-$def($def.S + $def.F, 'Object', {assign: require('./$.assign')});
-},{"./$.assign":232,"./$.def":236}],247:[function(require,module,exports){
+},{"./$.defined":236,"dup":65}],246:[function(require,module,exports){
+arguments[4][66][0].apply(exports,arguments)
+},{"./$.def":235,"./$.object-assign":242,"dup":66}],247:[function(require,module,exports){
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = require('./$.is-object');
 
@@ -32630,11 +32635,11 @@ require('./$.object-sap')('isFrozen', function($isFrozen){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
-},{"./$.is-object":241,"./$.object-sap":243}],248:[function(require,module,exports){
+},{"./$.is-object":240,"./$.object-sap":243}],248:[function(require,module,exports){
 arguments[4][68][0].apply(exports,arguments)
 },{"./$.object-sap":243,"./$.to-object":245,"dup":68}],249:[function(require,module,exports){
 arguments[4][69][0].apply(exports,arguments)
-},{"./$.def":236,"./$.set-proto":244,"dup":69}],250:[function(require,module,exports){
+},{"./$.def":235,"./$.set-proto":244,"dup":69}],250:[function(require,module,exports){
 arguments[4][70][0].apply(exports,arguments)
 },{"dup":70}],251:[function(require,module,exports){
 'use strict';
@@ -40935,7 +40940,6 @@ var HTMLDOMPropertyConfig = {
     multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     name: null,
-    nonce: MUST_USE_ATTRIBUTE,
     noValidate: HAS_BOOLEAN_VALUE,
     open: HAS_BOOLEAN_VALUE,
     optimum: null,
@@ -40947,7 +40951,6 @@ var HTMLDOMPropertyConfig = {
     readOnly: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     rel: null,
     required: HAS_BOOLEAN_VALUE,
-    reversed: HAS_BOOLEAN_VALUE,
     role: MUST_USE_ATTRIBUTE,
     rows: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
     rowSpan: null,
@@ -41393,7 +41396,6 @@ assign(React, {
 });
 
 React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
-React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
 },{"./Object.assign":391,"./ReactDOM":404,"./ReactDOMServer":414,"./ReactIsomorphic":432,"./deprecated":475}],394:[function(require,module,exports){
@@ -51602,7 +51604,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.3';
+module.exports = '0.14.2';
 },{}],454:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
