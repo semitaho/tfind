@@ -15,7 +15,7 @@ class Map extends React.Component {
 
   render() {
     return (
-      <div ref="map" id={this.props.id}></div>
+      <div ref="map" id={this.props.id} className={this.props.className}></div>
     );
   }
 
@@ -49,6 +49,43 @@ class Map extends React.Component {
       $('#' + this.props.id).height(h - mapY - footerHeight - 10);
 
     };
+    UIUtils.calculateModalMapHeight(this.props.id);
+    this.renderMap(mapOptions);
+
+    if (this.props.katoamispaikka) {
+      console.log('has katoamispaikka', this.props.katoamispaikka);
+      let markerIcon = {
+        scale: 7,
+        animation: google.maps.Animation.DROP,
+        path: google.maps.SymbolPath.CIRCLE
+      };
+      this.katoamis = new google.maps.Marker({
+        position: {lat: this.props.katoamispaikka.lat, lng: this.props.katoamispaikka.lng},
+        map: this.map,
+        animation: google.maps.Animation.DROP,
+        icon: markerIcon
+      });
+    }
+
+    if (this.props.circle) {
+      console.log('circle is ', this.map);
+      if (this.cityCircle) {
+        this.cityCircle.setMap(null);
+      }
+      this.cityCircle = new google.maps.Circle({
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        map: this.map,
+        center: this.props.circle,
+        radius: 600,
+        editable: true,
+        draggable: true
+      });
+    }
+
     if (this.props.findings && this.props.findings.length > 0) {
       UIUtils.calculateModalMapHeight(this.props.id);
       let center = this.calculateCenter(this.props.findings);
@@ -56,7 +93,7 @@ class Map extends React.Component {
       this.renderMap(mapOptions);
       this.createMarkers(this.props.findings);
       this.createRoute();
-    
+
       google.maps.event.addDomListener(window, "resize", () => {
         UIUtils.calculateModalMapHeight(this.props.id);
         this.map.setCenter(this.calculateCenter(this.props.findings));
@@ -322,6 +359,10 @@ class Map extends React.Component {
     return str;
   }
 
+  componentWillUnmount(){
+    console.log('unmounting....');
+  }
+
   componentDidUpdate(prevProps, prevState) {
     // center: {lat: this.props.findings[0].lat, lng: this.props.findings[0].lon}
     // this.map.setCenter
@@ -331,5 +372,5 @@ class Map extends React.Component {
 
 }
 
-Map.defaultProps = {id: 'map-havainnot', scrollwheel: false, initialZoom: 12};
+Map.defaultProps = {className: '', id: 'map-havainnot', scrollwheel: false, initialZoom: 12};
 export default Map;

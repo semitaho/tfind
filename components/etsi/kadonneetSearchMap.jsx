@@ -10,7 +10,7 @@ import DateTimePicker from 'react-bootstrap-datetimepicker';
 import UIUtils from './../../utils/uiutils.js';
 import KadonneetMarker from './kadonneetMarker.jsx';
 import KadonneetTracker from './kadonneetTracker.jsx';
-
+import Map from './../map.jsx';
 
 export default class KadonneetSearchMap extends React.Component {
   constructor() {
@@ -56,12 +56,14 @@ export default class KadonneetSearchMap extends React.Component {
       {this.state.opened === false && this.state.started === true?
         this.renderTracking() : ''}
    
-      {this.state.opened === false && this.state.marking ? <KadonneetMarker position={this.marker.getPosition()}  item={this.props.item} onclose={this.props.onclose} radius={this.state.radius} location={this.state.location} katoamisdistance={this.state.katoamisdistance} /> : ''}
+      {this.state.opened === false && this.state.marking ? <KadonneetMarker position={this.state.katoamispaikka}  item={this.props.item} onclose={this.props.onclose} radius={this.state.radius} location={this.state.location} katoamisdistance={this.state.katoamisdistance} /> : ''}
       <Modal.Body>
-        {this.state.opened === true ? <div className="opened">{this.renderQuestion()}</div> : ''}
-        
-        <div id="kadonneet-search-map" className={mapClass}>
-        </div>
+        {this.state.opened === false && this.state.marking ? <Map id="kadonneet-search-map"  circle={{lat: this.state.katoamispaikka.lat, lng: this.state.katoamispaikka.lng}} katoamispaikka={this.state.katoamispaikka} /> : '' }
+        {this.state.opened === true ?
+          <div className="opened">
+            {this.renderQuestion()}
+            <Map id="kadonneet-search-map" className={mapClass} katoamispaikka={this.state.katoamispaikka} />
+          </div> : ''}
         {this.state.loading ? this.renderSpinner("kadonneet-search-map") : ''}
       </Modal.Body>
     </Modal>)
@@ -181,24 +183,17 @@ export default class KadonneetSearchMap extends React.Component {
     this.setState({opened: false, loading: true});
   }
 
-  drawKatoamispaikka() {
+  getKatoamispaikka() {
     let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
-    let markerIcon = {
-      scale: 7,
-      animation: google.maps.Animation.DROP,
-      path: google.maps.SymbolPath.CIRCLE
-    };
-    this.katoamis = new google.maps.Marker({
-      position: {lat: katoamisLoc.lat, lng: katoamisLoc.lng},
-      map: this.map,
-      animation: google.maps.Animation.DROP,
-      icon: markerIcon
-    });
+    return katoamisLoc;
+
   }
 
   markToMap() {
-    this.drawKatoamispaikka();
     let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
+    this.setState({opened: false, marking: true, radius: this.state.radius, katoamispaikka: katoamisLoc});
+    /*
+    this.drawKatoamispaikka();
     this.updateMarker({latitude: katoamisLoc.lat, longitude: katoamisLoc.lng});
 
     this.state.radius = this.props.radius;
@@ -213,8 +208,8 @@ export default class KadonneetSearchMap extends React.Component {
       this.drawCircle(e.latLng);
     });
 
-    this.setState({opened: false, marking: true, radius: this.state.radius});
 
+  */
   }
 
   componentDidUpdate(){
