@@ -41,8 +41,8 @@ var mongoConnection = require('./mongodb.js').mongoConnection;
 mongoConnection.then(db => {
   console.log('mongodb successfully connected...');
   var kadonneetCollection = db.collection('kadonneet'),
-  contentCollection = db.collection('content'),
-  ukkCollection = db.collection('ukk');
+    contentCollection = db.collection('content'),
+    ukkCollection = db.collection('ukk');
   var collections = {ukk: ukkCollection, kadonneet: kadonneetCollection, contents: contentCollection};
   return collections
 }).then(collections => {
@@ -56,7 +56,7 @@ mongoConnection.then(db => {
         quoteauthor: content.quoteauthor
       });
     });
-    
+
   });
 
   app.post('/submitfinding', upload.single('pic'), (req, res) => {
@@ -126,48 +126,62 @@ mongoConnection.then(db => {
 
     });
 
-  }).get('/kadonneetkartalla', (req,res) => {
-    collections.kadonneet.find().toArray(function (err, docs) {
+  }).get('/kadonneet/:id', (req, res) => {
+    collections.kadonneet.find({_id:new ObjectId(req.params.id)}).toArray(function (err, docs) {
       if (err) {
         res.error();
         return;
       }
-      res.render('kadonneetkartalla', {
-        items: docs,
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
-        kadonneetkartalla: ReactDOMServer.renderToString(KadonneetKartalla({items: docs}))
+      console.log('foc', docs);
+      res.render('profiili', {
+        item: docs[0],
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 0}))
       });
 
     });
+  })
 
+    .get('/kadonneetkartalla', (req, res) => {
+      collections.kadonneet.find().toArray(function (err, docs) {
+        if (err) {
+          res.error();
+          return;
+        }
+        res.render('kadonneetkartalla', {
+          items: docs,
+          navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
+          kadonneetkartalla: ReactDOMServer.renderToString(KadonneetKartalla({items: docs}))
+        });
 
-  }).get('/etsi', (req, res) => {
-    collections.kadonneet.find().sort({name: 1}).toArray((err, docs) => {
-      res.render('etsi', {
-        kadonneet: docs,
-        kadonneetlist: ReactDOMServer.renderToString(KadonneetList({items: docs})),
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 3}))
       });
-    });
 
-  }).get('/ilmoita', (req, res) => {
-    res.render('lisaakadonnut', {
-      navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2})),
-      kadonnutform: ReactDOMServer.renderToString(KadonnutForm({}))
-    });
-  }).get('/ukk', (req, res) => {
-    collections.ukk.find({}).sort({jnro: 1}).toArray((err, docs) => {
-      if (err) {
-        res.error();
-        return;
-      }
-      res.render('ukk', {
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 4})),
-        ukkform: ReactDOMServer.renderToString(UKKForm({items: docs}))
+    }).get('/etsi', (req, res) => {
+      collections.kadonneet.find().sort({name: 1}).toArray((err, docs) => {
+        res.render('etsi', {
+          kadonneet: docs,
+          kadonneetlist: ReactDOMServer.renderToString(KadonneetList({items: docs})),
+          navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 3}))
+        });
       });
-    });
 
-  });
+    }).get('/ilmoita', (req, res) => {
+      res.render('lisaakadonnut', {
+        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2})),
+        kadonnutform: ReactDOMServer.renderToString(KadonnutForm({}))
+      });
+    }).get('/ukk', (req, res) => {
+      collections.ukk.find({}).sort({jnro: 1}).toArray((err, docs) => {
+        if (err) {
+          res.error();
+          return;
+        }
+        res.render('ukk', {
+          navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 4})),
+          ukkform: ReactDOMServer.renderToString(UKKForm({items: docs}))
+        });
+      });
+
+    });
 
 // error
   app.get('*', errorRoute);
