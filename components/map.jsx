@@ -20,6 +20,9 @@ class Map extends React.Component {
   }
 
   renderMap(mapOptions) {
+    if (this.map) {
+      return;
+    }
     var domNode = ReactDOM.findDOMNode(this.refs.map);
     this.map = new google.maps.Map(domNode, mapOptions);
   }
@@ -35,6 +38,62 @@ class Map extends React.Component {
     resize();
 
     google.maps.event.addDomListener(window, "resize", resize);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.circle) {
+      this.drawCircle(nextProps.circle, nextProps.radius);
+    }
+    if (nextProps.center) {
+      this.updateCenter(nextProps);
+    }
+    if (nextProps.marker) {
+      this.drawMarker(nextProps.marker);
+    }
+  }
+
+  updateCenter(props) {
+    this.map.setCenter(props.center);
+  }
+
+  drawCircle(position, radius) {
+    if (this.cityCircle) {
+      this.cityCircle.setMap(null);
+    }
+    this.cityCircle = new google.maps.Circle({
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: this.map,
+      center: {lat: position.lat, lng: position.lng},
+      radius: radius,
+      editable: true,
+      draggable: true
+    });
+
+    if (this.props.radiuschanged) {
+      console.log('radius changes...');
+      this.cityCircle.addListener('radius_changed', _ => {
+        this.props.radiuschanged(this.cityCircle.getRadius());
+
+      });
+    }
+    return this.cityCircle;
+  }
+
+  drawMarker(position) {
+    if (this.marker) {
+      this.marker.setMap(null);
+    }
+
+    this.marker = new google.maps.Marker({
+      position: position,
+      map: this.map,
+      animation: google.maps.Animation.DROP,
+      title: 'Nykyinen sijainti'
+    });
   }
 
   componentDidMount() {
@@ -60,10 +119,11 @@ class Map extends React.Component {
       let mapY = mapElement.offset().top;
       let footerHeight = $('#footer').height();
       $('#' + this.props.id).height(h - mapY - footerHeight - 10);
-
     };
+    UIUtils.calculateModalMapHeight(this.props.id);
+    console.log('aijaa');
+
     if (this.props.katoamispaikka) {
-      UIUtils.calculateModalMapHeight(this.props.id);
       this.renderMap(mapOptions);
       let markerIcon = {
         scale: 7,
@@ -76,63 +136,34 @@ class Map extends React.Component {
         animation: google.maps.Animation.DROP,
         icon: markerIcon
       });
-      this.map.setCenter({lat: this.props.katoamispaikka.lat, lng: this.props.katoamispaikka.lng});
-
     }
 
-    const drawCircle = position => {
-      if (this.cityCircle) {
-        this.cityCircle.setMap(null);
-      }
-      this.cityCircle = new google.maps.Circle({
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        map: this.map,
-        center: {lat: position.lat, lng: position.lng},
-        radius: this.props.radius,
-        editable: true,
-        draggable: true
-      });
-      if (this.props.radiuschanged) {
-        this.cityCircle.addListener('radius_changed', _ => this.props.radiuschanged(this.cityCircle.getRadius()));
-      }
-    };
-    if (this.props.circle) {
-      if (this.map === null) {
-        this.renderMap(mapOptions)
-      }
-      drawCircle(this.props.circle);
+    if (this.props.marker) {
+      this.renderMap(mapOptions);
+      this.drawMarker(this.props.marker);
+    }
 
-      this.updateMarker({latitude: this.props.circle.lat, longitude: this.props.circle.lng});
-      const positionChanged = (e) => {
-        let position = {lat: e.latLng.lat(), lng: e.latLng.lng()};
-        this.updateMarker({latitude: position.lat, longitude: position.lng});
-        drawCircle(position);
-        this.props.circlechanged({current: position, original: this.props.circle});
-      };
-      if (this.props.circlechanged) {
-        google.maps.event.addListener(this.map, 'click', positionChanged);
-      }
-
+    if (this.props.radius && this.props.circle) {
+      this.renderMap(mapOptions);
+      this.drawCircle(this.props.circle, this.props.radius);
     }
 
     if (this.props.findings && this.props.findings.length > 0) {
       UIUtils.calculateModalMapHeight(this.props.id);
-      let center = this.calculateCenter(this.props.findings);
-      mapOptions.center = center;
+      //let center = this.calculateCenter(this.props.findings);
+      //mapOptions.center = center;
       this.renderMap(mapOptions);
       this.createMarkers(this.props.findings);
-      this.createRoute();
-
       google.maps.event.addDomListener(window, "resize", () => {
         UIUtils.calculateModalMapHeight(this.props.id);
-        this.map.setCenter(this.calculateCenter(this.props.findings));
+        this.map.setCenter(this.props.center);
       });
 
       // google.maps.event.addDomListener(window, "resize", resize);
+    }
+
+    if (this.props.route) {
+      this.createRoute(this.props.route);
     }
 
     if (this.props.kadonneet && this.props.kadonneet.length > 0) {
@@ -140,10 +171,10 @@ class Map extends React.Component {
     }
 
     if (this.props.center) {
-      console.log('center', this.props.center);
-      UIUtils.calculateModalMapHeight(this.props.id);
-      this.renderMap(mapOptions);
-      this.updateMarker({latitude: this.props.center.lat, longitude: this.props.center.lng});
+      this.updateCenter((this.props));
+    }
+    if (this.props.onmapclick) {
+      google.maps.event.addListener(this.map, 'click', this.props.onmapclick);
     }
 
     if (this.props.onClick) {
@@ -156,8 +187,7 @@ class Map extends React.Component {
 
     if (this.props.onArea) {
       google.maps.event.addListener(this.map, 'click', event => {
-        this.updateArea(event.latLng);
-        this.updateLocation(event.latLng);
+
       });
     }
   }
@@ -189,43 +219,6 @@ class Map extends React.Component {
     return this.marker.position;
   }
 
-  updateLocation(latlng) {
-    this.geocoder.geocode({'location': latlng}, (results, status) => {
-      if (status === google.maps.GeocoderStatus.OK) {
-        if (results[0]) {
-          this.setState({location: results[0].formatted_address});
-          if (this.props.onArea) {
-            this.props.onArea(latlng, results[0].formatted_address);
-          }
-        }
-      }
-    });
-  }
-
-  calculateCenter(findings) {
-    if (findings.length === 0) {
-      return {
-        lat: 63.612101,
-        lng: 26.175575
-      };
-    }
-    if (findings.length == 1) {
-      return {
-        lat: findings[0].lat,
-        lng: findings[0].lng
-      };
-    }
-
-    var latSum = findings.reduce((prev, current, index, array) => {
-      return current.lat + prev;
-    }, 0);
-    var lngSum = findings.reduce((prev, current, index, array) => {
-      return current.lng + prev;
-    }, 0);
-    var finding = findings[findings.length - 1];
-    return {lat: latSum / findings.length, lng: lngSum / findings.length};
-  }
-
   createFindingMarker(latlng) {
     var markerIcon = {
       scale: 7,
@@ -246,8 +239,6 @@ class Map extends React.Component {
       },
       map: this.map
     });
-
-    this.createRoute(latlng);
   }
 
   createKadonneet() {
@@ -339,25 +330,17 @@ class Map extends React.Component {
     )
   }
 
-  createRoute(latlng) {
+  createRoute(latlngs) {
+
     if (this.line) {
       this.line.setMap(null);
     }
     var lineSymbol = {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
     };
-    var path = this.props.findings.map(finding => {
-      return {
-        lat: finding.lat,
-        lng: finding.lng
-      };
-    });
 
-    if (latlng) {
-      path.push(latlng);
-    }
     this.line = new google.maps.Polyline({
-      path: path,
+      path: latlngs,
       strokeOpacity: '0.5',
       icons: [{
         icon: lineSymbol,

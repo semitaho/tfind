@@ -2,6 +2,10 @@ class UIUtils {
 
   static calculateModalMapHeight(id) {
     let h = $(window).height();
+    let hasModal = $('.modal-body').length > 0;
+    if (!hasModal){
+      return;
+    }
     let offsetY = $('.modal-body').position().top;
     let footerHeight = $('#footer').height();
     console.log('footer', footerHeight);

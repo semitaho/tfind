@@ -11,14 +11,21 @@ import ConfirmDialog from './../modals/confirmDialog.jsx';
 class KadonnutForm extends React.Component {
   constructor() {
     super();
-    this.state = {formstate: {}, activeKey: 1};
+    this.state = {
+      formstate: {},
+      activeKey: 1,
+      radius: 7000,
+      circle: {lat: 65.7770391, lng: 27.1159877},
+      center: {lat: 65.7770391, lng: 27.1159877}
+    };
     this.handleTextChange = this.handleTextChange.bind(this);
     this.onPasteImage = this.onPasteImage.bind(this);
     this.timeChange = this.timeChange.bind(this);
   }
 
   componentDidMount() {
-    console.log('on mount');
+    this.geocoder = new google.maps.Geocoder;
+
   }
 
   isValid(params) {
@@ -102,16 +109,19 @@ class KadonnutForm extends React.Component {
     }
     let isFormValid = isMapValid;
 
-    const circlechanged = (data) => {
-      console.log('circle', data);
-    };
+    const radiusChanged = (radius) => this.setState({radius: Math.round(radius)});
 
-    let areaSelected = (loc, address) => {
-      console.log('alue valittu', loc);
-      let location = {lat: loc.lat(), lng: loc.lng()};
-      this.state.formstate.location = location;
-      this.state.formstate.address = address;
-      this.setState({formstate: this.state.formstate});
+    const areaSelected = (event) => {
+      this.geocoder.geocode({'location': event.latLng}, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK) {
+          if (results[0]) {
+            let location = {lat: event.latLng.lat(), lng: event.latLng.lng()};
+            this.state.formstate.location = location;
+            this.state.formstate.address = results[0].formatted_address;
+            this.setState({formstate: this.state.formstate, circle: location, center: location});
+          }
+        }
+      });
     };
 
     const onClickNext = () => {
@@ -132,10 +142,13 @@ class KadonnutForm extends React.Component {
       });
     };
 
-    let handleSelect = (key) => {
-      this.setState({activeKey: key})
-    };
+    let
+      handleSelect = (key) => {
+        this.setState({activeKey: key})
+      };
+
     return (
+
       <div className="row">
         <div className="col-md-12">
           <label className="control-label">Edistys</label>
@@ -193,10 +206,13 @@ class KadonnutForm extends React.Component {
                   {isTimeValid ?
                     <div className="form-group">
                       <label className="control-label">Viimeisin havainto kartalla</label>
-                      <Map id="kadonneet-form-map" initialZoom={5} radius={1000}
-                           circle={{lat: 63.612101,lng: 26.175575}} circlechanged={circlechanged}
-                           onArea={areaSelected}/>
-                      <label><strong>{this.state.formstate.address}</strong></label>
+                      <Map id="kadonneet-form-map" initialZoom={7}
+                           radius={this.state.radius}
+                           radiuschanged={radiusChanged}
+                           circle={this.state.circle}
+                           center={this.state.center}
+                           onmapclick={areaSelected}/>
+                      <label><strong>{this.state.formstate.address}</strong> säteellä <strong>{this.state.radius} m</strong>.</label>
                     </div>
                     : ''}
                 </div>

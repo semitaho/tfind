@@ -23,6 +23,7 @@ export default class KadonneetSearchMap extends React.Component {
     this.markToMap = this.markToMap.bind(this);
     this.radiuschanged = this.radiuschanged.bind(this);
     this.circlechanged = this.circlechanged.bind(this);
+    this.onMapClick = this.onMapClick.bind(this);
 
     this.state = {opened: true, loading: false, katoamisdistance: 0};
     this.polyline = new google.maps.Polyline({
@@ -38,64 +39,98 @@ export default class KadonneetSearchMap extends React.Component {
 
   renderQuestion() {
     return (<div>
-              <h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
-              <div className="center-block row">
-                <div className="col-md-12 btn-toolbar">
-                  <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
-                  <button type="button" className="btn btn-success btn-md" onClick={this.markToMap}>Merkitse karttaan</button>
-                  <button type="button" className="btn btn-primary btn-md" onClick={this.startSearching}>Aloita jäljittäminen
-                    (vaatii HTML5 geotunnisteen)
-                  </button>
-                </div>
-              </div>
-            </div>)
+      <h3>Valitse etsintätapa henkilöstä {this.props.item.name}</h3>
+
+      <div className="center-block row">
+        <div className="col-md-12 btn-toolbar">
+          <button type="button" className="btn btn-default btn-md" onClick={this.props.onclose}>Sulje</button>
+          <button type="button" className="btn btn-success btn-md" onClick={this.markToMap}>Merkitse karttaan</button>
+          <button type="button" className="btn btn-primary btn-md" onClick={this.startSearching}>Aloita jäljittäminen
+            (vaatii HTML5 geotunnisteen)
+          </button>
+        </div>
+      </div>
+    </div>)
 
   }
 
   render() {
     var mapClass = this.state.opened === true ? 'grayable' : '';
     return (<Modal dialogClassName="search-modal" show={true} bsSize="large" onHide={this.props.onclose}>
-      {this.state.opened === false && this.state.started === true?
+      {this.state.opened === false && this.state.started === true ?
         this.renderTracking() : ''}
-   
-      {this.state.opened === false && this.state.marking ? <KadonneetMarker position={this.state.katoamispaikka}  item={this.props.item} onclose={this.props.onclose} radius={this.state.radius} location={this.state.location} katoamisdistance={this.state.katoamisdistance} /> : ''}
-    
+
+      {this.state.opened === false && this.state.marking ?
+        <KadonneetMarker position={this.state.katoamispaikka} item={this.props.item} onclose={this.props.onclose}
+                         radius={this.state.radius} location={this.state.location}
+                         katoamisdistance={this.state.katoamisdistance}/> : ''}
+
       <Modal.Body>
         {this.state.opened === true ?
           <div>
             <div className="opened">
               {this.renderQuestion()}
             </div>
-            <Map id="kadonneet-search-map" className={mapClass} katoamispaikka={this.getKatoamispaikka()} /> 
+            <Map
+              id="kadonneet-search-map"
+              className={mapClass}
+              center={this.state.center}
+              />
           </div> : ''}
         {this.state.loading ? this.renderSpinner("kadonneet-search-map") : ''}
-        {this.state.opened === false && this.state.marking ? 
-          <Map id="kadonneet-marker-map"  className="" radius={this.state.radius} radiuschanged={this.radiuschanged} 
-                circle={{lat: this.getKatoamispaikka().lat, lng: this.getKatoamispaikka().lng}} 
-                circlechanged={this.circlechanged}
-                katoamispaikka={this.getKatoamispaikka()} /> : '' }
+        {this.state.opened === false && this.state.marking ?
+          <Map id="kadonneet-marker-map" className=""
+               radius={this.state.radius}
+               radiuschanged={this.radiuschanged}
+               circle={this.state.circle}
+               center={this.state.center}
+               marker={this.state.marker}
+               onmapclick={this.onMapClick}
+               katoamispaikka={this.getKatoamispaikka()}/> : '' }
         {this.state.opened === false && this.state.started ?
-          <Map id="kadonneet-tracker-map" center={this.state.center}
-            /> :  ''}
-          </Modal.Body>
+          <Map id="kadonneet-tracker-map" center={this.state.center} marker={this.state.marker}
+            /> : ''}
+      </Modal.Body>
     </Modal>)
   }
 
+  onMapClick(event) {
+    console.log('on map click', event);
+    let newClickPosition = {lat: event.latLng.lat(), lng: event.latLng.lng()};
+    this.geocoder.geocode({'location': newClickPosition}, (results, status) => {
+      if (status === google.maps.GeocoderStatus.OK) {
+        if (results[0]) {
+          let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(this.state.katoamispaikka.lat, this.state.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
+          this.setState({
+            circle: newClickPosition,
+            center: newClickPosition,
+            marker: newClickPosition,
+            location: results[0].formatted_address,
+            katoamisdistance: TextFormatter.formatMeters(distance)
+          });
+        }
+      }
+    });
+
+  }
+
   renderTracking() {
-    return <KadonneetTracker length={this.state.length} item={this.props.item} onclose={this.props.onclose} />
+    return <KadonneetTracker length={this.state.length} item={this.props.item} onclose={this.props.onclose}/>
   }
 
   gotLocation(latlng) {
     console.log('coords', latlng.coords);
-    this.setState({started: true, loading: false, center: {lat: latlng.coords.latitude, lng: latlng.coords.longitude}});
+    let position =  {lat: latlng.coords.latitude, lng: latlng.coords.longitude};
+    this.setState({started: true, loading: false, center: position, marker: position});
     if (!this.checkLatestPointsDistance(latlng.coords)) {
       return;
     }
-    var position = this.updateMarker(latlng.coords);
+    /*
+
     this.updateRoute(position);
     var length = this.calculateLength();
     this.setState({length: length});
-
+    */
   }
 
   calculateLength() {
@@ -115,20 +150,6 @@ export default class KadonneetSearchMap extends React.Component {
       return false;
     }
     return true;
-  }
-
-  updateMarker(location) {
-    if (this.marker) {
-      this.marker.setMap(null);
-    }
-    var position = {lat: location.latitude, lng: location.longitude};
-    this.marker = new google.maps.Marker({
-      position: position,
-      map: this.map,
-      title: 'Nykyinen sijainti'
-    });
-    this.map.setCenter(this.marker.getPosition());
-    return this.marker.position;
   }
 
   updateRoute(position) {
@@ -177,13 +198,13 @@ export default class KadonneetSearchMap extends React.Component {
     let loc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
     this.initMap({latitude: loc.lat, longitude: loc.lng});
     this.resizeListener = google.maps.event.addDomListener(window, "resize", () => {
-        let mapId = 'kadonneet-search-map';
-        UIUtils.calculateModalMapHeight(mapId);
-        let center = this.map.getCenter();
-        let loc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
-        this.map.setCenter({lat: loc.lat, lng: loc.lng});
-      });
- 
+      let mapId = 'kadonneet-search-map';
+      UIUtils.calculateModalMapHeight(mapId);
+      let center = this.map.getCenter();
+      let loc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
+      this.map.setCenter({lat: loc.lat, lng: loc.lng});
+    });
+
   }
 
   startSearching() {
@@ -204,53 +225,51 @@ export default class KadonneetSearchMap extends React.Component {
 
   markToMap() {
     let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
-    this.setState({opened: false, marking: true, radius: this.props.radius, katoamispaikka: katoamisLoc});
-    /*
-    this.drawKatoamispaikka();
-    this.updateMarker({latitude: katoamisLoc.lat, longitude: katoamisLoc.lng});
-
-    this.state.radius = this.props.radius;
-
-    this.drawCircle(this.marker.getPosition());
-    this.updateLocation((this.marker.getPosition()));
-
-    this.map.addListener('click', e => {
-      console.log('e.', e.latLng);
-      this.updateLocation(e.latLng);
-      this.drawCircle(e.latLng);
+    this.setState({
+      opened: false,
+      marking: true,
+      radius: this.props.radius,
+      katoamispaikka: katoamisLoc,
+      center: katoamisLoc,
+      marker: katoamisLoc,
+      circle: katoamisLoc
     });
+    /*
+     this.drawKatoamispaikka();
+     this.updateMarker({latitude: katoamisLoc.lat, longitude: katoamisLoc.lng});
+
+     this.state.radius = this.props.radius;
+
+     this.drawCircle(this.marker.getPosition());
+     this.updateLocation((this.marker.getPosition()));
+
+     this.map.addListener('click', e => {
+     console.log('e.', e.latLng);
+     this.updateLocation(e.latLng);
+     this.drawCircle(e.latLng);
+     });
 
 
-  */
+     */
   }
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     console.log('cdu');
     UIUtils.calculateModalMapHeight('kadonneet-search-map');
   }
 
   updateLocation(latlng) {
-    this.geocoder.geocode({'location': latlng.current}, (results, status) => {
-      if (status === google.maps.GeocoderStatus.OK) {
-        if (results[0]) {
-          let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(latlng.original.lat, latlng.original.lng), new google.maps.LatLng(latlng.current.lat, latlng.current.lng));
-          this.setState({
-            location: results[0].formatted_address,
-            katoamisdistance: TextFormatter.formatMeters(distance)
-          });
-        }
-      }
-    });
+
   }
 
-
-  radiuschanged(radius){
+  radiuschanged(radius) {
+    console.log('ai radius');
     this.setState({radius: Math.round(radius)});
   }
 
-  circlechanged(center){
+  circlechanged(center) {
     this.updateLocation(center);
-  
+
   }
 }
 
