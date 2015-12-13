@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import LostsGrid from '../components/listakadonneista/lostsgrid.jsx';
 import FindingForm from '../components/findingform.jsx';
-import KadonnutForm from '../components/kadonnutform.jsx';
+import KadonnutForm from '../components/ilmoitakadonneeksi/kadonnutform.jsx';
 import KadonneetList from '../components/etsi/kadonneetlist.jsx';
 import KadonneetKartalla from '../components/kadonneetkartalla/kadonneetkartalla.jsx';
 

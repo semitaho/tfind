@@ -4,7 +4,7 @@ class MapModal extends React.Component {
   render() {
     let props = this.props;
     return (<Modal onHide={props.onHide} id="modal" bsSize={props.size ? props.size : 'medium'} show={true}>
-      <Modal.Header closeButton>{props.title}</Modal.Header>
+      <Modal.Header closeButton><h2>{props.title}</h2></Modal.Header>
       {props.children}
     </Modal>  )
   }

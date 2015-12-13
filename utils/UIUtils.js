@@ -9,6 +9,15 @@ class UIUtils {
     $('#' + id).height(h-offsetY-footerHeight-50);
   }
 
+  static calcHeight(id){
+    let h = $(window).height();
+    let mapElement = $('#' + id);
+    let mapY = mapElement.offset().top;
+    let footerHeight = $('#footer').height();
+    $('#' + id).height(h - mapY - footerHeight - 10);
+
+  }
+
 }
 
 export default UIUtils;

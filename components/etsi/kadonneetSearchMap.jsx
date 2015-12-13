@@ -74,8 +74,10 @@ export default class KadonneetSearchMap extends React.Component {
                 circle={{lat: this.getKatoamispaikka().lat, lng: this.getKatoamispaikka().lng}} 
                 circlechanged={this.circlechanged}
                 katoamispaikka={this.getKatoamispaikka()} /> : '' }
-      
-      </Modal.Body>
+        {this.state.opened === false && this.state.started ?
+          <Map id="kadonneet-tracker-map" center={this.state.center}
+            /> :  ''}
+          </Modal.Body>
     </Modal>)
   }
 
@@ -84,7 +86,8 @@ export default class KadonneetSearchMap extends React.Component {
   }
 
   gotLocation(latlng) {
-    this.setState({started: true, loading: false});
+    console.log('coords', latlng.coords);
+    this.setState({started: true, loading: false, center: {lat: latlng.coords.latitude, lng: latlng.coords.longitude}});
     if (!this.checkLatestPointsDistance(latlng.coords)) {
       return;
     }

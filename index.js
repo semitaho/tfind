@@ -9,7 +9,7 @@ import findingFormJsx from './components/findingform.jsx';
 import ukkformjsx from './components/questionsanswers.jsx';
 import lostsgrid from './components/listakadonneista/lostsgrid.jsx';
 import kadonneetlistjsx from './components/etsi/kadonneetlist.jsx';
-import kadonnutFormjsx from './components/kadonnutform.jsx';
+import kadonnutFormjsx from './components/ilmoitakadonneeksi/kadonnutform.jsx';
 import nav from './components/navigation.jsx';
 import kadonneetkartallajsx from './components/kadonneetkartalla/kadonneetkartalla.jsx';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import KadonnutForm from '../../components/kadonnutform.jsx';
+import KadonnutForm from '../../components/ilmoitakadonneeksi/kadonnutform.jsx';
 import TestUtils  from 'react-addons-test-utils';
 
 describe('kadonnutform tests', _ => {

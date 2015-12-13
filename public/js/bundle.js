@@ -19,9 +19,9 @@ var _componentsFindingformJsx = require('../components/findingform.jsx');
 
 var _componentsFindingformJsx2 = _interopRequireDefault(_componentsFindingformJsx);
 
-var _componentsKadonnutformJsx = require('../components/kadonnutform.jsx');
+var _componentsIlmoitakadonneeksiKadonnutformJsx = require('../components/ilmoitakadonneeksi/kadonnutform.jsx');
 
-var _componentsKadonnutformJsx2 = _interopRequireDefault(_componentsKadonnutformJsx);
+var _componentsIlmoitakadonneeksiKadonnutformJsx2 = _interopRequireDefault(_componentsIlmoitakadonneeksiKadonnutformJsx);
 
 var _componentsEtsiKadonneetlistJsx = require('../components/etsi/kadonneetlist.jsx');
 
@@ -64,7 +64,7 @@ if (form) {
 }
 
 if (kadonnut) {
-  _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonnutformJsx2['default'], null), kadonnut);
+  _reactDom2['default'].render(_react2['default'].createElement(_componentsIlmoitakadonneeksiKadonnutformJsx2['default'], null), kadonnut);
 }
 if (kadonneetkartalla) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsKadonneetkartallaKadonneetkartallaJsx2['default'], { items: losts }), kadonneetkartalla);
@@ -73,7 +73,7 @@ if (kadonneetlist) {
   _reactDom2['default'].render(_react2['default'].createElement(_componentsEtsiKadonneetlistJsx2['default'], { items: kadonneetItems }), kadonneetlist);
 }
 
-},{"../components/etsi/kadonneetlist.jsx":5,"../components/findingform.jsx":6,"../components/kadonneetkartalla/kadonneetkartalla.jsx":8,"../components/kadonnutform.jsx":10,"../components/listakadonneista/lostsgrid.jsx":12,"../components/navigation.jsx":17,"react":525,"react-dom":369}],2:[function(require,module,exports){
+},{"../components/etsi/kadonneetlist.jsx":5,"../components/findingform.jsx":6,"../components/ilmoitakadonneeksi/kadonnutform.jsx":8,"../components/kadonneetkartalla/kadonneetkartalla.jsx":9,"../components/listakadonneista/lostsgrid.jsx":12,"../components/navigation.jsx":17,"react":525,"react-dom":369}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -445,7 +445,9 @@ var KadonneetSearchMap = (function (_React$Component) {
           this.state.opened === false && this.state.marking ? _react2['default'].createElement(_mapJsx2['default'], { id: 'kadonneet-marker-map', className: '', radius: this.state.radius, radiuschanged: this.radiuschanged,
             circle: { lat: this.getKatoamispaikka().lat, lng: this.getKatoamispaikka().lng },
             circlechanged: this.circlechanged,
-            katoamispaikka: this.getKatoamispaikka() }) : ''
+            katoamispaikka: this.getKatoamispaikka() }) : '',
+          this.state.opened === false && this.state.started ? _react2['default'].createElement(_mapJsx2['default'], { id: 'kadonneet-tracker-map', center: this.state.center
+          }) : ''
         )
       );
     }
@@ -457,7 +459,8 @@ var KadonneetSearchMap = (function (_React$Component) {
   }, {
     key: 'gotLocation',
     value: function gotLocation(latlng) {
-      this.setState({ started: true, loading: false });
+      console.log('coords', latlng.coords);
+      this.setState({ started: true, loading: false, center: { lat: latlng.coords.latitude, lng: latlng.coords.longitude } });
       if (!this.checkLatestPointsDistance(latlng.coords)) {
         return;
       }
@@ -1105,166 +1108,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _mapJsx = require('./../map.jsx');
-
-var _mapJsx2 = _interopRequireDefault(_mapJsx);
-
-var KadonneetKartalla = (function (_React$Component) {
-  _inherits(KadonneetKartalla, _React$Component);
-
-  function KadonneetKartalla() {
-    _classCallCheck(this, KadonneetKartalla);
-
-    _get(Object.getPrototypeOf(KadonneetKartalla.prototype), 'constructor', this).apply(this, arguments);
-  }
-
-  _createClass(KadonneetKartalla, [{
-    key: 'render',
-    value: function render() {
-      return _react2['default'].createElement(_mapJsx2['default'], { id: 'map-kadonneet', kadonneet: this.props.items, initialZoom: 4 });
-    }
-  }]);
-
-  return KadonneetKartalla;
-})(_react2['default'].Component);
-
-exports['default'] = KadonneetKartalla;
-module.exports = exports['default'];
-
-},{"./../map.jsx":14,"react":525}],9:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactBootstrap = require('react-bootstrap');
-
-var _utilsTextformatterJs = require('./../utils/textformatter.js');
-
-var _utilsTextformatterJs2 = _interopRequireDefault(_utilsTextformatterJs);
-
-var KadonnutNews = (function (_React$Component) {
-  _inherits(KadonnutNews, _React$Component);
-
-  function KadonnutNews() {
-    _classCallCheck(this, KadonnutNews);
-
-    _get(Object.getPrototypeOf(KadonnutNews.prototype), 'constructor', this).call(this);
-    this.state = { data: [] };
-  }
-
-  _createClass(KadonnutNews, [{
-    key: 'render',
-    value: function render() {
-      return _react2['default'].createElement(
-        _reactBootstrap.Modal,
-        { id: 'news-modal', show: true, onHide: this.props.onHide },
-        _react2['default'].createElement(
-          _reactBootstrap.Modal.Header,
-          { closeButton: true },
-          _react2['default'].createElement(
-            _reactBootstrap.Modal.Title,
-            null,
-            'Uutisia henkilöstä ',
-            this.props.item.name
-          )
-        ),
-        _react2['default'].createElement(
-          _reactBootstrap.Modal.Body,
-          null,
-          this.state.data && this.state.data.length > 0 ? _react2['default'].createElement(
-            'div',
-            null,
-            this.state.data.map(function (dataitem) {
-              return _react2['default'].createElement(
-                'p',
-                null,
-                _react2['default'].createElement(
-                  'dl',
-                  null,
-                  _react2['default'].createElement(
-                    'dt',
-                    null,
-                    _utilsTextformatterJs2['default'].formatTime(new Date(dataitem.created_time).getTime())
-                  ),
-                  _react2['default'].createElement('dd', { dangerouslySetInnerHTML: { __html: _utilsTextformatterJs2['default'].formatToHTML(_utilsTextformatterJs2['default'].formatLinks(dataitem.message)) } })
-                )
-              );
-            })
-          ) : ''
-        ),
-        _react2['default'].createElement(_reactBootstrap.Modal.Footer, null)
-      );
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this = this;
-
-      FB.api('/Kadoksissa.fi/feed', function (response) {
-        console.log('response', response);
-        if (response.data) {
-          var filteredData = response.data.filter(function (item) {
-            if (!item.message) {
-              return false;
-            }
-            var filteredName = _this.props.item.name.toLowerCase();
-            var surname = filteredName.split(' ')[1];
-            console.log('surname', surname);
-            var text = item.message.toLowerCase();
-            if (text.indexOf(filteredName) > -1 || text.indexOf(surname) > -1) {
-              return true;
-            }
-            return false;
-          });
-          _this.setState({ data: filteredData });
-        }
-      });
-    }
-  }]);
-
-  return KadonnutNews;
-})(_react2['default'].Component);
-
-exports['default'] = KadonnutNews;
-module.exports = exports['default'];
-
-},{"./../utils/textformatter.js":527,"react":525,"react-bootstrap":202}],10:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
 var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
@@ -1279,19 +1122,19 @@ var _reactBootstrapDatetimepicker = require('react-bootstrap-datetimepicker');
 
 var _reactBootstrapDatetimepicker2 = _interopRequireDefault(_reactBootstrapDatetimepicker);
 
-var _mapJsx = require('./map.jsx');
+var _mapJsx = require('./../map.jsx');
 
 var _mapJsx2 = _interopRequireDefault(_mapJsx);
 
-var _spinnerJsx = require('./spinner.jsx');
+var _spinnerJsx = require('./../spinner.jsx');
 
 var _spinnerJsx2 = _interopRequireDefault(_spinnerJsx);
 
-var _formsNextJsx = require('./forms/next.jsx');
+var _formsNextJsx = require('./../forms/next.jsx');
 
 var _formsNextJsx2 = _interopRequireDefault(_formsNextJsx);
 
-var _modalsConfirmDialogJsx = require('./modals/confirmDialog.jsx');
+var _modalsConfirmDialogJsx = require('./../modals/confirmDialog.jsx');
 
 var _modalsConfirmDialogJsx2 = _interopRequireDefault(_modalsConfirmDialogJsx);
 
@@ -1427,6 +1270,10 @@ var KadonnutForm = (function (_React$Component) {
 
       var isFormValid = isMapValid;
 
+      var circlechanged = function circlechanged(data) {
+        console.log('circle', data);
+      };
+
       var areaSelected = function areaSelected(loc, address) {
         console.log('alue valittu', loc);
         var location = { lat: loc.lat(), lng: loc.lng() };
@@ -1540,7 +1387,9 @@ var KadonnutForm = (function (_React$Component) {
                     { className: 'control-label' },
                     'Viimeisin havainto kartalla'
                   ),
-                  _react2['default'].createElement(_mapJsx2['default'], { initialZoom: 5, center: { lat: 63.612101, lng: 26.175575 }, onArea: areaSelected }),
+                  _react2['default'].createElement(_mapJsx2['default'], { id: 'kadonneet-form-map', initialZoom: 5, radius: 1000,
+                    circle: { lat: 63.612101, lng: 26.175575 }, circlechanged: circlechanged,
+                    onArea: areaSelected }),
                   _react2['default'].createElement(
                     'label',
                     null,
@@ -1637,7 +1486,167 @@ KadonnutForm.defaultProps = { tilanteet: [{ value: 1, label: 'Kadonnut' }] };
 exports['default'] = KadonnutForm;
 module.exports = exports['default'];
 
-},{"./forms/next.jsx":7,"./map.jsx":14,"./modals/confirmDialog.jsx":15,"./spinner.jsx":18,"jquery":20,"react":525,"react-bootstrap":202,"react-bootstrap-datetimepicker":22,"react-dom":369}],11:[function(require,module,exports){
+},{"./../forms/next.jsx":7,"./../map.jsx":14,"./../modals/confirmDialog.jsx":15,"./../spinner.jsx":18,"jquery":20,"react":525,"react-bootstrap":202,"react-bootstrap-datetimepicker":22,"react-dom":369}],9:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _mapJsx = require('./../map.jsx');
+
+var _mapJsx2 = _interopRequireDefault(_mapJsx);
+
+var KadonneetKartalla = (function (_React$Component) {
+  _inherits(KadonneetKartalla, _React$Component);
+
+  function KadonneetKartalla() {
+    _classCallCheck(this, KadonneetKartalla);
+
+    _get(Object.getPrototypeOf(KadonneetKartalla.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  _createClass(KadonneetKartalla, [{
+    key: 'render',
+    value: function render() {
+      return _react2['default'].createElement(_mapJsx2['default'], { id: 'map-kadonneet', kadonneet: this.props.items, initialZoom: 4 });
+    }
+  }]);
+
+  return KadonneetKartalla;
+})(_react2['default'].Component);
+
+exports['default'] = KadonneetKartalla;
+module.exports = exports['default'];
+
+},{"./../map.jsx":14,"react":525}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactBootstrap = require('react-bootstrap');
+
+var _utilsTextformatterJs = require('./../utils/textformatter.js');
+
+var _utilsTextformatterJs2 = _interopRequireDefault(_utilsTextformatterJs);
+
+var KadonnutNews = (function (_React$Component) {
+  _inherits(KadonnutNews, _React$Component);
+
+  function KadonnutNews() {
+    _classCallCheck(this, KadonnutNews);
+
+    _get(Object.getPrototypeOf(KadonnutNews.prototype), 'constructor', this).call(this);
+    this.state = { data: [] };
+  }
+
+  _createClass(KadonnutNews, [{
+    key: 'render',
+    value: function render() {
+      return _react2['default'].createElement(
+        _reactBootstrap.Modal,
+        { id: 'news-modal', show: true, onHide: this.props.onHide },
+        _react2['default'].createElement(
+          _reactBootstrap.Modal.Header,
+          { closeButton: true },
+          _react2['default'].createElement(
+            _reactBootstrap.Modal.Title,
+            null,
+            'Uutisia henkilöstä ',
+            this.props.item.name
+          )
+        ),
+        _react2['default'].createElement(
+          _reactBootstrap.Modal.Body,
+          null,
+          this.state.data && this.state.data.length > 0 ? _react2['default'].createElement(
+            'div',
+            null,
+            this.state.data.map(function (dataitem) {
+              return _react2['default'].createElement(
+                'p',
+                null,
+                _react2['default'].createElement(
+                  'dl',
+                  null,
+                  _react2['default'].createElement(
+                    'dt',
+                    null,
+                    _utilsTextformatterJs2['default'].formatTime(new Date(dataitem.created_time).getTime())
+                  ),
+                  _react2['default'].createElement('dd', { dangerouslySetInnerHTML: { __html: _utilsTextformatterJs2['default'].formatToHTML(_utilsTextformatterJs2['default'].formatLinks(dataitem.message)) } })
+                )
+              );
+            })
+          ) : ''
+        ),
+        _react2['default'].createElement(_reactBootstrap.Modal.Footer, null)
+      );
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this = this;
+
+      FB.api('/Kadoksissa.fi/feed', function (response) {
+        console.log('response', response);
+        if (response.data) {
+          var filteredData = response.data.filter(function (item) {
+            if (!item.message) {
+              return false;
+            }
+            var filteredName = _this.props.item.name.toLowerCase();
+            var surname = filteredName.split(' ')[1];
+            console.log('surname', surname);
+            var text = item.message.toLowerCase();
+            if (text.indexOf(filteredName) > -1 || text.indexOf(surname) > -1) {
+              return true;
+            }
+            return false;
+          });
+          _this.setState({ data: filteredData });
+        }
+      });
+    }
+  }]);
+
+  return KadonnutNews;
+})(_react2['default'].Component);
+
+exports['default'] = KadonnutNews;
+module.exports = exports['default'];
+
+},{"./../utils/textformatter.js":527,"react":525,"react-bootstrap":202}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1859,7 +1868,7 @@ GridItem.defaultProps = { interval: 0 };
 exports['default'] = GridItem;
 module.exports = exports['default'];
 
-},{"./../../utils/textformatter.js":527,"./../findingform.jsx":6,"./../kadonnutNews.jsx":9,"./lostsmodal.jsx":13,"react":525,"react-bootstrap":202}],12:[function(require,module,exports){
+},{"./../../utils/textformatter.js":527,"./../findingform.jsx":6,"./../kadonnutNews.jsx":10,"./lostsmodal.jsx":13,"react":525,"react-bootstrap":202}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2113,12 +2122,27 @@ var Map = (function (_React$Component) {
       this.map = new google.maps.Map(domNode, mapOptions);
     }
   }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
+    key: 'drawKadonneet',
+    value: function drawKadonneet(mapOptions) {
       var _this = this;
 
+      mapOptions.center = { lat: 65.7770391, lng: 27.1159877 };
+      this.renderMap(mapOptions);
+      var resize = function resize() {
+        _utilsUiutilsJs2['default'].calcHeight(_this.props.id);
+        _this.map.setCenter({ lat: 65.7770391, lng: 27.1159877 });
+      };
+      this.createKadonneet();
+      resize();
+
+      google.maps.event.addDomListener(window, "resize", resize);
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
       this.geocoder = new google.maps.Geocoder();
-      _utilsUiutilsJs2['default'].calculateModalMapHeight(this.props.id);
 
       var mapOptions = {
         draggable: true,
@@ -2136,14 +2160,14 @@ var Map = (function (_React$Component) {
 
       var calcHeight = function calcHeight() {
         var h = (0, _jquery2['default'])(window).height();
-        var mapElement = (0, _jquery2['default'])('#' + _this.props.id);
+        var mapElement = (0, _jquery2['default'])('#' + _this2.props.id);
         var mapY = mapElement.offset().top;
         var footerHeight = (0, _jquery2['default'])('#footer').height();
-        (0, _jquery2['default'])('#' + _this.props.id).height(h - mapY - footerHeight - 10);
+        (0, _jquery2['default'])('#' + _this2.props.id).height(h - mapY - footerHeight - 10);
       };
-      this.renderMap(mapOptions);
       if (this.props.katoamispaikka) {
-        console.log('has katoamispaikka', this.props.katoamispaikka);
+        _utilsUiutilsJs2['default'].calculateModalMapHeight(this.props.id);
+        this.renderMap(mapOptions);
         var markerIcon = {
           scale: 7,
           animation: google.maps.Animation.DROP,
@@ -2159,38 +2183,42 @@ var Map = (function (_React$Component) {
       }
 
       var drawCircle = function drawCircle(position) {
-        if (_this.cityCircle) {
-          _this.cityCircle.setMap(null);
+        if (_this2.cityCircle) {
+          _this2.cityCircle.setMap(null);
         }
-        _this.cityCircle = new google.maps.Circle({
+        _this2.cityCircle = new google.maps.Circle({
           strokeColor: '#FF0000',
           strokeOpacity: 0.8,
           strokeWeight: 2,
           fillColor: '#FF0000',
           fillOpacity: 0.35,
-          map: _this.map,
+          map: _this2.map,
           center: { lat: position.lat, lng: position.lng },
-          radius: _this.props.radius,
+          radius: _this2.props.radius,
           editable: true,
           draggable: true
         });
-        if (_this.props.radiuschanged) {
-          _this.cityCircle.addListener('radius_changed', function (_) {
-            return _this.props.radiuschanged(_this.cityCircle.getRadius());
+        if (_this2.props.radiuschanged) {
+          _this2.cityCircle.addListener('radius_changed', function (_) {
+            return _this2.props.radiuschanged(_this2.cityCircle.getRadius());
           });
         }
       };
       if (this.props.circle) {
+        if (this.map === null) {
+          this.renderMap(mapOptions);
+        }
         drawCircle(this.props.circle);
-        this.updateMarker({ latitude: this.props.circle.lat, longitude: this.props.circle.lng });
 
+        this.updateMarker({ latitude: this.props.circle.lat, longitude: this.props.circle.lng });
+        var positionChanged = function positionChanged(e) {
+          var position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+          _this2.updateMarker({ latitude: position.lat, longitude: position.lng });
+          drawCircle(position);
+          _this2.props.circlechanged({ current: position, original: _this2.props.circle });
+        };
         if (this.props.circlechanged) {
-          google.maps.event.addListener(this.map, 'click', function (e) {
-            var position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-            _this.updateMarker({ latitude: position.lat, longitude: position.lng });
-            drawCircle(position);
-            _this.props.circlechanged({ current: position, original: _this.props.circle });
-          });
+          google.maps.event.addListener(this.map, 'click', positionChanged);
         }
       }
 
@@ -2203,47 +2231,36 @@ var Map = (function (_React$Component) {
         this.createRoute();
 
         google.maps.event.addDomListener(window, "resize", function () {
-          _utilsUiutilsJs2['default'].calculateModalMapHeight(_this.props.id);
-          _this.map.setCenter(_this.calculateCenter(_this.props.findings));
+          _utilsUiutilsJs2['default'].calculateModalMapHeight(_this2.props.id);
+          _this2.map.setCenter(_this2.calculateCenter(_this2.props.findings));
         });
 
         // google.maps.event.addDomListener(window, "resize", resize);
-      } else if (this.props.kadonneet && this.props.kadonneet.length > 0) {
+      }
 
-          mapOptions.center = { lat: 65.7770391, lng: 27.1159877 };
+      if (this.props.kadonneet && this.props.kadonneet.length > 0) {
+        this.drawKadonneet(mapOptions);
+      }
 
-          var load = function load() {
-            calcHeight();
-            _this.renderMap(mapOptions);
-            _this.createKadonneet();
-          };
-
-          var resize = function resize() {
-            calcHeight();
-            _this.map.setCenter({ lat: 65.7770391, lng: 27.1159877 });
-          };
-          google.maps.event.addDomListener(window, "load", load);
-          google.maps.event.addDomListener(window, "resize", resize);
-        } else if (this.props.center) {
-          console.log('center');
-          mapOptions.center = this.props.center;
-          this.renderMap(mapOptions);
-          this.updateArea(this.props.center);
-        }
+      if (this.props.center) {
+        console.log('center', this.props.center);
+        _utilsUiutilsJs2['default'].calculateModalMapHeight(this.props.id);
+        this.renderMap(mapOptions);
+        this.updateMarker({ latitude: this.props.center.lat, longitude: this.props.center.lng });
+      }
 
       if (this.props.onClick) {
         google.maps.event.addListener(this.map, 'click', function (event) {
           console.log("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
-          _this.props.onClick(event.latLng);
-          _this.createFindingMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+          _this2.props.onClick(event.latLng);
+          _this2.createFindingMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() });
         });
       }
 
       if (this.props.onArea) {
-
         google.maps.event.addListener(this.map, 'click', function (event) {
-          _this.updateArea(event.latLng);
-          _this.updateLocation(event.latLng);
+          _this2.updateArea(event.latLng);
+          _this2.updateLocation(event.latLng);
         });
       }
     }
@@ -2279,14 +2296,14 @@ var Map = (function (_React$Component) {
   }, {
     key: 'updateLocation',
     value: function updateLocation(latlng) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.geocoder.geocode({ 'location': latlng }, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
           if (results[0]) {
-            _this2.setState({ location: results[0].formatted_address });
-            if (_this2.props.onArea) {
-              _this2.props.onArea(latlng, results[0].formatted_address);
+            _this3.setState({ location: results[0].formatted_address });
+            if (_this3.props.onArea) {
+              _this3.props.onArea(latlng, results[0].formatted_address);
             }
           }
         }
@@ -2345,7 +2362,7 @@ var Map = (function (_React$Component) {
   }, {
     key: 'createKadonneet',
     value: function createKadonneet() {
-      var _this3 = this;
+      var _this4 = this;
 
       var infowindow = new google.maps.InfoWindow();
 
@@ -2363,15 +2380,15 @@ var Map = (function (_React$Component) {
             lat: coordinates.lat,
             lng: coordinates.lng
           },
-          map: _this3.map
+          map: _this4.map
         });
         var content = '<div> ' + '   <div>' + '    <h4>' + finding.name + ' <small>Kadonnut 13.11.2015</small></h4>' + '    ' + '   </div>' + '     <div class="clearfix content-heading">' + '     <img class="img-havainto img-span pull-left" src="' + finding.imgsrc + '" />' + '     <p>' + finding.description + '</p>' + '   </div>' + '   <footer><a href="/kadonneet/' + finding._id + '">Avaa profiili</a></footer> ';
         ' </div>';
         marker.addListener('click', function (e) {
-          _this3.map.setCenter({ lat: coordinates.lat, lng: coordinates.lng });
+          _this4.map.setCenter({ lat: coordinates.lat, lng: coordinates.lng });
           infowindow.close();
           infowindow.setContent(content);
-          infowindow.open(_this3.map, marker);
+          infowindow.open(_this4.map, marker);
         });
       });
     }
@@ -2613,7 +2630,11 @@ var MapModal = (function (_React$Component) {
         _react2['default'].createElement(
           _reactBootstrap.Modal.Header,
           { closeButton: true },
-          props.title
+          _react2['default'].createElement(
+            'h2',
+            null,
+            props.title
+          )
         ),
         props.children
       );
@@ -32583,50 +32604,61 @@ exports["default"] = function (obj, keys) {
 exports.__esModule = true;
 },{}],225:[function(require,module,exports){
 arguments[4][43][0].apply(exports,arguments)
-},{"../../modules/$.core":233,"../../modules/es6.object.assign":246,"dup":43}],226:[function(require,module,exports){
+},{"../../modules/$.core":234,"../../modules/es6.object.assign":246,"dup":43}],226:[function(require,module,exports){
 arguments[4][44][0].apply(exports,arguments)
-},{"../../modules/$":241,"dup":44}],227:[function(require,module,exports){
+},{"../../modules/$":242,"dup":44}],227:[function(require,module,exports){
 require('../../modules/es6.object.is-frozen');
 module.exports = require('../../modules/$.core').Object.isFrozen;
-},{"../../modules/$.core":233,"../../modules/es6.object.is-frozen":247}],228:[function(require,module,exports){
+},{"../../modules/$.core":234,"../../modules/es6.object.is-frozen":247}],228:[function(require,module,exports){
 arguments[4][47][0].apply(exports,arguments)
-},{"../../modules/$.core":233,"../../modules/es6.object.keys":248,"dup":47}],229:[function(require,module,exports){
+},{"../../modules/$.core":234,"../../modules/es6.object.keys":248,"dup":47}],229:[function(require,module,exports){
 arguments[4][48][0].apply(exports,arguments)
-},{"../../modules/$.core":233,"../../modules/es6.object.set-prototype-of":249,"dup":48}],230:[function(require,module,exports){
+},{"../../modules/$.core":234,"../../modules/es6.object.set-prototype-of":249,"dup":48}],230:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
 },{"dup":49}],231:[function(require,module,exports){
 arguments[4][50][0].apply(exports,arguments)
-},{"./$.is-object":240,"dup":50}],232:[function(require,module,exports){
-arguments[4][51][0].apply(exports,arguments)
-},{"dup":51}],233:[function(require,module,exports){
-arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],234:[function(require,module,exports){
-arguments[4][53][0].apply(exports,arguments)
-},{"./$.a-function":230,"dup":53}],235:[function(require,module,exports){
-arguments[4][54][0].apply(exports,arguments)
-},{"./$.core":233,"./$.global":238,"dup":54}],236:[function(require,module,exports){
-arguments[4][55][0].apply(exports,arguments)
-},{"dup":55}],237:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"dup":56}],238:[function(require,module,exports){
-arguments[4][57][0].apply(exports,arguments)
-},{"dup":57}],239:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"./$.cof":232,"dup":58}],240:[function(require,module,exports){
-arguments[4][59][0].apply(exports,arguments)
-},{"dup":59}],241:[function(require,module,exports){
-arguments[4][60][0].apply(exports,arguments)
-},{"dup":60}],242:[function(require,module,exports){
+},{"./$.is-object":241,"dup":50}],232:[function(require,module,exports){
 arguments[4][61][0].apply(exports,arguments)
-},{"./$":241,"./$.fails":237,"./$.iobject":239,"./$.to-object":245,"dup":61}],243:[function(require,module,exports){
-arguments[4][62][0].apply(exports,arguments)
-},{"./$.core":233,"./$.def":235,"./$.fails":237,"dup":62}],244:[function(require,module,exports){
+},{"./$":242,"./$.fails":238,"./$.iobject":240,"./$.to-object":245,"dup":61}],233:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"dup":51}],234:[function(require,module,exports){
+var core = module.exports = {version: '1.2.3'};
+if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+},{}],235:[function(require,module,exports){
+arguments[4][53][0].apply(exports,arguments)
+},{"./$.a-function":230,"dup":53}],236:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"./$.core":234,"./$.global":239,"dup":54}],237:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],238:[function(require,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"dup":56}],239:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"dup":57}],240:[function(require,module,exports){
+arguments[4][58][0].apply(exports,arguments)
+},{"./$.cof":233,"dup":58}],241:[function(require,module,exports){
+arguments[4][59][0].apply(exports,arguments)
+},{"dup":59}],242:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"dup":60}],243:[function(require,module,exports){
+// most Object methods by ES6 should accept primitives
+module.exports = function(KEY, exec){
+  var $def = require('./$.def')
+    , fn   = (require('./$.core').Object || {})[KEY] || Object[KEY]
+    , exp  = {};
+  exp[KEY] = exec(fn);
+  $def($def.S + $def.F * require('./$.fails')(function(){ fn(1); }), 'Object', exp);
+};
+},{"./$.core":234,"./$.def":236,"./$.fails":238}],244:[function(require,module,exports){
 arguments[4][63][0].apply(exports,arguments)
-},{"./$":241,"./$.an-object":231,"./$.ctx":234,"./$.is-object":240,"dup":63}],245:[function(require,module,exports){
+},{"./$":242,"./$.an-object":231,"./$.ctx":235,"./$.is-object":241,"dup":63}],245:[function(require,module,exports){
 arguments[4][65][0].apply(exports,arguments)
-},{"./$.defined":236,"dup":65}],246:[function(require,module,exports){
-arguments[4][66][0].apply(exports,arguments)
-},{"./$.def":235,"./$.object-assign":242,"dup":66}],247:[function(require,module,exports){
+},{"./$.defined":237,"dup":65}],246:[function(require,module,exports){
+// 19.1.3.1 Object.assign(target, source)
+var $def = require('./$.def');
+
+$def($def.S + $def.F, 'Object', {assign: require('./$.assign')});
+},{"./$.assign":232,"./$.def":236}],247:[function(require,module,exports){
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = require('./$.is-object');
 
@@ -32635,11 +32667,11 @@ require('./$.object-sap')('isFrozen', function($isFrozen){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
-},{"./$.is-object":240,"./$.object-sap":243}],248:[function(require,module,exports){
+},{"./$.is-object":241,"./$.object-sap":243}],248:[function(require,module,exports){
 arguments[4][68][0].apply(exports,arguments)
 },{"./$.object-sap":243,"./$.to-object":245,"dup":68}],249:[function(require,module,exports){
 arguments[4][69][0].apply(exports,arguments)
-},{"./$.def":235,"./$.set-proto":244,"dup":69}],250:[function(require,module,exports){
+},{"./$.def":236,"./$.set-proto":244,"dup":69}],250:[function(require,module,exports){
 arguments[4][70][0].apply(exports,arguments)
 },{"dup":70}],251:[function(require,module,exports){
 'use strict';
@@ -40940,6 +40972,7 @@ var HTMLDOMPropertyConfig = {
     multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     name: null,
+    nonce: MUST_USE_ATTRIBUTE,
     noValidate: HAS_BOOLEAN_VALUE,
     open: HAS_BOOLEAN_VALUE,
     optimum: null,
@@ -40951,6 +40984,7 @@ var HTMLDOMPropertyConfig = {
     readOnly: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     rel: null,
     required: HAS_BOOLEAN_VALUE,
+    reversed: HAS_BOOLEAN_VALUE,
     role: MUST_USE_ATTRIBUTE,
     rows: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
     rowSpan: null,
@@ -41396,6 +41430,7 @@ assign(React, {
 });
 
 React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
+React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
 },{"./Object.assign":391,"./ReactDOM":404,"./ReactDOMServer":414,"./ReactIsomorphic":432,"./deprecated":475}],394:[function(require,module,exports){
@@ -51604,7 +51639,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.2';
+module.exports = '0.14.3';
 },{}],454:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -56702,6 +56737,15 @@ var UIUtils = (function () {
       console.log('footer', footerHeight);
       var headerHeight = $('.modal-header').height();
       $('#' + id).height(h - offsetY - footerHeight - 50);
+    }
+  }, {
+    key: 'calcHeight',
+    value: function calcHeight(id) {
+      var h = $(window).height();
+      var mapElement = $('#' + id);
+      var mapY = mapElement.offset().top;
+      var footerHeight = $('#footer').height();
+      $('#' + id).height(h - mapY - footerHeight - 10);
     }
   }]);
 

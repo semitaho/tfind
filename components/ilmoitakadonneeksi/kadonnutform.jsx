@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import {Panel, Input, ProgressBar, Button, ButtonGroup,FormControls, Tabs, Tab} from 'react-bootstrap';
 import $ from 'jquery';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
-import Map from './map.jsx';
-import Spinner from './spinner.jsx';
-import Next from './forms/next.jsx';
-import ConfirmDialog from './modals/confirmDialog.jsx';
+import Map from './../map.jsx';
+import Spinner from './../spinner.jsx';
+import Next from './../forms/next.jsx';
+import ConfirmDialog from './../modals/confirmDialog.jsx';
 
 class KadonnutForm extends React.Component {
   constructor() {
@@ -102,6 +102,10 @@ class KadonnutForm extends React.Component {
     }
     let isFormValid = isMapValid;
 
+    const circlechanged = (data) => {
+      console.log('circle', data);
+    };
+
     let areaSelected = (loc, address) => {
       console.log('alue valittu', loc);
       let location = {lat: loc.lat(), lng: loc.lng()};
@@ -151,7 +155,7 @@ class KadonnutForm extends React.Component {
             {isNameValid ?
               <Tab title="2. Tiedot" tabIndex="-1" eventKey={2}>
                 <div className="wizard-content">
-                  <Input  bsSize="large" type="textarea" autoFocus="true" tabIndex="2"
+                  <Input bsSize="large" type="textarea" autoFocus="true" tabIndex="2"
                          placeholder="Kuvaile kadonnutta mahdollisimman tarkasti" name="description"
                          label="Henkilön kuvaus" onChange={this.handleTextChange}
                     />
@@ -164,7 +168,7 @@ class KadonnutForm extends React.Component {
               <Tab title="3. Kuva" eventKey={3} tabIndex="-1">
                 <div className="wizard-content">
                   <Input
-                    type="text"  bsSize="large"
+                    type="text" bsSize="large"
                     onBlur={this.onPasteImage} label="Kuva henkilöstä" className="form-control"
                     placeholder="Liitä kuva kadonneesta henkilöstä" hasFeedback/>
                   {this.state.formstate.imgsrc ?
@@ -189,7 +193,9 @@ class KadonnutForm extends React.Component {
                   {isTimeValid ?
                     <div className="form-group">
                       <label className="control-label">Viimeisin havainto kartalla</label>
-                      <Map initialZoom={5} center={{lat: 63.612101,lng: 26.175575}} onArea={areaSelected}/>
+                      <Map id="kadonneet-form-map" initialZoom={5} radius={1000}
+                           circle={{lat: 63.612101,lng: 26.175575}} circlechanged={circlechanged}
+                           onArea={areaSelected}/>
                       <label><strong>{this.state.formstate.address}</strong></label>
                     </div>
                     : ''}
