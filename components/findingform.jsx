@@ -85,7 +85,6 @@ class FindingForm extends React.Component {
     var hideMap = this.generateHideClass('timestamp') !== '' ? true : false;
     var hideSubmitClass = !this.canSubmit() ? 'hide' : '';
     return (
-
       <MapModal onHide={this.props.onclosemodal} size="large"
                 title={'Ilmoita uusi havainto henkilöstä '+this.props.item.name+'.'}>
         <form method="POST" id="findingForm" action="/submitfinding" noValidate encType="multipart/form-data">

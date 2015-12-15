@@ -9,13 +9,13 @@
     "start": "node_modules/.bin/babel-node  --presets es2015,react index.js",
     "babelnode": "node_modules/.bin/babel-node  --presets es2015,react index.js",
     "babeldev": "node_modules/.bin/babel-node  --presets es2015,react index.js",
-    "prebabelnode": "NODE_ENV=production node_modules/.bin/browserify -t babelify  client/main.js -p [minifyify --no-map] > ./public/js/bundle.js",
-    "browserify": "node_modules/.bin/webpack --config webpack.conf.js",
+    "prebabelnode": "node_modules/.bin/webpack --config webpack.prod.js",
+    "watch:jsx": "node_modules/.bin/webpack --config webpack.conf.js --colors --watch",
     "build:css": "node_modules/.bin/stylus -u nib stylus/tfind.styl -o public/css/tfind.css",
     "watch:css": "node_modules/.bin/stylus -w -u nib stylus/tfind.styl -o public/css/tfind.css",
     "build": "npm run build:css && node_modules/.bin/browserify -t babelify client/main.js -o ./public/js/bundle.js",
     "local": "npm run build && npm run watch:css & npm start",
-    "watch": "npm run babeldev & npm run watch:css &  nodemon -e jsx,js,json -w ./index.js -w utils -w ./components -w ./resources -w ./client --exec npm run browserify"
+    "watch": "npm run babeldev & npm run watch:css &  npm run watch:jsx"
   },
   "jest": {
     "testDirectoryName": "tests",

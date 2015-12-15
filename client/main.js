@@ -43,6 +43,6 @@ if (kadonneetkartalla){
   ReactDOM.render(<KadonneetKartalla items={losts} />, kadonneetkartalla);
 }
 if (kadonneetlist){
-  ReactDOM.render(<KadonneetList items={kadonneetItems} />, kadonneetlist);
+  ReactDOM.render(<KadonneetList  items={kadonneetItems} />, kadonneetlist);
 }
 
