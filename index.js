@@ -12,6 +12,9 @@ import kadonneetlistjsx from './components/etsi/kadonneetlist.jsx';
 import kadonnutFormjsx from './components/ilmoitakadonneeksi/kadonnutform.jsx';
 import nav from './components/navigation.jsx';
 import kadonneetkartallajsx from './components/kadonneetkartalla/kadonneetkartalla.jsx';
+import {Router, match, RoutingContext} from 'react-router';
+import routes from './routes';
+
 
 let app = express();
 let upload = multer({dest: './public/files'});
@@ -38,6 +41,11 @@ var errorRoute = (req, res) => {
 
 var ObjectId = require('mongodb').ObjectID;
 var mongoConnection = require('./mongodb.js').mongoConnection;
+
+const handleParams = props => {
+  props.path = props.location.path;
+  return props;
+};
 mongoConnection.then(db => {
   console.log('mongodb successfully connected...');
   var kadonneetCollection = db.collection('kadonneet'),
@@ -46,7 +54,36 @@ mongoConnection.then(db => {
   var collections = {ukk: ukkCollection, kadonneet: kadonneetCollection, contents: contentCollection};
   return collections
 }).then(collections => {
-  app.get('/', (req, res) => {
+  
+  app.get('/*', (req, res) => {
+    match({routes, location: req.url}, (error, redirectloc, renderProps) => {
+      if (error){      
+        res.status(500).send(error.message);
+      } else if (redirectloc){
+        res.redirect(302, redirectloc.pathname + redirectloc.search);
+      } else if (renderProps){
+        const page = ReactDOMServer.renderToString(<RoutingContext {...handleParams(renderProps)}  kakka='lisaakadonnut' />);
+        res.render('layout', {
+          page
+        });
+      } else {
+        res.redirect('error');
+
+      }
+
+
+    });
+    //console.log('req url', routes);
+    //let renderString = React.renderToString(<Router>{routes}</Router>);
+    //res.render('index');
+    /*
+    rRouter.routes()
+    Router.run(routes, req.url, Handler => {
+      let content = React.renderToString(<Handler />);
+      //res.render('index', { content: content });
+      */
+
+    /*
     collections.contents.find().toArray((err, docs) => {
       let content = docs[0];
       res.render('index', {
@@ -56,10 +93,9 @@ mongoConnection.then(db => {
         quoteauthor: content.quoteauthor
       });
     });
+*/
 
-  });
-
-  app.post('/submitfinding', upload.single('pic'), (req, res) => {
+  }).post('/submitfinding', upload.single('pic'), (req, res) => {
     var findings = {
       timestamp: parseInt(req.body.timestamp, 10),
       description: req.body.description,

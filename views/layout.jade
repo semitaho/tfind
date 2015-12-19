@@ -9,11 +9,10 @@ html(lang="en")
     script(src="/bootstrap/js/bootstrap.min.js")
     title tFind - Löydä kadonneet
   body.container-fluid
+    div!= page
     .row
       .col-md-12.col-sm-12.col-xs-12
         nav#navigation!= navigation
-
-     block content
     include ./footer
     script(src="js/bundle.js")
     script(src="js/scripts.js")

@@ -70,6 +70,7 @@
     "body-parser": "^1.14.1",
     "express": "4.13.3",
     "flux": "^2.1.1",
+    "history": "^1.13.1",
     "jade": "1.11.0",
     "jquery": "^2.1.4",
     "minifyify": "^7.1.0",
@@ -81,6 +82,7 @@
     "react-bootstrap": "^0.27.3",
     "react-bootstrap-datetimepicker": "0.0.21",
     "react-dom": "^0.14.3",
+    "react-router": "^1.0.2",
     "stylus": "0.52.4",
     "uglify-js": "^2.6.1"
   },
