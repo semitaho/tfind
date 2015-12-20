@@ -64,6 +64,10 @@
 
 	var _reactRouter = __webpack_require__(609);
 
+	var _app = __webpack_require__(660);
+
+	var _app2 = _interopRequireDefault(_app);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	//import KadonnutForm from '../components/ilmoitakadonneeksi/kadonnutform.jsx';
@@ -82,8 +86,8 @@
 
 	var losts = [];
 
-	console.log('props', props);
-	_reactDom2.default.render(_react2.default.createElement(_reactRouter.RoutingContext, props), page);
+	console.log('props', page);
+	_reactDom2.default.render(_react2.default.createElement(_app2.default, props), page);
 
 	/*
 	if (typeof items !== 'undefined') {
@@ -63308,6 +63312,176 @@
 
 	exports['default'] = useBasename;
 	module.exports = exports['default'];
+
+/***/ },
+/* 660 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(609);
+
+	var _navigation = __webpack_require__(661);
+
+	var _navigation2 = _interopRequireDefault(_navigation);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var App = function App(props) {
+	  var children = props.children;
+
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement(
+	      'div',
+	      { className: 'row' },
+	      _react2.default.createElement(
+	        'div',
+	        { className: 'col-md-12 col-sm-12 col-xs-12' },
+	        _react2.default.createElement(
+	          'nav',
+	          { id: 'navigation' },
+	          _react2.default.createElement(_navigation2.default, null)
+	        )
+	      )
+	    ),
+	    children
+	  );
+	};
+
+	exports.default = App;
+
+/***/ },
+/* 661 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Navigation = (function (_React$Component) {
+	  _inherits(Navigation, _React$Component);
+
+	  function Navigation() {
+	    _classCallCheck(this, Navigation);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Navigation).call(this));
+	  }
+
+	  _createClass(Navigation, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      var navitems = this.props.items.map(function (item, index) {
+	        var className = '';
+	        if (_this2.props.selectedIndex === index) {
+	          className = 'active';
+	        }
+	        return _react2.default.createElement(
+	          'li',
+	          { className: className },
+	          _react2.default.createElement(
+	            'a',
+	            { tabIndex: '-1', href: item.link },
+	            item.title
+	          )
+	        );
+	      });
+	      return _react2.default.createElement(
+	        'nav',
+	        { className: 'navbar navbar-default navbar-static-top' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'row' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'col-md-8 end col-md-offset-2' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'navbar-header navbar-left' },
+	              _react2.default.createElement(
+	                'button',
+	                { className: 'navbar-toggle', 'data-toggle': 'collapse', type: 'button', 'aria-expanded': 'true',
+	                  'data-target': '#collapsing', 'aria-controls': 'collapsing' },
+	                _react2.default.createElement(
+	                  'span',
+	                  { className: 'sr-only' },
+	                  'Toggle navigation'
+	                ),
+	                _react2.default.createElement('span', { className: 'icon-bar' }),
+	                _react2.default.createElement('span', { className: 'icon-bar' }),
+	                _react2.default.createElement('span', { className: 'icon-bar' }),
+	                _react2.default.createElement('span', { className: 'icon-bar' })
+	              ),
+	              _react2.default.createElement(
+	                'a',
+	                { className: 'navbar-brand pull-left', tabIndex: '-1', href: '/' },
+	                'tFind'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'collapse  navbar-collapse', id: 'collapsing' },
+	              _react2.default.createElement(
+	                'ul',
+	                { className: 'navbar-nav nav' },
+	                navitems
+	              ),
+	              _react2.default.createElement(
+	                'ul',
+	                { className: 'navbar-nav nav navbar-right' },
+	                _react2.default.createElement(
+	                  'li',
+	                  null,
+	                  _react2.default.createElement('div', { className: 'fb-login-button', 'data-max-rows': '1', 'data-size': 'medium', 'data-show-faces': 'false',
+	                    'data-auto-logout-link': 'true' })
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      console.log('harhar');
+	    }
+	  }]);
+
+	  return Navigation;
+	})(_react2.default.Component);
+
+	Navigation.defaultProps = {
+	  items: [{ title: 'Luettelo kadonneista', link: '/kadonneet' }, { title: 'Kadonneet kartalla', link: '/kadonneetkartalla' }, { title: 'Ilmoita kadonneeksi', link: '/ilmoita' }, { title: 'Etsi henkilöä', link: '/etsi' }, { title: 'UKK', link: '/ukk' }]
+	};
+	exports.default = Navigation;
 
 /***/ }
 /******/ ]);

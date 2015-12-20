@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import LostsGrid from '../components/listakadonneista/lostsgrid.jsx';
 import FindingForm from '../components/findingform.jsx';
 import {RoutingContext} from 'react-router';
-
+import App from '../components/app.jsx';
 //import KadonnutForm from '../components/ilmoitakadonneeksi/kadonnutform.jsx';
 //import KadonneetList from '../components/etsi/kadonneetlist.jsx';
 //import KadonneetKartalla from '../components/kadonneetkartalla/kadonneetkartalla.jsx';
@@ -20,10 +20,8 @@ var main = document.getElementById('losts'),
 
 var losts = [];
 
-let page = <RoutingContext {...props} />
-
 console.log('props', page);
-ReactDOM.render(<RoutingContext {...props} />, page);
+ReactDOM.render(<App {...props} />, page);
 
 /*
 if (typeof items !== 'undefined') {
