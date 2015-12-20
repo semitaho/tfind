@@ -1,5 +1,6 @@
 import React from 'react';
 import GridItem from './griditem.jsx';
+import Page from './../page.jsx';
 import {Navbar, Input, Glyphicon} from 'react-bootstrap';
 class LostsGrid extends React.Component {
 
@@ -12,7 +13,7 @@ class LostsGrid extends React.Component {
 
   filterByCriteria(search) {
     let searchLower = search.toLowerCase();
-    let filteredItems = this.props.items.filter(item => {
+    let filteredItems = this.props.params.items.filter(item => {
       var nameLowercase = item.name.toLowerCase();
       var descriptionLowercase = item.description.toLowerCase();
 
@@ -44,11 +45,14 @@ class LostsGrid extends React.Component {
         <GridItem item={item}/></div>)
     });
 
-    return (<div className="row">
+    return (
+      <Page title="Oletko nähnyt heitä?">
+
+      <div className="row">
       <div className="col-md-12 col-sm-12">
         <div className="row">
           <div className="col-md-12 col-sm-12">
-            <label className="pull-left search-results">Tuloksia {filteredItems.length} / {this.props.items.length}</label> 
+            <label className="pull-left search-results">Tuloksia {filteredItems.length} / {this.props.params.items.length}</label> 
             <form className="navbar-form navbar-right" role="search">
             <div className="form-group">
             <Input type="text" placeholder="Hae kadonnutta"  addonAfter={<Glyphicon glyph="search" />}  onChange={this.changeSearchCriteria}/>
@@ -57,7 +61,7 @@ class LostsGrid extends React.Component {
           </div>
          </div> 
       </div>
-      {items}</div>)
+      {items}</div></Page>)
   }
 }
 

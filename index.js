@@ -42,9 +42,43 @@ var errorRoute = (req, res) => {
 var ObjectId = require('mongodb').ObjectID;
 var mongoConnection = require('./mongodb.js').mongoConnection;
 
-const handleParams = props => {
-  props.path = props.location.path;
-  return props;
+const renderPage =(res, renderProps) => {
+  const page = ReactDOMServer.renderToString(<RoutingContext {...renderProps}  />);
+  console.log('renderpros', renderProps);
+  var keijo = ['kukka', 'kakka'];
+  res.render('layout', {
+    page,
+    renderProps
+  });
+};
+
+const doRender = (res, collections,renderProps) => {
+  switch (renderProps.location.pathname){
+    case '/':
+      collections.contents.find().toArray((err, docs) => {
+        let content = docs[0];
+        renderProps.params.quotetext = content.quotetext;
+        renderProps.params.quoteauthor = content.quoteauthor;
+        renderProps.params.description = content.description;
+        renderProps.params.navindex = -1;
+        renderPage(res, renderProps);
+        
+      });
+      break;
+    case '/kadonneet': 
+      collections.kadonneet.find().sort({timestamp: -1}).toArray(function (err, docs) {
+        if (err) {
+          res.error();
+          return;
+        }
+        renderProps.params.items = docs;
+        renderProps.params.navindex = 0;
+        renderPage(res, renderProps);
+      });
+      break;  
+    default:
+      console.log('no matching route exists');  
+  } 
 };
 mongoConnection.then(db => {
   console.log('mongodb successfully connected...');
@@ -61,11 +95,8 @@ mongoConnection.then(db => {
         res.status(500).send(error.message);
       } else if (redirectloc){
         res.redirect(302, redirectloc.pathname + redirectloc.search);
-      } else if (renderProps){
-        const page = ReactDOMServer.renderToString(<RoutingContext {...handleParams(renderProps)}  kakka='lisaakadonnut' />);
-        res.render('layout', {
-          page
-        });
+      } else if (collections, renderProps){
+          doRender(res, collections, renderProps);
       } else {
         res.redirect('error');
 
@@ -84,15 +115,7 @@ mongoConnection.then(db => {
       */
 
     /*
-    collections.contents.find().toArray((err, docs) => {
-      let content = docs[0];
-      res.render('index', {
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: -1})),
-        description: content.description,
-        quotetext: content.quotetext,
-        quoteauthor: content.quoteauthor
-      });
-    });
+    
 */
 
   }).post('/submitfinding', upload.single('pic'), (req, res) => {
@@ -148,6 +171,8 @@ mongoConnection.then(db => {
       res.end('OK');
     });
   });
+
+  /*
   app.get('/kadonneet', (req, res) => {
     collections.kadonneet.find().sort({timestamp: -1}).toArray(function (err, docs) {
       if (err) {
@@ -162,7 +187,9 @@ mongoConnection.then(db => {
 
     });
 
-  }).get('/kadonneet/:id', (req, res) => {
+  })
+*/
+  app.get('/kadonneet/:id', (req, res) => {
     collections.kadonneet.find({_id:new ObjectId(req.params.id)}).toArray(function (err, docs) {
       if (err) {
         res.error();
