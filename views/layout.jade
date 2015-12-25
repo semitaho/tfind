@@ -14,7 +14,9 @@ html(lang="en")
       .col-md-12.col-sm-12.col-xs-12
         nav#navigation!= navigation
     include ./footer
-    script var props = !{JSON.stringify(renderProps)};
+    script.
+      var clientProps = !{JSON.stringify(renderProps)};
     script(src="js/scripts.js")
+    script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByzQDlFO3HK8MQmkCMpZ9Wzg-hyECUKNI")
     script(src="js/bundle.js")
   

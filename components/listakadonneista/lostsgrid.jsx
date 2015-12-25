@@ -65,7 +65,4 @@ class LostsGrid extends React.Component {
   }
 }
 
-LostsGrid.propTypes = {
-  items: React.PropTypes.array.isRequired
-};
 export default LostsGrid;

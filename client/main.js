@@ -1,14 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import LostsGrid from '../components/listakadonneista/lostsgrid.jsx';
-import FindingForm from '../components/findingform.jsx';
-import {RoutingContext} from 'react-router';
-import App from '../components/app.jsx';
-//import KadonnutForm from '../components/ilmoitakadonneeksi/kadonnutform.jsx';
-//import KadonneetList from '../components/etsi/kadonneetlist.jsx';
-//import KadonneetKartalla from '../components/kadonneetkartalla/kadonneetkartalla.jsx';
 
-//import Navigation from '../components/navigation.jsx';
+import React from 'react';
+import {render} from 'react-dom';
+import {Router, match} from 'react-router';
+import routes from '../routes.js';
+import createBrowserHistory from 'history/lib/createBrowserHistory'
 
 var main = document.getElementById('losts'),
   form = document.getElementById('findingform'),
@@ -18,40 +13,5 @@ var main = document.getElementById('losts'),
   kadonneetlist = document.getElementById('kadonneetlist'),
   page = document.getElementById('page');
 
-var losts = [];
-
-console.log('props', page);
-ReactDOM.render(<App {...props} />, page);
-
-/*
-if (typeof items !== 'undefined') {
-  losts = items;
-}
-
-var kadonneetItems = [];
-if (typeof kadonneet !== 'undefined'){
-  kadonneetItems = kadonneet;
-}
-
-var lost = {};
-if (typeof finding !== 'undefined') {
-  lost = finding;
-}
-if (main) {
-  ReactDOM.render(<LostsGrid items={losts}/>, main);
-}
-if (form) {
-  ReactDOM.render(<FindingForm item={lost}/>, form);
-}
-
-if (kadonnut) {
-  ReactDOM.render(<KadonnutForm />, kadonnut);
-}
-if (kadonneetkartalla){
-  ReactDOM.render(<KadonneetKartalla items={losts} />, kadonneetkartalla);
-}
-if (kadonneetlist){
-  ReactDOM.render(<KadonneetList  items={kadonneetItems} />, kadonneetlist);
-}
-
-*/
+let history = createBrowserHistory();
+render(<Router history={history} children={routes} />, page); 

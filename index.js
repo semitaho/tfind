@@ -44,8 +44,6 @@ var mongoConnection = require('./mongodb.js').mongoConnection;
 
 const renderPage =(res, renderProps) => {
   const page = ReactDOMServer.renderToString(<RoutingContext {...renderProps}  />);
-  console.log('renderpros', renderProps);
-  var keijo = ['kukka', 'kakka'];
   res.render('layout', {
     page,
     renderProps
@@ -76,6 +74,45 @@ const doRender = (res, collections,renderProps) => {
         renderPage(res, renderProps);
       });
       break;  
+    case '/kadonneetkartalla':
+      collections.kadonneet.find().toArray(function (err, docs) {
+        if (err) {
+          res.error();
+          return;
+        }
+        renderProps.params.navindex = 1;
+        renderProps.params.items = docs;
+        renderPage(res, renderProps);
+      });
+      break;
+    case '/ilmoita':
+      renderProps.params.navindex = 2;
+      renderPage(res, renderProps);
+      break;
+    case '/etsi':
+      collections.kadonneet.find().sort({name: 1}).toArray((err, docs) => {
+        if (err) {
+          res.error();
+          return;
+        }
+        renderProps.params.navindex = 3;
+        renderProps.params.items = docs;
+        renderPage(res, renderProps);
+      });
+      break;
+    case '/ukk':
+    collections.ukk.find({}).sort({jnro: 1}).toArray((err, docs) => {
+        if (err) {
+          res.error();
+          return;
+        }
+        renderProps.params.navindex = 4;
+        renderProps.params.items = docs;
+        renderPage(res, renderProps);
+      });
+      break;  
+  
+      
     default:
       console.log('no matching route exists');  
   } 
@@ -90,6 +127,7 @@ mongoConnection.then(db => {
 }).then(collections => {
   
   app.get('/*', (req, res) => {
+    console.log('url', req.url);
     match({routes, location: req.url}, (error, redirectloc, renderProps) => {
       if (error){      
         res.status(500).send(error.message);
@@ -172,23 +210,7 @@ mongoConnection.then(db => {
     });
   });
 
-  /*
-  app.get('/kadonneet', (req, res) => {
-    collections.kadonneet.find().sort({timestamp: -1}).toArray(function (err, docs) {
-      if (err) {
-        res.error();
-        return;
-      }
-      res.render('kadonneet', {
-        items: docs,
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 0})),
-        losts: ReactDOMServer.renderToString(Losts({items: docs}))
-      });
 
-    });
-
-  })
-*/
   app.get('/kadonneet/:id', (req, res) => {
     collections.kadonneet.find({_id:new ObjectId(req.params.id)}).toArray(function (err, docs) {
       if (err) {
@@ -233,16 +255,7 @@ mongoConnection.then(db => {
         kadonnutform: ReactDOMServer.renderToString(KadonnutForm({}))
       });
     }).get('/ukk', (req, res) => {
-      collections.ukk.find({}).sort({jnro: 1}).toArray((err, docs) => {
-        if (err) {
-          res.error();
-          return;
-        }
-        res.render('ukk', {
-          navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 4})),
-          ukkform: ReactDOMServer.renderToString(UKKForm({items: docs}))
-        });
-      });
+      
 
     });
 

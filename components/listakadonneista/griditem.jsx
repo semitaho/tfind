@@ -23,6 +23,7 @@ class GridItem extends React.Component {
   }
 
   componentDidMount() {
+    console.log('onnnn did mount');
     this.imageInterval = setInterval(this.onTimeout, this.props.interval);
     if (this.props.item && this.props.item.lost) {
       this.kadonnutInterval = setInterval(this.onKadonnutTimeout, 1000);

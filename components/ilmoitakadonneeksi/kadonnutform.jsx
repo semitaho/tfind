@@ -7,6 +7,7 @@ import Map from './../map.jsx';
 import Spinner from './../spinner.jsx';
 import Next from './../forms/next.jsx';
 import ConfirmDialog from './../modals/confirmDialog.jsx';
+import Page from './../page.jsx';
 
 class KadonnutForm extends React.Component {
   constructor() {
@@ -148,7 +149,9 @@ class KadonnutForm extends React.Component {
       };
 
     return (
-
+      <Page title="Ilmoita kadonneeksi">
+        <p className="lead">Onko joku sukulainen tai tuttusi kadonnut? Tällä sivulla voit ilmoittaa henkilön kadonneeksi ja tarvittaessa julkaista tapaus Sosiaalisessa mediassa.</p>
+        <p className="lead">Täytä allaoleva lomake huolellisesti.</p>  
       <div className="row">
         <div className="col-md-12">
           <label className="control-label">Edistys</label>
@@ -268,7 +271,7 @@ class KadonnutForm extends React.Component {
           </Tabs>
 
         </div>
-      </div>)
+      </div></Page>)
   }
 
   formatTime(timestamp) {

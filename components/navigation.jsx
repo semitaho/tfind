@@ -9,7 +9,7 @@ class Navigation extends React.Component {
   render() {
     var navitems = this.props.items.map((item, index) => {
       var className = '';
-      if (this.props.selectedIndex === index) {
+      if (this.props.navindex === index) {
         className = 'active';
       }
       return (<li className={className}>
