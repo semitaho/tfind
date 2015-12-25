@@ -8,7 +8,7 @@ import KadonneetKartalla from './components/kadonneetkartalla/kadonneetkartalla.
 import IlmoitaKadonneeksi from './components/ilmoitakadonneeksi/kadonnutform.jsx';
 import KadonneetList from './components/etsi/kadonneetlist.jsx';
 import Ukk from './components/questionsanswers.jsx';
-
+import NoMatch from './components/nomatch.jsx';
 
 export default (  
   <Route component={ AppHandler } path="/">
@@ -18,6 +18,8 @@ export default (
       <Route path="/ilmoita" component={IlmoitaKadonneeksi}/>
       <Route path="/etsi" component={KadonneetList}/>
       <Route path="/ukk" component={Ukk}/>
+      <Route path="*" component={NoMatch}/>
+
 
   </Route>
 );

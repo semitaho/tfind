@@ -58,7 +58,7 @@
 
 	var _routes2 = _interopRequireDefault(_routes);
 
-	var _createBrowserHistory = __webpack_require__(673);
+	var _createBrowserHistory = __webpack_require__(674);
 
 	var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
 
@@ -24726,6 +24726,10 @@
 
 	var _questionsanswers2 = _interopRequireDefault(_questionsanswers);
 
+	var _nomatch = __webpack_require__(673);
+
+	var _nomatch2 = _interopRequireDefault(_nomatch);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = _react2.default.createElement(
@@ -24736,7 +24740,8 @@
 	    _react2.default.createElement(_reactRouter.Route, { path: "/kadonneetkartalla", component: _kadonneetkartalla2.default }),
 	    _react2.default.createElement(_reactRouter.Route, { path: "/ilmoita", component: _kadonnutform2.default }),
 	    _react2.default.createElement(_reactRouter.Route, { path: "/etsi", component: _kadonneetlist2.default }),
-	    _react2.default.createElement(_reactRouter.Route, { path: "/ukk", component: _questionsanswers2.default })
+	    _react2.default.createElement(_reactRouter.Route, { path: "/ukk", component: _questionsanswers2.default }),
+	    _react2.default.createElement(_reactRouter.Route, { path: "*", component: _nomatch2.default })
 	);
 
 /***/ },
@@ -65003,6 +65008,40 @@
 
 /***/ },
 /* 673 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _page = __webpack_require__(214);
+
+	var _page2 = _interopRequireDefault(_page);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NoMatch = function NoMatch(props) {
+	  return _react2.default.createElement(
+	    _page2.default,
+	    { title: 'OOPS!' },
+	    _react2.default.createElement(
+	      'p',
+	      null,
+	      'Pyytämäsi sivu ei ole saatavilla.'
+	    )
+	  );
+	};
+
+	exports.default = NoMatch;
+
+/***/ },
+/* 674 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';

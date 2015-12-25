@@ -111,10 +111,9 @@ const doRender = (res, collections,renderProps) => {
         renderPage(res, renderProps);
       });
       break;  
-  
-      
     default:
       console.log('no matching route exists');  
+      renderPage(res, renderProps);
   } 
 };
 mongoConnection.then(db => {
@@ -142,20 +141,6 @@ mongoConnection.then(db => {
 
 
     });
-    //console.log('req url', routes);
-    //let renderString = React.renderToString(<Router>{routes}</Router>);
-    //res.render('index');
-    /*
-    rRouter.routes()
-    Router.run(routes, req.url, Handler => {
-      let content = React.renderToString(<Handler />);
-      //res.render('index', { content: content });
-      */
-
-    /*
-    
-*/
-
   }).post('/submitfinding', upload.single('pic'), (req, res) => {
     var findings = {
       timestamp: parseInt(req.body.timestamp, 10),
@@ -171,8 +156,7 @@ mongoConnection.then(db => {
       }
       res.redirect('/kadonneet');
     });
-  });
-  app.post('/saveilmoita', (req, res) => {
+  }).post('/saveilmoita', (req, res) => {
     var copy = {
       name: req.body.name,
       description: req.body.description,
@@ -194,8 +178,7 @@ mongoConnection.then(db => {
       }
       res.end('OK');
     });
-  });
-  app.post('/savemarking', (req, res) => {
+  }).post('/savemarking', (req, res) => {
     console.log('body', req.body);
     var copy = Object.assign({}, req.body);
     copy.searchResult = parseInt(copy.searchResult, 10);
@@ -208,10 +191,7 @@ mongoConnection.then(db => {
       }
       res.end('OK');
     });
-  });
-
-
-  app.get('/kadonneet/:id', (req, res) => {
+  }).get('/kadonneet/:id', (req, res) => {
     collections.kadonneet.find({_id:new ObjectId(req.params.id)}).toArray(function (err, docs) {
       if (err) {
         res.error();
@@ -224,40 +204,7 @@ mongoConnection.then(db => {
       });
 
     });
-  })
-
-    .get('/kadonneetkartalla', (req, res) => {
-      collections.kadonneet.find().toArray(function (err, docs) {
-        if (err) {
-          res.error();
-          return;
-        }
-        res.render('kadonneetkartalla', {
-          items: docs,
-          navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 1})),
-          kadonneetkartalla: ReactDOMServer.renderToString(KadonneetKartalla({items: docs}))
-        });
-
-      });
-
-    }).get('/etsi', (req, res) => {
-      collections.kadonneet.find().sort({name: 1}).toArray((err, docs) => {
-        res.render('etsi', {
-          kadonneet: docs,
-          kadonneetlist: ReactDOMServer.renderToString(KadonneetList({items: docs})),
-          navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 3}))
-        });
-      });
-
-    }).get('/ilmoita', (req, res) => {
-      res.render('lisaakadonnut', {
-        navigation: ReactDOMServer.renderToString(Navigation({selectedIndex: 2})),
-        kadonnutform: ReactDOMServer.renderToString(KadonnutForm({}))
-      });
-    }).get('/ukk', (req, res) => {
-      
-
-    });
+  });
 
 // error
   app.get('*', errorRoute);
