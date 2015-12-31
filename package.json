@@ -82,7 +82,9 @@
     "react-bootstrap": "^0.27.3",
     "react-bootstrap-datetimepicker": "0.0.21",
     "react-dom": "^0.14.3",
+    "react-redux": "^4.0.5",
     "react-router": "^1.0.2",
+    "redux": "^3.0.5",
     "stylus": "0.52.4",
     "uglify-js": "^2.6.1"
   },

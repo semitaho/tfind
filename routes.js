@@ -5,7 +5,7 @@ import AppHandler from "./components/app.jsx";
 import Home from './components/home.jsx';
 import Kadonneet from './components/listakadonneista/lostsgrid.jsx';
 import KadonneetKartalla from './components/kadonneetkartalla/kadonneetkartalla.jsx';
-import IlmoitaKadonneeksi from './components/ilmoitakadonneeksi/kadonnutform.jsx';
+import IlmoitaKadonneeksi from './components/ilmoitakadonneeksi/kadonnutformwrapper.jsx';
 import KadonneetList from './components/etsi/kadonneetlist.jsx';
 import Ukk from './components/questionsanswers.jsx';
 import NoMatch from './components/nomatch.jsx';
