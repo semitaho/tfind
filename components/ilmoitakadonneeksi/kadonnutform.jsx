@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Panel, Input, ProgressBar, Button, ButtonGroup,FormControls, Tabs, Tab} from 'react-bootstrap';
+
 import $ from 'jquery';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
 import Map from './../map.jsx';
@@ -12,27 +13,14 @@ import Page from './../page.jsx';
 class KadonnutForm extends React.Component {
   constructor() {
     super();
-    this.state = {
-      formstate: {},
-      activeKey: 1,
-      radius: 7000,
-      circle: {lat: 65.7770391, lng: 27.1159877},
-      center: {lat: 65.7770391, lng: 27.1159877}
-    };
-    this.handleTextChange = this.handleTextChange.bind(this);
     this.onPasteImage = this.onPasteImage.bind(this);
     this.timeChange = this.timeChange.bind(this);
-  }
-
-  componentDidMount() {
-    this.geocoder = new google.maps.Geocoder;
-
   }
 
   isValid(params) {
     var isValid = true;
     params.forEach(param => {
-      var name = this.state.formstate[param];
+      var name = this.props.formstate[param];
       if (name === null || name === undefined || name.length === 0) {
         isValid = false;
       }
@@ -42,48 +30,37 @@ class KadonnutForm extends React.Component {
   }
 
   isMapValid() {
-    let location = this.state.formstate['location'];
+    let location = this.props.formstate['location'];
     if (location && location.lat && location.lng) {
       return true;
     }
     return false;
   }
 
-  handleTextChange(event) {
-    this.setFormstate(event.target.name, event.target.value);
-  }
-
-  setFormstate(key, value, interval) {
-    this.state.formstate[key] = value;
-    this.setState({formstate: this.state.formstate});
-
-  }
-
   onPasteImage(e) {
     var content = e.target.value;
     var img = new Image();
     img.onload = () => {
-      this.setFormstate('imgsrc', content, 1000);
+      this.props.changeField('imgsrc', content);
     };
 
     img.onerror = () => {
-      this.setFormstate('imgsrc', null);
+      this.props.changeField('imgsrc', null);
+      console.log('cannot paste image....')
     }
     img.src = content;
   }
 
   timeChange(e) {
-    if (!isNaN(e)) {
-      var fs = this.state.formstate;
-      fs.timestamp = e;
-      this.setState({formstate: fs});
+    if (!isNaN(e)) {      
+      this.props.changeField('timestamp', e);
     } else {
-      this.setFormstate('timestamp', null);
+      this.props.changeField('timestamp', null);
     }
   }
 
   isTimeValid() {
-    var time = this.state.formstate.timestamp;
+    var time = this.props.formstate.timestamp;
     if (time && !isNaN(time)) {
       return true;
     }
@@ -110,25 +87,11 @@ class KadonnutForm extends React.Component {
     }
     let isFormValid = isMapValid;
 
-    const radiusChanged = (radius) => this.setState({radius: Math.round(radius)});
+    const radiusChanged = (radius) => this.props.changeRadius(Math.round(radius));
 
-    const areaSelected = (event) => {
-      this.geocoder.geocode({'location': event.latLng}, (results, status) => {
-        if (status === google.maps.GeocoderStatus.OK) {
-          if (results[0]) {
-            let location = {lat: event.latLng.lat(), lng: event.latLng.lng()};
-            this.state.formstate.location = location;
-            this.state.formstate.address = results[0].formatted_address;
-            this.setState({formstate: this.state.formstate, circle: location, center: location});
-          }
-        }
-      });
-    };
+    const areaSelected = (event) =>  this.props.selectArea(event);
+    
 
-    const onClickNext = () => {
-      let newActiveKey = this.state.activeKey + 1;
-      this.setState({activeKey: newActiveKey});
-    };
     const onSave = () => {
       this.setState({saving: true});
       $.ajax({
@@ -143,11 +106,7 @@ class KadonnutForm extends React.Component {
       });
     };
 
-    let
-      handleSelect = (key) => {
-        this.setState({activeKey: key})
-      };
-
+  
     return (
       <Page title="Ilmoita kadonneeksi">
         <p className="lead">Onko joku sukulainen tai tuttusi kadonnut? Tällä sivulla voit ilmoittaa henkilön kadonneeksi ja tarvittaessa julkaista tapaus Sosiaalisessa mediassa.</p>
@@ -158,14 +117,15 @@ class KadonnutForm extends React.Component {
           <ProgressBar now={ Math.round((correctCount / fields.length ) * 100)} label="%(percent)s%" bsStyle="success"/>
         </div>
         <div className="col-md-12">
-          <Tabs activeKey={this.state.activeKey} onSelect={handleSelect}>
+          <Tabs activeKey={this.props.active} onSelect={key => this.props.togglePage(key)}>
 
             <Tab eventKey={1} title="1. Nimi" tabIndex="-1">
               <div className="wizard-content">
-                <Input bsSize="large" tabIndex="1" type="text" name="name" onChange={this.handleTextChange}
+                <Input bsSize="large" tabIndex="1" type="text" name="name" onChange={ e =>  this.props.changeField('name', e.target.value)}
                        placeholder="Syötä muodossa etunimi sukunimi"
+                       value={this.props.formstate.name}
                        label="Henkilön nimi"/>
-                <Next disabled={!isNameValid} onClick={onClickNext}/>
+                <Next disabled={!isNameValid} onClick={() => this.props.togglePage(2)}/>
               </div>
             </Tab>
             {isNameValid ?
@@ -173,10 +133,10 @@ class KadonnutForm extends React.Component {
                 <div className="wizard-content">
                   <Input bsSize="large" type="textarea" autoFocus="true" tabIndex="2"
                          placeholder="Kuvaile kadonnutta mahdollisimman tarkasti" name="description"
-                         label="Henkilön kuvaus" onChange={this.handleTextChange}
+                         label="Henkilön kuvaus" value={this.props.description} onChange={ e =>  this.props.changeField('description', e.target.value)}
                     />
                 </div>
-                <Next disabled={!isDescriptionValid} onClick={onClickNext}/>
+                <Next disabled={!isDescriptionValid} onClick={() => this.props.togglePage(3)}/>
 
               </Tab> : ''}
 
@@ -187,11 +147,11 @@ class KadonnutForm extends React.Component {
                     type="text" bsSize="large"
                     onBlur={this.onPasteImage} label="Kuva henkilöstä" className="form-control"
                     placeholder="Liitä kuva kadonneesta henkilöstä" hasFeedback/>
-                  {this.state.formstate.imgsrc ?
-                    <img src={this.state.formstate.imgsrc} className="thumbnail img-responsive"/>
+                  {this.props.formstate.imgsrc ?
+                    <img src={this.props.formstate.imgsrc} className="thumbnail img-responsive"/>
                     : ''}
                 </div>
-                <Next disabled={!isImageValid} onClick={onClickNext}/>
+                <Next disabled={!isImageValid} onClick={() => this.props.togglePage(4)}/>
 
               </Tab>
               : '' }
@@ -209,17 +169,17 @@ class KadonnutForm extends React.Component {
                   {isTimeValid ?
                     <div className="form-group">
                       <label className="control-label">Viimeisin havainto kartalla</label>
-                      <Map id="kadonneet-form-map" initialZoom={7}
-                           radius={this.state.radius}
+                      <Map id="kadonneet-form-map" initialZoom={this.props.initialZoom}
+                           radius={this.props.radius}
                            radiuschanged={radiusChanged}
-                           circle={this.state.circle}
-                           center={this.state.center}
+                           circle={this.props.circle}
+                           center={this.props.center}
                            onmapclick={areaSelected}/>
-                      <label><strong>{this.state.formstate.address}</strong> säteellä <strong>{this.state.radius} m</strong>.</label>
+                      <label><strong>{this.props.formstate.address}</strong> säteellä <strong>{this.props.radius} m</strong>.</label>
                     </div>
                     : ''}
                 </div>
-                <Next disabled={!isMapValid} onClick={onClickNext}/>
+                <Next disabled={!isMapValid} onClick={() => this.props.togglePage(5)}/>
 
               </Tab>
               : ''}
@@ -230,12 +190,12 @@ class KadonnutForm extends React.Component {
                   <fieldset>
                     <legend>Tarkista lomakkeen tiedot</legend>
                     <form className="form-horizontal" id="confirm-form">
-                      <FormControls.Static label="Henkilön nimi" value={this.state.formstate.name}
+                      <FormControls.Static label="Henkilön nimi" value={this.props.formstate.name}
                                            labelClassName="col-md-3"
                                            wrapperClassName="col-md-9"/>
-                      <FormControls.Static label="Henkilön kuvaus" value={this.state.formstate.description}
+                      <FormControls.Static label="Henkilön kuvaus" value={this.props.formstate.description}
                                            labelClassName="col-md-3"
-                                           wrapperClassName="col-md-8"/>
+                                           wrapperClassName="col-md-9"/>
 
                       <div className="form-group">
                         <label className="control-label col-md-3">
@@ -243,15 +203,15 @@ class KadonnutForm extends React.Component {
                         </label>
 
                         <div className="col-md-9">
-                          <img className="thumbnail img-responsive" src={this.state.formstate.imgsrc}/>
+                          <img className="thumbnail img-responsive" src={this.props.formstate.imgsrc}/>
                         </div>
 
                       </div>
                       <FormControls.Static label="Katoamisajankohta"
-                                           value={this.formatTime(this.state.formstate.timestamp)}
+                                           value={this.formatTime(this.props.formstate.timestamp)}
                                            labelClassName="col-md-3"
                                            wrapperClassName="col-md-9"/>
-                      <FormControls.Static label="Katoamispaikka" value={this.state.formstate.address}
+                      <FormControls.Static label="Katoamispaikka" value={this.props.formstate.address}
                                            labelClassName="col-md-3"
                                            wrapperClassName="col-md-9"/>
 
@@ -261,7 +221,7 @@ class KadonnutForm extends React.Component {
 
                     </form>
                   </fieldset>
-                  {this.state.saving ?
+                  {this.props.loading ?
                     <Spinner dimm="confirm-form"/> : ''
                   }
                 </div>

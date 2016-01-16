@@ -87,6 +87,12 @@ const doRender = (res, collections,renderProps) => {
       break;
     case '/ilmoita':
       renderProps.params.navindex = 2;
+      renderProps.params.state= {formstate: {formstate: {},  active: 1},mapstate: {
+        initialZoom: 7,
+        radius: 7000,
+        circle: {lat: 65.7770391, lng: 27.1159877},
+        center: {lat: 65.7770391, lng: 27.1159877}
+      }};
       renderPage(res, renderProps);
       break;
     case '/etsi':
