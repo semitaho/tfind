@@ -1,6 +1,5 @@
 import React from 'react';
 import {Button, Carousel, CarouselItem} from 'react-bootstrap';
-import LostsModal from './lostsmodal.jsx';
 import FindingForm from './../findingform.jsx';
 import KadonnutNews from './../kadonnutNews.jsx';
 import TextFormatter from './../../utils/textformatter.js';
@@ -9,7 +8,6 @@ class GridItem extends React.Component {
   constructor() {
     super();
     this.state = {current: 0, kadonnutTime: 0, showmodal: false};
-    this.onTimeout = this.onTimeout.bind(this);
     this.onModalOpen = this.onModalOpen.bind(this);
     this.onFormOpen = this.onFormOpen.bind(this);
 
@@ -23,11 +21,8 @@ class GridItem extends React.Component {
   }
 
   componentDidMount() {
-    console.log('onnnn did mount');
-    this.imageInterval = setInterval(this.onTimeout, this.props.interval);
     if (this.props.item && this.props.item.lost) {
-      this.kadonnutInterval = setInterval(this.onKadonnutTimeout, 1000);
-
+      this.kadonnutInterval = setInterval(() => this.props.receiveTimeout(new Date()) , 1000);
     }
 
   }
@@ -46,25 +41,9 @@ class GridItem extends React.Component {
   }
 
   onKadonnutTimeout() {
-    var kadonnutTime = new Date().getTime() - this.props.item.lost.timestamp;
-    this.setState({kadonnutTime: this.formatToTime(kadonnutTime)});
-  }
-
-  onTimeout() {
-    var currentIndex = this.state.current;
-    currentIndex += 1;
-    if (currentIndex >= this.props.item.thumbnails.length) {
-      currentIndex = 0;
-    }
-
-    this.setState({current: currentIndex});
-  }
-
-  getKadonnut() {
-    if (this.state.kadonnutTime === 0) {
-      return '';
-    }
-    return this.state.kadonnutTime;
+    let timeout = this.props.item.timeout;
+    var kadonnutTime = timeout.getTime() - this.props.item.lost.timestamp;
+    return this.formatToTime(kadonnutTime);
   }
 
   onModalOpen() {
@@ -100,7 +79,6 @@ class GridItem extends React.Component {
     var self = this;
     let formattedDescription = TextFormatter.formatToHTML(item.description);
     return <div className="thumbnail text-left">
-      {this.state.showmodal ? <LostsModal item={item} onclosemodal={this.onModalClose}/> : ''}
       {this.state.showform ? <FindingForm item={item} onclosemodal={this.onFormClose}/> : ''}
       {this.state.shownews ? <KadonnutNews onHide={this.onNewsHide} item={item}/> : ''}
 
@@ -125,12 +103,12 @@ class GridItem extends React.Component {
 
             <div dangerouslySetInnerHTML={{__html: formattedDescription}}/>
             <div className="btn-group">
-              <Button bsStyle="info" onClick={self.onModalOpen}>Havainnot kartalla
+              <Button bsStyle="info" onClick={() => this.props.onHavainnotClick(item)}>Havainnot kartalla
                 ({this.props.item.findings.length})</Button>
               <Button bsStyle="info" onClick={this.onNewsOpen}>Uutiset henkilöstä {item.name}</Button>
               <Button bsStyle="success" onClick={self.onFormOpen}>Ilmoita havainnosta</Button>
             </div>
-            {self.state.kadonnutTime === 0 ? '' : <p className="text-primary">Kadonneena<br/>{this.getKadonnut()}</p>}
+            {!item.timeout ? '' : <p className="text-primary">Kadonneena<br/>{this.onKadonnutTimeout()}</p>}
           </div>
         </div>
       </div>

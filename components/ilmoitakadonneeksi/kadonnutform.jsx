@@ -86,27 +86,9 @@ class KadonnutForm extends React.Component {
 
     }
     let isFormValid = isMapValid;
-
     const radiusChanged = (radius) => this.props.changeRadius(Math.round(radius));
-
     const areaSelected = (event) =>  this.props.selectArea(event);
-    
-
-    const onSave = () => {
-      this.setState({saving: true});
-      $.ajax({
-        type: "POST",
-        contentType: 'application/json; charset=utf-8',
-        url: '/saveilmoita',
-        data: JSON.stringify(this.state.formstate),
-        success: _ => {
-          this.setState({saving: false});
-          window.location.replace("/kadonneet");
-        }
-      });
-    };
-
-  
+    const onSave = () => this.props.onSave(this.props.formstate);      
     return (
       <Page title="Ilmoita kadonneeksi">
         <p className="lead">Onko joku sukulainen tai tuttusi kadonnut? Tällä sivulla voit ilmoittaa henkilön kadonneeksi ja tarvittaessa julkaista tapaus Sosiaalisessa mediassa.</p>

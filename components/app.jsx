@@ -5,13 +5,17 @@ import { Provider, connect } from 'react-redux'
 import {createStore, combineReducers,applyMiddleware} from 'redux';
 import formstate from './ilmoitakadonneeksi/kadonnutformreducer.js';
 import mapstate from './mapreducer.js';
+import spinnerstate from './spinnerreducer.js';
+import listakadonneistastate from './listakadonneista/listakadonneistareducer.js';
+
 import thunkMiddleware from 'redux-thunk'
 
 const App = (props) => {
   const app = combineReducers({
     formstate,
-    mapstate
-
+    mapstate,
+    loading: spinnerstate,
+    listakadonneistastate
   });
 
   

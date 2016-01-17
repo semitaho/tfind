@@ -69,7 +69,14 @@ const doRender = (res, collections,renderProps) => {
           res.error();
           return;
         }
-        renderProps.params.items = docs;
+        renderProps.params.state = {
+          listakadonneistastate: {
+            items: docs,
+            search: '',
+            havainnotkartalla: {show:false}
+          },
+          mapstate: {}
+        };
         renderProps.params.navindex = 0;
         renderPage(res, renderProps);
       });
@@ -167,7 +174,10 @@ mongoConnection.then(db => {
       name: req.body.name,
       description: req.body.description,
       imgsrc: req.body.imgsrc,
+      radius: req.body.radius,
+      address: req.body.address,
       thumbnails: [req.body.imgsrc],
+
       findings: [{
         type: '1',
         description: 'Viimeisin havainto ennen katoamista',

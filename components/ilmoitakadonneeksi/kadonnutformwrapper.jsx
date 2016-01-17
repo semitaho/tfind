@@ -1,8 +1,8 @@
 import React from 'react';
 import KadonnutForm from './Kadonnutform.jsx';
-import {changeField, togglePage} from './kadonnutformactions.js';
+import {changeField, togglePage,save} from './kadonnutformactions.js';
 import {selectArea, changeRadius} from './../mapactions.js';
-
+import {toggleSpinner} from './../spinneractions.js';
 
 import { Provider, connect } from 'react-redux'
 
@@ -11,9 +11,9 @@ class KadonnutFormWrapper extends React.Component  {
   
 
   render(){
-    let {dispatch, formprops, mapstate} = this.props;
+    let {dispatch, formprops, mapstate, loading} = this.props;
     return (
-      <KadonnutForm {...formprops} {...mapstate} changeRadius={radius => dispatch(changeRadius(radius))} selectArea={event => dispatch(selectArea(event))} togglePage={page => dispatch(togglePage(page))}  changeField={(field,value) => dispatch(changeField(field,value))} />
+      <KadonnutForm loading={loading} {...formprops} {...mapstate}  onSave={(data) => dispatch(save(data))} changeRadius={radius => dispatch(changeRadius(radius))} selectArea={event => dispatch(selectArea(event))} togglePage={page => dispatch(togglePage(page))}  changeField={(field,value) => dispatch(changeField(field,value))} />
     )
   }
 
@@ -26,13 +26,16 @@ class KadonnutFormWrapper extends React.Component  {
       }
     };
     this.props.dispatch(selectArea(event));
+    this.props.dispatch(toggleSpinner(true));
+
   }
 };
 
 function mapStateToProps(state){
   return {
     formprops: state.formstate,
-    mapstate: state.mapstate
+    mapstate: state.mapstate,
+    loading: state.loading
   };
 }
 
