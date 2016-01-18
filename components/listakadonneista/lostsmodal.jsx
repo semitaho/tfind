@@ -52,7 +52,7 @@ export default class LostsModal extends React.Component {
 
   render() {
     return (
-      <MapModal onHide={this.props.onclosemodal} size="large" title={this.props.item.name}>
+      <MapModal onHide={this.props.onCloseModal} size="large" title={this.props.item.name}>
         <Modal.Body>
           <Map findings={this.props.item.findings} center={this.calculateCenter()} route={this.calculateRoutePoints()}/>
         </Modal.Body>

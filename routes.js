@@ -7,7 +7,7 @@ import Kadonneet from './components/listakadonneista/listakadonneista.jsx';
 import KadonneetKartalla from './components/kadonneetkartalla/kadonneetkartalla.jsx';
 import IlmoitaKadonneeksi from './components/ilmoitakadonneeksi/kadonnutformwrapper.jsx';
 import KadonneetList from './components/etsi/kadonneetlist.jsx';
-import Ukk from './components/questionsanswers.jsx';
+import Ukk from './components/ukk/questionsanswers.jsx';
 import NoMatch from './components/nomatch.jsx';
 
 export default (  

@@ -7,6 +7,8 @@ import formstate from './ilmoitakadonneeksi/kadonnutformreducer.js';
 import mapstate from './mapreducer.js';
 import spinnerstate from './spinnerreducer.js';
 import listakadonneistastate from './listakadonneista/listakadonneistareducer.js';
+import ukkstate from './ukk/ukkreducer.js';
+import etsistate from './etsi/etsireducer.js';
 
 import thunkMiddleware from 'redux-thunk'
 
@@ -15,7 +17,9 @@ const App = (props) => {
     formstate,
     mapstate,
     loading: spinnerstate,
-    listakadonneistastate
+    listakadonneistastate,
+    etsistate,
+    ukkstate
   });
 
   

@@ -1,5 +1,14 @@
 export default function mapreducer(state={}, action){
   switch (action.type){
+
+    case 'MARK_TO_MAP':
+      return Object.assign({},state, {
+        radius: action.radius,
+        circle: action.location,
+        center: action.location,
+        marker: action.location,
+        katoamispaikka: action.location
+      });
     case 'RECEIVE_LOCATION':
       return Object.assign({},state, {
         center: action.location

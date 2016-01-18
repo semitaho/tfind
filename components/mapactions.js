@@ -26,6 +26,32 @@ export function receiveCircle(circle){
   };
 }
 
+export function onMapClick(event){
+
+  let geocoder = new google.maps.Geocoder;
+  return dispatch => {
+    let newClickPosition = {lat: event.latLng.lat(), lng: event.latLng.lng()};
+    return geocoder.geocode({'location': newClickPosition}, (results, status) => {
+      if (status === google.maps.GeocoderStatus.OK) {
+        if (results[0]) {
+         // let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(this.state.katoamispaikka.lat, this.state.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
+          dispatch({type: 'RECEIVE_CIRCLE', circle: newClickPosition});
+          dispatch({type: 'RECEIVE_LOCATION', location: newClickPosition});
+         
+            /*
+            circle: newClickPosition,
+            center: newClickPosition,
+            marker: newClickPosition,
+            location: results[0].formatted_address,
+            katoamisdistance: TextFormatter.formatMeters(distance)
+          });
+          */
+        }
+      }
+    });
+  }
+}
+
 
 export function selectArea(event){
   let geocoder = new google.maps.Geocoder;

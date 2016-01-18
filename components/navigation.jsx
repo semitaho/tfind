@@ -12,7 +12,8 @@ class Navigation extends React.Component {
       if (this.props.navindex === index) {
         className = 'active';
       }
-      return (<li className={className}>
+      let navkey = 'nav_'+index;
+      return (<li key={navkey} className={className}>
         <a tabIndex="-1" href={item.link}>{item.title}</a>
       </li>)
 

@@ -1,6 +1,7 @@
-export function onHavainnotClick(item){
+export function toggleHavainnotClick(isopen,item){
   return {
-    type: 'ON_HAVAINNOT_CLICK',
+    type: 'TOGGLE_HAVAINNOT_CLICK',
+    isopen,
     item
   };
 }

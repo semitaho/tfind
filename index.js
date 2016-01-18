@@ -109,7 +109,14 @@ const doRender = (res, collections,renderProps) => {
           return;
         }
         renderProps.params.navindex = 3;
-        renderProps.params.items = docs;
+        renderProps.params.state ={
+          etsistate: {
+            items:docs,
+            modal: {
+              show: false
+            }
+          }
+        };
         renderPage(res, renderProps);
       });
       break;
@@ -120,7 +127,12 @@ const doRender = (res, collections,renderProps) => {
           return;
         }
         renderProps.params.navindex = 4;
-        renderProps.params.items = docs;
+        renderProps.params.state = {
+          ukkstate: {
+            items: docs
+          }
+
+        };
         renderPage(res, renderProps);
       });
       break;  

@@ -4,7 +4,7 @@ import {changeField, togglePage,save} from './kadonnutformactions.js';
 import {selectArea, changeRadius} from './../mapactions.js';
 import {toggleSpinner} from './../spinneractions.js';
 
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 
 
 class KadonnutFormWrapper extends React.Component  {

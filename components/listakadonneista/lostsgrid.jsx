@@ -44,7 +44,7 @@ class LostsGrid extends React.Component {
     var items = filteredItems.map((item, key) => {
       let idkey = 'thumbnail_' + key;
       return (<div key={idkey} className="col-lg-12 col-md-12 col-sm-12">
-        <GridItem item={item}    onHavainnotClick={item => this.props.onHavainnotClick(item)} receiveTimeout={date => this.props.receiveTimeout(key, date)}  /></div>)
+        <GridItem item={item}  onHavainnotClick={item => this.props.onHavainnotClick(true, item)} receiveTimeout={date => this.props.receiveTimeout(key, date)}  /></div>)
     });
 
     return (
@@ -64,7 +64,7 @@ class LostsGrid extends React.Component {
          </div> 
       </div>
       {this.props.havainnotkartalla.show ? 
-      <LostsModal {...this.props.havainnotkartalla} /> : ''}
+      <LostsModal {...this.props.havainnotkartalla} onCloseModal={() =>  this.props.onHavainnotClick(false) } /> : ''}
       {items}</div></Page>)
   }
 }

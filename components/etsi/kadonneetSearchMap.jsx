@@ -25,7 +25,7 @@ export default class KadonneetSearchMap extends React.Component {
     this.circlechanged = this.circlechanged.bind(this);
     this.onMapClick = this.onMapClick.bind(this);
 
-    this.state = {opened: true, loading: false, katoamisdistance: 0};
+    this.state = {loading: false, katoamisdistance: 0};
     this.polyline = new google.maps.Polyline({
       strokeColor: '#000000',
       strokeOpacity: 1.0,
@@ -55,18 +55,18 @@ export default class KadonneetSearchMap extends React.Component {
   }
 
   render() {
-    var mapClass = this.state.opened === true ? 'grayable' : '';
+    var mapClass = this.props.opened === true ? 'grayable' : '';
     return (<Modal dialogClassName="search-modal" show={true} bsSize="large" onHide={this.props.onclose}>
-      {this.state.opened === false && this.state.started === true ?
+      {this.props.opened === false && this.state.started === true ?
         this.renderTracking() : ''}
 
-      {this.state.opened === false && this.state.marking ?
+      {this.props.opened === false && this.props.marking ?
         <KadonneetMarker position={this.state.katoamispaikka} item={this.props.item} onclose={this.props.onclose}
-                         radius={this.state.radius} location={this.state.location}
+                         radius={this.props.radius} location={this.props.location}
                          katoamisdistance={this.state.katoamisdistance}/> : ''}
 
       <Modal.Body>
-        {this.state.opened === true ?
+        {this.props.opened === true ?
           <div>
             <div className="opened">
               {this.renderQuestion()}
@@ -78,16 +78,16 @@ export default class KadonneetSearchMap extends React.Component {
               />
           </div> : ''}
         {this.state.loading ? this.renderSpinner("kadonneet-search-map") : ''}
-        {this.state.opened === false && this.state.marking ?
+        {this.props.opened === false && this.props.marking ?
           <Map id="kadonneet-marker-map" className=""
-               radius={this.state.radius}
+               radius={this.props.radius}
                radiuschanged={this.radiuschanged}
-               circle={this.state.circle}
-               center={this.state.center}
-               marker={this.state.marker}
+               circle={this.props.circle}
+               center={this.props.center}
+               marker={this.props.marker}
                onmapclick={this.onMapClick}
-               katoamispaikka={this.getKatoamispaikka()}/> : '' }
-        {this.state.opened === false && this.state.started ?
+               katoamispaikka={this.getKatoamispaikka()} /> : '' }
+        {this.props.opened === false && this.state.started ?
           <Map id="kadonneet-tracker-map" center={this.state.center} marker={this.state.marker}
             /> : ''}
       </Modal.Body>
@@ -95,6 +95,7 @@ export default class KadonneetSearchMap extends React.Component {
   }
 
   onMapClick(event) {
+    this.props.onMapClick(event);
     console.log('on map click', event);
     let newClickPosition = {lat: event.latLng.lat(), lng: event.latLng.lng()};
     this.geocoder.geocode({'location': newClickPosition}, (results, status) => {
@@ -214,7 +215,7 @@ export default class KadonneetSearchMap extends React.Component {
       maximumAge: 0
     };
     this.watchId = navigator.geolocation.watchPosition(this.gotLocation, this.onErrorGeocoding, options);
-    this.setState({opened: false, loading: true});
+    this.setState({loading: true});
   }
 
   getKatoamispaikka() {
@@ -225,6 +226,10 @@ export default class KadonneetSearchMap extends React.Component {
 
   markToMap() {
     let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
+    this.props.markToMap(this.props.radius, katoamisLoc); 
+    /*
+
+
     this.setState({
       opened: false,
       marking: true,
@@ -234,23 +239,7 @@ export default class KadonneetSearchMap extends React.Component {
       marker: katoamisLoc,
       circle: katoamisLoc
     });
-    /*
-     this.drawKatoamispaikka();
-     this.updateMarker({latitude: katoamisLoc.lat, longitude: katoamisLoc.lng});
-
-     this.state.radius = this.props.radius;
-
-     this.drawCircle(this.marker.getPosition());
-     this.updateLocation((this.marker.getPosition()));
-
-     this.map.addListener('click', e => {
-     console.log('e.', e.latLng);
-     this.updateLocation(e.latLng);
-     this.drawCircle(e.latLng);
-     });
-
-
-     */
+*/
   }
 
   componentDidUpdate() {
@@ -264,7 +253,7 @@ export default class KadonneetSearchMap extends React.Component {
 
   radiuschanged(radius) {
     console.log('ai radius');
-    this.setState({radius: Math.round(radius)});
+    this.props.changeRadius(Math.round(radius));
   }
 
   circlechanged(center) {
