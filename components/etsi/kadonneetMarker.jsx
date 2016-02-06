@@ -11,7 +11,6 @@ class KadonneetMarker extends React.Component{
   constructor(){
     super();
     this.state = {saveMarking: false};
-
   }
 
   renderConfirm(){
@@ -47,7 +46,7 @@ class KadonneetMarker extends React.Component{
   render(){
     const confirmSaveMarking = _ => {
       console.log('got', this.props);     
-      this.props.saveMarking();
+      this.props.confirmdialogactions.saveMarking();
    //   this.setState({saveMarking: true, ajankohtaTimestamp: n});
     };
 
@@ -65,7 +64,7 @@ class KadonneetMarker extends React.Component{
         </div>
       </div>
       {
-          this.props.confirmdialog ? <KadonneetConfirmDialog cancel={this.props.cancelConfirmMarking} {...this.props.confirmdialog} />
+          this.props.confirmdialog ? <KadonneetConfirmDialog {...this.props.confirmdialogactions} {...this.props.confirmdialog} />
  : ''
         }
     </Modal.Header>)

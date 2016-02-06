@@ -2,7 +2,7 @@ import React from 'react';
 import KadonneetSearchMap from './kadonneetSearchMap.jsx';
 import Page from './../page.jsx';
 import { connect } from 'react-redux'
-import {toggleEtsiModal, markToMap, saveMarking, cancelConfirmMarking} from './etsiactions.js';
+import {toggleEtsiModal, markToMap, saveMarking, cancelConfirmMarking, doSaveMarking, changeAjankohta} from './etsiactions.js';
 import {changeRadius, onMapClick} from './../mapactions.js';
 class KadonneetList extends React.Component{
   constructor(){
@@ -17,7 +17,7 @@ class KadonneetList extends React.Component{
                   return <button key={'search_'+key} className="list-group-item" onClick={() => this.props.toggleEtsiModal(true, item) }>  {item.name}<span className="pull-right glyphicon glyphicon-menu-right" aria-hidden="true"></span></button>;
                 })}
               </div>  
-              {this.props.modal && this.props.modal.show ?  <KadonneetSearchMap cancelConfirmMarking={this.props.cancelConfirmMarking} saveMarking={this.props.saveMarking} onMapClick={this.props.onMapClick} changeRadius={this.props.changeRadius} markToMap={(radius, katoamisloc) =>  this.props.markToMap(radius, katoamisloc) } {...this.props.mapstate}  {...this.props.modal} onclose={() => this.props.toggleEtsiModal(false)}  /> : ''}
+              {this.props.modal && this.props.modal.show ?  <KadonneetSearchMap confirmdialogactions={this.props.confirmdialogactions} {...this.props.mapactions} markToMap={(radius, katoamisloc) =>  this.props.markToMap(radius, katoamisloc) } {...this.props.mapstate}  {...this.props.modal} onclose={() => this.props.toggleEtsiModal(false)}  /> : ''}
           </Page>
   }
 }
@@ -34,11 +34,16 @@ const mapDispatchToProps = dispatch => {
   return {
     toggleEtsiModal: (isopen, item) => dispatch(toggleEtsiModal(isopen,item)),
     markToMap: (radius, katoamisloc) => dispatch(markToMap(radius, katoamisloc)),
-    changeRadius: (radius) => dispatch(changeRadius(radius)),
-    onMapClick: (event) => dispatch(onMapClick(event)),
-    saveMarking: () => dispatch(saveMarking()),
-    cancelConfirmMarking: () => dispatch(cancelConfirmMarking())
-
+    mapactions: {
+      changeRadius: (radius) => dispatch(changeRadius(radius)),
+      onMapClick: (event) => dispatch(onMapClick(event)),
+    },
+    confirmdialogactions: {
+      saveMarking: () => dispatch(saveMarking()),
+      doSaveMarking: () => dispatch(doSaveMarking()),
+      changeAjankohta: (e) => dispatch(changeAjankohta(e)),
+      cancelConfirmMarking: () => dispatch(cancelConfirmMarking())
+    }
 
   };
 };

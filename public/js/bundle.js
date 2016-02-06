@@ -26456,12 +26456,27 @@
 	  var action = arguments[1];
 
 	  switch (action.type) {
+
+	    case 'LOAD_SPINNER':
+	      var newObject = Object.assign({}, state.confirmdialog, {
+	        saving: true
+	      });
+	      return Object.assign({}, state, {
+	        confirmdialog: newObject
+	      });
+
 	    case 'TOGGLE_ETSI_MODAL':
 	      if (!action.isopen) {
 	        return { show: false };
 	      }
 	      return { item: action.item, show: true, opened: true };
-
+	    case 'CHANGE_AJANKOHTA':
+	      var newConfirmObject = Object.assign({}, state.confirmdialog, {
+	        ajankohta: action.timestamp
+	      });
+	      return Object.assign({}, state, {
+	        confirmdialog: newConfirmObject
+	      });
 	    case 'OPEN_SAVE_MARKING':
 	      console.log('joo save marking');
 	      return Object.assign({}, state, {
@@ -66178,7 +66193,7 @@
 	            );
 	          })
 	        ),
-	        this.props.modal && this.props.modal.show ? _react2.default.createElement(_kadonneetSearchMap2.default, _extends({ cancelConfirmMarking: this.props.cancelConfirmMarking, saveMarking: this.props.saveMarking, onMapClick: this.props.onMapClick, changeRadius: this.props.changeRadius, markToMap: function markToMap(radius, katoamisloc) {
+	        this.props.modal && this.props.modal.show ? _react2.default.createElement(_kadonneetSearchMap2.default, _extends({ confirmdialogactions: this.props.confirmdialogactions }, this.props.mapactions, { markToMap: function markToMap(radius, katoamisloc) {
 	            return _this2.props.markToMap(radius, katoamisloc);
 	          } }, this.props.mapstate, this.props.modal, { onclose: function onclose() {
 	            return _this2.props.toggleEtsiModal(false);
@@ -66206,17 +66221,27 @@
 	    markToMap: function markToMap(radius, katoamisloc) {
 	      return dispatch((0, _etsiactions.markToMap)(radius, katoamisloc));
 	    },
-	    changeRadius: function changeRadius(radius) {
-	      return dispatch((0, _mapactions.changeRadius)(radius));
+	    mapactions: {
+	      changeRadius: function changeRadius(radius) {
+	        return dispatch((0, _mapactions.changeRadius)(radius));
+	      },
+	      onMapClick: function onMapClick(event) {
+	        return dispatch((0, _mapactions.onMapClick)(event));
+	      }
 	    },
-	    onMapClick: function onMapClick(event) {
-	      return dispatch((0, _mapactions.onMapClick)(event));
-	    },
-	    saveMarking: function saveMarking() {
-	      return dispatch((0, _etsiactions.saveMarking)());
-	    },
-	    cancelConfirmMarking: function cancelConfirmMarking() {
-	      return dispatch((0, _etsiactions.cancelConfirmMarking)());
+	    confirmdialogactions: {
+	      saveMarking: function saveMarking() {
+	        return dispatch((0, _etsiactions.saveMarking)());
+	      },
+	      doSaveMarking: function doSaveMarking() {
+	        return dispatch((0, _etsiactions.doSaveMarking)());
+	      },
+	      changeAjankohta: function changeAjankohta(e) {
+	        return dispatch((0, _etsiactions.changeAjankohta)(e));
+	      },
+	      cancelConfirmMarking: function cancelConfirmMarking() {
+	        return dispatch((0, _etsiactions.cancelConfirmMarking)());
+	      }
 	    }
 
 	  };
@@ -66366,9 +66391,9 @@
 	        _reactBootstrap.Modal,
 	        { dialogClassName: 'search-modal', show: true, bsSize: 'large', onHide: this.props.onclose },
 	        this.props.opened === false && this.state.started === true ? this.renderTracking() : '',
-	        this.props.opened === false && this.props.marking ? _react2.default.createElement(_kadonneetMarker2.default, { cancelConfirmMarking: this.props.cancelConfirmMarking, position: this.state.katoamispaikka, item: this.props.item, onclose: this.props.onclose,
+	        this.props.opened === false && this.props.marking ? _react2.default.createElement(_kadonneetMarker2.default, { confirmdialogactions: this.props.confirmdialogactions, position: this.state.katoamispaikka, item: this.props.item, onclose: this.props.onclose,
 	          radius: this.props.radius, location: this.props.location, confirmdialog: this.props.confirmdialog,
-	          katoamisdistance: this.props.katoamisdistance, saveMarking: this.props.saveMarking }) : '',
+	          katoamisdistance: this.props.katoamisdistance }) : '',
 	        _react2.default.createElement(
 	          _reactBootstrap.Modal.Body,
 	          null,
@@ -66628,7 +66653,6 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(KadonneetMarker).call(this));
 
 	    _this.state = { saveMarking: false };
-
 	    return _this;
 	  }
 
@@ -66671,7 +66695,7 @@
 
 	      var confirmSaveMarking = function confirmSaveMarking(_) {
 	        console.log('got', _this3.props);
-	        _this3.props.saveMarking();
+	        _this3.props.confirmdialogactions.saveMarking();
 	        //   this.setState({saveMarking: true, ajankohtaTimestamp: n});
 	      };
 
@@ -66728,7 +66752,7 @@
 	            )
 	          )
 	        ),
-	        this.props.confirmdialog ? _react2.default.createElement(_kadonneetConfirmDialog2.default, _extends({ cancel: this.props.cancelConfirmMarking }, this.props.confirmdialog)) : ''
+	        this.props.confirmdialog ? _react2.default.createElement(_kadonneetConfirmDialog2.default, _extends({}, this.props.confirmdialogactions, this.props.confirmdialog)) : ''
 	      );
 	    }
 	  }]);
@@ -66768,6 +66792,10 @@
 
 	var _reactBootstrapDatetimepicker2 = _interopRequireDefault(_reactBootstrapDatetimepicker);
 
+	var _spinner = __webpack_require__(489);
+
+	var _spinner2 = _interopRequireDefault(_spinner);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -66788,16 +66816,19 @@
 	  _createClass(KadonneetConfirmDialog, [{
 	    key: 'render',
 	    value: function render() {
-	      var saveMarking = function saveMarking() {};
+	      var _this2 = this;
 
-	      var ajankohtaChange = function ajankohtaChange() {};
+	      var ajankohtaChange = function ajankohtaChange(e) {
+	        console.log('this.props', _this2.props);
+	        _this2.props.changeAjankohta(e);
+	      };
 
 	      var searchResultChange = function searchResultChange() {};
 
 	      return _react2.default.createElement(
 	        _confirmDialog2.default,
-	        { onHide: this.props.cancel, onSave: saveMarking },
-	        this.props.saving ? _react2.default.createElement(Spinner, { dimm: 'confirm-form' }) : '',
+	        { onHide: this.props.cancelConfirmMarking, onSave: this.props.doSaveMarking },
+	        this.props.saving ? _react2.default.createElement(_spinner2.default, { dimm: 'confirm-form' }) : '',
 	        _react2.default.createElement(
 	          'form',
 	          { className: 'form-horizontal', id: 'confirm-form' },
@@ -66941,6 +66972,8 @@
 	});
 	exports.toggleEtsiModal = toggleEtsiModal;
 	exports.markToMap = markToMap;
+	exports.changeAjankohta = changeAjankohta;
+	exports.doSaveMarking = doSaveMarking;
 	exports.saveMarking = saveMarking;
 	exports.cancelConfirmMarking = cancelConfirmMarking;
 	function toggleEtsiModal(isopen, item) {
@@ -66959,11 +66992,24 @@
 	  };
 	}
 
+	function changeAjankohta(timestamp) {
+	  return {
+	    type: 'CHANGE_AJANKOHTA',
+	    timestamp: timestamp
+	  };
+	}
+
+	function doSaveMarking() {
+
+	  return function (dispatch, getState) {
+	    dispatch({ type: 'LOAD_SPINNER' });
+	  };
+	}
+
 	function saveMarking() {
 	  return function (dispatch, getState) {
-	    console.log('saving marking....', getState());
 	    var state = getState();
-	    var confirmObject = { name: state.etsistate.modal.item.name, location: state.mapstate.location, radius: state.mapstate.radius };
+	    var confirmObject = { ajankohta: new Date().getTime(), name: state.etsistate.modal.item.name, location: state.mapstate.location, radius: state.mapstate.radius };
 	    return dispatch({ type: 'OPEN_SAVE_MARKING', confirmObject: confirmObject });
 	  };
 	}
@@ -66972,7 +67018,6 @@
 	  return {
 	    type: 'OPEN_SAVE_MARKING',
 	    confirmObject: null
-
 	  };
 	}
 

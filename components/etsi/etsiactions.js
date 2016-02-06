@@ -14,11 +14,28 @@ export function markToMap(radius, location){
   };
 }
 
+export function changeAjankohta(timestamp){
+  return {
+    type: 'CHANGE_AJANKOHTA',
+    timestamp
+  };
+
+}
+
+export function doSaveMarking(){
+
+  return (dispatch, getState) => {
+    dispatch({type: 'LOAD_SPINNER'});
+
+
+  };
+
+}
+
 export function saveMarking(){
   return (dispatch,getState) => {
-    console.log('saving marking....', getState());
     let state = getState();
-    let confirmObject = {name: state.etsistate.modal.item.name, location: state.mapstate.location, radius: state.mapstate.radius}
+    let confirmObject = {ajankohta: new Date().getTime(), name: state.etsistate.modal.item.name, location: state.mapstate.location, radius: state.mapstate.radius}
     return dispatch({type:'OPEN_SAVE_MARKING', confirmObject});
   }
 }
@@ -27,6 +44,5 @@ export function cancelConfirmMarking(){
   return {
     type: 'OPEN_SAVE_MARKING',
     confirmObject: null
-
   };
 }

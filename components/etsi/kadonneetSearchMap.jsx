@@ -60,9 +60,9 @@ export default class KadonneetSearchMap extends React.Component {
         this.renderTracking() : ''}
 
       {this.props.opened === false && this.props.marking ?
-        <KadonneetMarker cancelConfirmMarking={this.props.cancelConfirmMarking} position={this.state.katoamispaikka} item={this.props.item} onclose={this.props.onclose}
+        <KadonneetMarker confirmdialogactions={this.props.confirmdialogactions} position={this.state.katoamispaikka} item={this.props.item} onclose={this.props.onclose}
                          radius={this.props.radius} location={this.props.location} confirmdialog={this.props.confirmdialog}
-                         katoamisdistance={this.props.katoamisdistance} saveMarking={this.props.saveMarking}  /> : ''} 
+                         katoamisdistance={this.props.katoamisdistance}   /> : ''} 
       <Modal.Body>
         {this.props.opened === true ?
           <div>

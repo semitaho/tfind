@@ -2,18 +2,16 @@ import React from 'react';
 import ConfirmDialog from './../modals/confirmDialog.jsx';
 import {Modal, FormControls, Input} from 'react-bootstrap';
 import DateTimePicker from 'react-bootstrap-datetimepicker';
-
+import Spinner from './../spinner.jsx';
 
 class KadonneetConfirmDialog extends React.Component{
 
 
   render(){
-    const saveMarking = () => {
-
-    };
-
-    const ajankohtaChange = () => {
-
+ 
+    const ajankohtaChange = (e) => {
+      console.log('this.props', this.props);
+      this.props.changeAjankohta(e);
     };
 
     const searchResultChange = () => {
@@ -21,7 +19,7 @@ class KadonneetConfirmDialog extends React.Component{
     };
 
 
-    return (<ConfirmDialog onHide={this.props.cancel} onSave={saveMarking}>
+    return (<ConfirmDialog onHide={this.props.cancelConfirmMarking} onSave={this.props.doSaveMarking}>
         {this.props.saving ? <Spinner dimm='confirm-form' /> : '' }
         <form className="form-horizontal" id="confirm-form">
           <FormControls.Static label="Nimi" value={this.props.name} labelClassName="col-md-4"
