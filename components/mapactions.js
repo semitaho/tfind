@@ -1,4 +1,5 @@
 import {toggleSpinner} from './spinneractions.js';
+import TextFormatter from './../utils/textformatter.js';
 export function receiveLocation(location){
   return {
     type: 'RECEIVE_LOCATION',
@@ -29,14 +30,27 @@ export function receiveCircle(circle){
 export function onMapClick(event){
 
   let geocoder = new google.maps.Geocoder;
-  return dispatch => {
+  return (dispatch, getState) => {
     let newClickPosition = {lat: event.latLng.lat(), lng: event.latLng.lng()};
     return geocoder.geocode({'location': newClickPosition}, (results, status) => {
       if (status === google.maps.GeocoderStatus.OK) {
         if (results[0]) {
+          let wanha = getState();
+          if (wanha.mapstate && wanha.mapstate.katoamispaikka){
+            let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(wanha.mapstate.katoamispaikka.lat, wanha.mapstate.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
+            console.log('distance',distance)
+
+            dispatch({type:'RECEIVE_KATOAMISDISTANCE', distance: TextFormatter.formatMeters(distance)});
+
+          }
+
+
          // let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(this.state.katoamispaikka.lat, this.state.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
           dispatch({type: 'RECEIVE_CIRCLE', circle: newClickPosition});
           dispatch({type: 'RECEIVE_LOCATION', location: newClickPosition});
+          dispatch({type: 'RECEIVE_MARKER', marker: newClickPosition});
+
+          dispatch({type: 'RECEIVE_NAMED_LOCATION', location: results[0].formatted_address});
          
             /*
             circle: newClickPosition,

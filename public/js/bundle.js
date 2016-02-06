@@ -58,7 +58,7 @@
 
 	var _routes2 = _interopRequireDefault(_routes);
 
-	var _createBrowserHistory = __webpack_require__(708);
+	var _createBrowserHistory = __webpack_require__(709);
 
 	var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
 
@@ -24722,11 +24722,11 @@
 
 	var _kadonneetlist2 = _interopRequireDefault(_kadonneetlist);
 
-	var _questionsanswers = __webpack_require__(706);
+	var _questionsanswers = __webpack_require__(707);
 
 	var _questionsanswers2 = _interopRequireDefault(_questionsanswers);
 
-	var _nomatch = __webpack_require__(707);
+	var _nomatch = __webpack_require__(708);
 
 	var _nomatch2 = _interopRequireDefault(_nomatch);
 
@@ -26279,8 +26279,23 @@
 	        circle: action.location,
 	        center: action.location,
 	        marker: action.location,
-	        katoamispaikka: action.location
+	        katoamispaikka: action.location,
+	        katoamisdistance: 0
 	      });
+
+	    case 'RECEIVE_NAMED_LOCATION':
+	      return Object.assign({}, state, {
+	        location: action.location
+	      });
+	    case 'RECEIVE_MARKER':
+	      return Object.assign({}, state, {
+	        marker: action.marker
+	      });
+	    case 'RECEIVE_KATOAMISDISTANCE':
+	      return Object.assign({}, state, {
+	        katoamisdistance: action.distance
+	      });
+
 	    case 'RECEIVE_LOCATION':
 	      return Object.assign({}, state, {
 	        center: action.location
@@ -26446,6 +26461,12 @@
 	        return { show: false };
 	      }
 	      return { item: action.item, show: true, opened: true };
+
+	    case 'OPEN_SAVE_MARKING':
+	      console.log('joo save marking');
+	      return Object.assign({}, state, {
+	        confirmdialog: action.confirmObject
+	      });
 	    case 'MARK_TO_MAP':
 	      var item = Object.assign({}, state.item);
 	      return {
@@ -65987,6 +66008,12 @@
 
 	var _spinneractions = __webpack_require__(699);
 
+	var _textformatter = __webpack_require__(689);
+
+	var _textformatter2 = _interopRequireDefault(_textformatter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function receiveLocation(location) {
 	  return {
 	    type: 'RECEIVE_LOCATION',
@@ -66017,14 +66044,25 @@
 	function onMapClick(event) {
 
 	  var geocoder = new google.maps.Geocoder();
-	  return function (dispatch) {
+	  return function (dispatch, getState) {
 	    var newClickPosition = { lat: event.latLng.lat(), lng: event.latLng.lng() };
 	    return geocoder.geocode({ 'location': newClickPosition }, function (results, status) {
 	      if (status === google.maps.GeocoderStatus.OK) {
 	        if (results[0]) {
+	          var wanha = getState();
+	          if (wanha.mapstate && wanha.mapstate.katoamispaikka) {
+	            var distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(wanha.mapstate.katoamispaikka.lat, wanha.mapstate.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
+	            console.log('distance', distance);
+
+	            dispatch({ type: 'RECEIVE_KATOAMISDISTANCE', distance: _textformatter2.default.formatMeters(distance) });
+	          }
+
 	          // let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(this.state.katoamispaikka.lat, this.state.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
 	          dispatch({ type: 'RECEIVE_CIRCLE', circle: newClickPosition });
 	          dispatch({ type: 'RECEIVE_LOCATION', location: newClickPosition });
+	          dispatch({ type: 'RECEIVE_MARKER', marker: newClickPosition });
+
+	          dispatch({ type: 'RECEIVE_NAMED_LOCATION', location: results[0].formatted_address });
 
 	          /*
 	          circle: newClickPosition,
@@ -66091,7 +66129,7 @@
 
 	var _reactRedux = __webpack_require__(213);
 
-	var _etsiactions = __webpack_require__(705);
+	var _etsiactions = __webpack_require__(706);
 
 	var _mapactions = __webpack_require__(700);
 
@@ -66140,7 +66178,7 @@
 	            );
 	          })
 	        ),
-	        this.props.modal && this.props.modal.show ? _react2.default.createElement(_kadonneetSearchMap2.default, _extends({ onMapClick: this.props.onMapClick, changeRadius: this.props.changeRadius, markToMap: function markToMap(radius, katoamisloc) {
+	        this.props.modal && this.props.modal.show ? _react2.default.createElement(_kadonneetSearchMap2.default, _extends({ cancelConfirmMarking: this.props.cancelConfirmMarking, saveMarking: this.props.saveMarking, onMapClick: this.props.onMapClick, changeRadius: this.props.changeRadius, markToMap: function markToMap(radius, katoamisloc) {
 	            return _this2.props.markToMap(radius, katoamisloc);
 	          } }, this.props.mapstate, this.props.modal, { onclose: function onclose() {
 	            return _this2.props.toggleEtsiModal(false);
@@ -66173,6 +66211,12 @@
 	    },
 	    onMapClick: function onMapClick(event) {
 	      return dispatch((0, _mapactions.onMapClick)(event));
+	    },
+	    saveMarking: function saveMarking() {
+	      return dispatch((0, _etsiactions.saveMarking)());
+	    },
+	    cancelConfirmMarking: function cancelConfirmMarking() {
+	      return dispatch((0, _etsiactions.cancelConfirmMarking)());
 	    }
 
 	  };
@@ -66230,7 +66274,7 @@
 
 	var _kadonneetMarker2 = _interopRequireDefault(_kadonneetMarker);
 
-	var _kadonneetTracker = __webpack_require__(704);
+	var _kadonneetTracker = __webpack_require__(705);
 
 	var _kadonneetTracker2 = _interopRequireDefault(_kadonneetTracker);
 
@@ -66261,7 +66305,6 @@
 	    _this.onErrorGeocoding = _this.onErrorGeocoding.bind(_this);
 	    _this.markToMap = _this.markToMap.bind(_this);
 	    _this.radiuschanged = _this.radiuschanged.bind(_this);
-	    _this.circlechanged = _this.circlechanged.bind(_this);
 	    _this.onMapClick = _this.onMapClick.bind(_this);
 
 	    _this.state = { loading: false, katoamisdistance: 0 };
@@ -66323,9 +66366,9 @@
 	        _reactBootstrap.Modal,
 	        { dialogClassName: 'search-modal', show: true, bsSize: 'large', onHide: this.props.onclose },
 	        this.props.opened === false && this.state.started === true ? this.renderTracking() : '',
-	        this.props.opened === false && this.props.marking ? _react2.default.createElement(_kadonneetMarker2.default, { position: this.state.katoamispaikka, item: this.props.item, onclose: this.props.onclose,
-	          radius: this.props.radius, location: this.props.location,
-	          katoamisdistance: this.state.katoamisdistance }) : '',
+	        this.props.opened === false && this.props.marking ? _react2.default.createElement(_kadonneetMarker2.default, { cancelConfirmMarking: this.props.cancelConfirmMarking, position: this.state.katoamispaikka, item: this.props.item, onclose: this.props.onclose,
+	          radius: this.props.radius, location: this.props.location, confirmdialog: this.props.confirmdialog,
+	          katoamisdistance: this.props.katoamisdistance, saveMarking: this.props.saveMarking }) : '',
 	        _react2.default.createElement(
 	          _reactBootstrap.Modal.Body,
 	          null,
@@ -66360,25 +66403,25 @@
 	  }, {
 	    key: 'onMapClick',
 	    value: function onMapClick(event) {
-	      var _this2 = this;
-
 	      this.props.onMapClick(event);
 	      console.log('on map click', event);
-	      var newClickPosition = { lat: event.latLng.lat(), lng: event.latLng.lng() };
-	      this.geocoder.geocode({ 'location': newClickPosition }, function (results, status) {
+	      /*
+	      let newClickPosition = {lat: event.latLng.lat(), lng: event.latLng.lng()};
+	      this.geocoder.geocode({'location': newClickPosition}, (results, status) => {
 	        if (status === google.maps.GeocoderStatus.OK) {
 	          if (results[0]) {
-	            var distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(_this2.state.katoamispaikka.lat, _this2.state.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
-	            _this2.setState({
+	            let distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(this.state.katoamispaikka.lat, this.state.katoamispaikka.lng), new google.maps.LatLng(newClickPosition.lat, newClickPosition.lng));
+	            this.setState({
 	              circle: newClickPosition,
 	              center: newClickPosition,
 	              marker: newClickPosition,
 	              location: results[0].formatted_address,
-	              katoamisdistance: _textformatter2.default.formatMeters(distance)
+	              katoamisdistance: TextFormatter.formatMeters(distance)
 	            });
 	          }
 	        }
 	      });
+	      */
 	    }
 	  }, {
 	    key: 'renderTracking',
@@ -66470,16 +66513,16 @@
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      var loc = _itemutils2.default.findKatoamispaikkaLoc(this.props.item);
 	      this.initMap({ latitude: loc.lat, longitude: loc.lng });
 	      this.resizeListener = google.maps.event.addDomListener(window, "resize", function () {
 	        var mapId = 'kadonneet-search-map';
 	        _uiutils2.default.calculateModalMapHeight(mapId);
-	        var center = _this3.map.getCenter();
-	        var loc = _itemutils2.default.findKatoamispaikkaLoc(_this3.props.item);
-	        _this3.map.setCenter({ lat: loc.lat, lng: loc.lng });
+	        var center = _this2.map.getCenter();
+	        var loc = _itemutils2.default.findKatoamispaikkaLoc(_this2.props.item);
+	        _this2.map.setCenter({ lat: loc.lat, lng: loc.lng });
 	      });
 	    }
 	  }, {
@@ -66504,37 +66547,17 @@
 	    value: function markToMap() {
 	      var katoamisLoc = _itemutils2.default.findKatoamispaikkaLoc(this.props.item);
 	      this.props.markToMap(this.props.radius, katoamisLoc);
-	      /*
-	        this.setState({
-	        opened: false,
-	        marking: true,
-	        radius: this.props.radius,
-	        katoamispaikka: katoamisLoc,
-	        center: katoamisLoc,
-	        marker: katoamisLoc,
-	        circle: katoamisLoc
-	      });
-	      */
 	    }
 	  }, {
 	    key: 'componentDidUpdate',
 	    value: function componentDidUpdate() {
-	      console.log('cdu');
 	      _uiutils2.default.calculateModalMapHeight('kadonneet-search-map');
 	    }
-	  }, {
-	    key: 'updateLocation',
-	    value: function updateLocation(latlng) {}
 	  }, {
 	    key: 'radiuschanged',
 	    value: function radiuschanged(radius) {
 	      console.log('ai radius');
 	      this.props.changeRadius(Math.round(radius));
-	    }
-	  }, {
-	    key: 'circlechanged',
-	    value: function circlechanged(center) {
-	      this.updateLocation(center);
 	    }
 	  }]);
 
@@ -66553,6 +66576,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -66582,6 +66607,10 @@
 
 	var _spinner2 = _interopRequireDefault(_spinner);
 
+	var _kadonneetConfirmDialog = __webpack_require__(704);
+
+	var _kadonneetConfirmDialog2 = _interopRequireDefault(_kadonneetConfirmDialog);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -66599,28 +66628,16 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(KadonneetMarker).call(this));
 
 	    _this.state = { saveMarking: false };
-	    _this.cancelConfirmMarking = _this.cancelConfirmMarking.bind(_this);
 
 	    return _this;
 	  }
 
 	  _createClass(KadonneetMarker, [{
-	    key: 'cancelConfirmMarking',
-	    value: function cancelConfirmMarking() {
-	      this.setState({ saveMarking: false });
-	    }
-	  }, {
 	    key: 'renderConfirm',
 	    value: function renderConfirm() {
 	      var _this2 = this;
 
-	      var ajankohtaChange = function ajankohtaChange(val) {
-	        _this2.setState({ ajankohtaTimestamp: val });
-	      };
-
-	      var searchResultChange = function searchResultChange(event) {
-	        _this2.setState({ searchResult: event.target.value });
-	      };
+	      console.log('rendering confirmmm');
 
 	      var saveMarking = function saveMarking(_) {
 	        _this2.setState({ saving: true });
@@ -66646,51 +66663,6 @@
 	          }
 	        });
 	      };
-
-	      return _react2.default.createElement(
-	        _confirmDialog2.default,
-	        { onHide: this.cancelConfirmMarking, onSave: saveMarking },
-	        this.state.saving ? _react2.default.createElement(_spinner2.default, { dimm: 'confirm-form' }) : '',
-	        _react2.default.createElement(
-	          'form',
-	          { className: 'form-horizontal', id: 'confirm-form' },
-	          _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Nimi', value: this.props.item.name, labelClassName: 'col-md-4',
-	            wrapperClassName: 'col-md-8' }),
-	          _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Etsitty kohteesta', value: this.props.location, labelClassName: 'col-md-4',
-	            wrapperClassName: 'col-md-8' }),
-	          _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Etsintäsäde', value: this.props.radius + ' m', labelClassName: 'col-md-4',
-	            wrapperClassName: 'col-md-8' }),
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'form-group' },
-	            _react2.default.createElement(
-	              'label',
-	              { className: 'control-label col-md-4' },
-	              'Etsintäajankohta'
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col-md-8' },
-	              _react2.default.createElement(_reactBootstrapDatetimepicker2.default, { format: 'x', ref: 'time',
-	                inputFormat: 'D.M.YYYY H:mm',
-	                onChange: ajankohtaChange })
-	            )
-	          ),
-	          _react2.default.createElement(
-	            _reactBootstrap.Input,
-	            { type: 'select', labelClassName: 'col-md-4', wrapperClassName: 'col-md-8', label: 'Etsinnän tulos',
-	              onChange: searchResultChange,
-	              placeholder: '1' },
-	            this.props.searchResults.map(function (item) {
-	              return _react2.default.createElement(
-	                'option',
-	                { value: item.value },
-	                item.label
-	              );
-	            })
-	          )
-	        )
-	      );
 	    }
 	  }, {
 	    key: 'render',
@@ -66698,9 +66670,9 @@
 	      var _this3 = this;
 
 	      var confirmSaveMarking = function confirmSaveMarking(_) {
-	        var d = new Date();
-	        var n = d.getTime();
-	        _this3.setState({ saveMarking: true, ajankohtaTimestamp: n });
+	        console.log('got', _this3.props);
+	        _this3.props.saveMarking();
+	        //   this.setState({saveMarking: true, ajankohtaTimestamp: n});
 	      };
 
 	      return _react2.default.createElement(
@@ -66756,7 +66728,7 @@
 	            )
 	          )
 	        ),
-	        this.state.saveMarking ? this.renderConfirm() : ''
+	        this.props.confirmdialog ? _react2.default.createElement(_kadonneetConfirmDialog2.default, _extends({ cancel: this.props.cancelConfirmMarking }, this.props.confirmdialog)) : ''
 	      );
 	    }
 	  }]);
@@ -66772,6 +66744,115 @@
 
 /***/ },
 /* 704 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _confirmDialog = __webpack_require__(697);
+
+	var _confirmDialog2 = _interopRequireDefault(_confirmDialog);
+
+	var _reactBootstrap = __webpack_require__(244);
+
+	var _reactBootstrapDatetimepicker = __webpack_require__(491);
+
+	var _reactBootstrapDatetimepicker2 = _interopRequireDefault(_reactBootstrapDatetimepicker);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var KadonneetConfirmDialog = (function (_React$Component) {
+	  _inherits(KadonneetConfirmDialog, _React$Component);
+
+	  function KadonneetConfirmDialog() {
+	    _classCallCheck(this, KadonneetConfirmDialog);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(KadonneetConfirmDialog).apply(this, arguments));
+	  }
+
+	  _createClass(KadonneetConfirmDialog, [{
+	    key: 'render',
+	    value: function render() {
+	      var saveMarking = function saveMarking() {};
+
+	      var ajankohtaChange = function ajankohtaChange() {};
+
+	      var searchResultChange = function searchResultChange() {};
+
+	      return _react2.default.createElement(
+	        _confirmDialog2.default,
+	        { onHide: this.props.cancel, onSave: saveMarking },
+	        this.props.saving ? _react2.default.createElement(Spinner, { dimm: 'confirm-form' }) : '',
+	        _react2.default.createElement(
+	          'form',
+	          { className: 'form-horizontal', id: 'confirm-form' },
+	          _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Nimi', value: this.props.name, labelClassName: 'col-md-4',
+	            wrapperClassName: 'col-md-8' }),
+	          _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Etsitty kohteesta', value: this.props.location, labelClassName: 'col-md-4',
+	            wrapperClassName: 'col-md-8' }),
+	          _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Etsintäsäde', value: this.props.radius + ' m', labelClassName: 'col-md-4',
+	            wrapperClassName: 'col-md-8' }),
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'form-group' },
+	            _react2.default.createElement(
+	              'label',
+	              { className: 'control-label col-md-4' },
+	              'Etsintäajankohta'
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-8' },
+	              _react2.default.createElement(_reactBootstrapDatetimepicker2.default, { format: 'x', ref: 'time',
+	                inputFormat: 'D.M.YYYY H:mm',
+	                onChange: ajankohtaChange })
+	            )
+	          ),
+	          _react2.default.createElement(
+	            _reactBootstrap.Input,
+	            { type: 'select', labelClassName: 'col-md-4', wrapperClassName: 'col-md-8', label: 'Etsinnän tulos',
+	              onChange: searchResultChange,
+	              placeholder: '1' },
+	            this.props.searchResults.map(function (item) {
+	              return _react2.default.createElement(
+	                'option',
+	                { value: item.value },
+	                item.label
+	              );
+	            })
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return KadonneetConfirmDialog;
+	})(_react2.default.Component);
+
+	KadonneetConfirmDialog.defaultProps = { searchResults: [{ value: 1, label: 'Ei havaintoa' }, { value: 2, label: 'Löydetty elävänä' }, {
+	    value: 3,
+	    label: 'Löydetty kuolleena'
+	  }] };
+
+	exports.default = KadonneetConfirmDialog;
+
+/***/ },
+/* 705 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -66850,7 +66931,7 @@
 	exports.default = KadonneetTracker;
 
 /***/ },
-/* 705 */
+/* 706 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -66860,6 +66941,8 @@
 	});
 	exports.toggleEtsiModal = toggleEtsiModal;
 	exports.markToMap = markToMap;
+	exports.saveMarking = saveMarking;
+	exports.cancelConfirmMarking = cancelConfirmMarking;
 	function toggleEtsiModal(isopen, item) {
 	  return {
 	    type: 'TOGGLE_ETSI_MODAL',
@@ -66876,8 +66959,25 @@
 	  };
 	}
 
+	function saveMarking() {
+	  return function (dispatch, getState) {
+	    console.log('saving marking....', getState());
+	    var state = getState();
+	    var confirmObject = { name: state.etsistate.modal.item.name, location: state.mapstate.location, radius: state.mapstate.radius };
+	    return dispatch({ type: 'OPEN_SAVE_MARKING', confirmObject: confirmObject });
+	  };
+	}
+
+	function cancelConfirmMarking() {
+	  return {
+	    type: 'OPEN_SAVE_MARKING',
+	    confirmObject: null
+
+	  };
+	}
+
 /***/ },
-/* 706 */
+/* 707 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -66959,7 +67059,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(UKKForm);
 
 /***/ },
-/* 707 */
+/* 708 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -66993,7 +67093,7 @@
 	exports.default = NoMatch;
 
 /***/ },
-/* 708 */
+/* 709 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';

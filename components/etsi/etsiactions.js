@@ -13,3 +13,20 @@ export function markToMap(radius, location){
     location
   };
 }
+
+export function saveMarking(){
+  return (dispatch,getState) => {
+    console.log('saving marking....', getState());
+    let state = getState();
+    let confirmObject = {name: state.etsistate.modal.item.name, location: state.mapstate.location, radius: state.mapstate.radius}
+    return dispatch({type:'OPEN_SAVE_MARKING', confirmObject});
+  }
+}
+
+export function cancelConfirmMarking(){
+  return {
+    type: 'OPEN_SAVE_MARKING',
+    confirmObject: null
+
+  };
+}

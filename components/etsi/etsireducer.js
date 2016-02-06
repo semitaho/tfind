@@ -15,6 +15,12 @@ function etsimodalreducer(state=modalInitialState, action){
        return {show:false};
       }
       return  {item: action.item, show: true, opened: true};
+    
+    case 'OPEN_SAVE_MARKING':
+      console.log('joo save marking');
+      return Object.assign({}, state, {
+        confirmdialog: action.confirmObject
+      });
     case 'MARK_TO_MAP':
       let item= Object.assign({},state.item);
       return {

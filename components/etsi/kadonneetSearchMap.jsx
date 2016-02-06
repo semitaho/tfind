@@ -22,7 +22,6 @@ export default class KadonneetSearchMap extends React.Component {
     this.onErrorGeocoding = this.onErrorGeocoding.bind(this);
     this.markToMap = this.markToMap.bind(this);
     this.radiuschanged = this.radiuschanged.bind(this);
-    this.circlechanged = this.circlechanged.bind(this);
     this.onMapClick = this.onMapClick.bind(this);
 
     this.state = {loading: false, katoamisdistance: 0};
@@ -61,10 +60,9 @@ export default class KadonneetSearchMap extends React.Component {
         this.renderTracking() : ''}
 
       {this.props.opened === false && this.props.marking ?
-        <KadonneetMarker position={this.state.katoamispaikka} item={this.props.item} onclose={this.props.onclose}
-                         radius={this.props.radius} location={this.props.location}
-                         katoamisdistance={this.state.katoamisdistance}/> : ''}
-
+        <KadonneetMarker cancelConfirmMarking={this.props.cancelConfirmMarking} position={this.state.katoamispaikka} item={this.props.item} onclose={this.props.onclose}
+                         radius={this.props.radius} location={this.props.location} confirmdialog={this.props.confirmdialog}
+                         katoamisdistance={this.props.katoamisdistance} saveMarking={this.props.saveMarking}  /> : ''} 
       <Modal.Body>
         {this.props.opened === true ?
           <div>
@@ -97,6 +95,7 @@ export default class KadonneetSearchMap extends React.Component {
   onMapClick(event) {
     this.props.onMapClick(event);
     console.log('on map click', event);
+    /*
     let newClickPosition = {lat: event.latLng.lat(), lng: event.latLng.lng()};
     this.geocoder.geocode({'location': newClickPosition}, (results, status) => {
       if (status === google.maps.GeocoderStatus.OK) {
@@ -112,6 +111,7 @@ export default class KadonneetSearchMap extends React.Component {
         }
       }
     });
+*/
 
   }
 
@@ -227,28 +227,11 @@ export default class KadonneetSearchMap extends React.Component {
   markToMap() {
     let katoamisLoc = ItemUtils.findKatoamispaikkaLoc(this.props.item);
     this.props.markToMap(this.props.radius, katoamisLoc); 
-    /*
-
-
-    this.setState({
-      opened: false,
-      marking: true,
-      radius: this.props.radius,
-      katoamispaikka: katoamisLoc,
-      center: katoamisLoc,
-      marker: katoamisLoc,
-      circle: katoamisLoc
-    });
-*/
+  
   }
 
   componentDidUpdate() {
-    console.log('cdu');
     UIUtils.calculateModalMapHeight('kadonneet-search-map');
-  }
-
-  updateLocation(latlng) {
-
   }
 
   radiuschanged(radius) {
@@ -256,10 +239,6 @@ export default class KadonneetSearchMap extends React.Component {
     this.props.changeRadius(Math.round(radius));
   }
 
-  circlechanged(center) {
-    this.updateLocation(center);
-
-  }
 }
 
 KadonneetSearchMap.defaultProps = {

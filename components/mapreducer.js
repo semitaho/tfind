@@ -7,8 +7,23 @@ export default function mapreducer(state={}, action){
         circle: action.location,
         center: action.location,
         marker: action.location,
-        katoamispaikka: action.location
+        katoamispaikka: action.location,
+        katoamisdistance: 0
       });
+
+    case 'RECEIVE_NAMED_LOCATION':
+      return Object.assign({},state, {
+        location: action.location
+    });
+    case 'RECEIVE_MARKER':
+      return Object.assign({},state, {
+        marker: action.marker
+      });  
+    case 'RECEIVE_KATOAMISDISTANCE':
+      return Object.assign({},state, {
+        katoamisdistance: action.distance
+      });
+
     case 'RECEIVE_LOCATION':
       return Object.assign({},state, {
         center: action.location
