@@ -9,11 +9,12 @@ function etsiitemsreducer(state=itemsInitialState, action){
 const modalInitialState = {show:false}
 
 function etsimodalreducer(state=modalInitialState, action){
+  let newConfirmObject;
   switch (action.type){
-    
-    case 'LOAD_SPINNER': 
+  
+    case 'TOGGLE_SPINN': 
      let newObject = Object.assign({},state.confirmdialog,{
-        saving: true
+        saving: action.value
       });
      return Object.assign({},state,{
         confirmdialog: newObject
@@ -25,12 +26,21 @@ function etsimodalreducer(state=modalInitialState, action){
       }
       return  {item: action.item, show: true, opened: true};
     case 'CHANGE_AJANKOHTA':
-      let newConfirmObject = Object.assign({},state.confirmdialog,{
-        ajankohta: action.timestamp
+      newConfirmObject = Object.assign({},state.confirmdialog,{
+        ajankohtaTimestamp: action.timestamp
       });
       return Object.assign({},state,{
         confirmdialog: newConfirmObject
       });
+
+    case 'CHANGE_TYPE':
+      newConfirmObject = Object.assign({},state.confirmdialog,{
+        searchResult: action.result
+      });
+      return Object.assign({},state,{
+        confirmdialog: newConfirmObject
+      });
+      
     case 'OPEN_SAVE_MARKING':
       console.log('joo save marking');
       return Object.assign({}, state, {

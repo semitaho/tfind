@@ -2,7 +2,7 @@ import React from 'react';
 import KadonneetSearchMap from './kadonneetSearchMap.jsx';
 import Page from './../page.jsx';
 import { connect } from 'react-redux'
-import {toggleEtsiModal, markToMap, saveMarking, cancelConfirmMarking, doSaveMarking, changeAjankohta} from './etsiactions.js';
+import {toggleEtsiModal, markToMap, saveMarking, cancelConfirmMarking, doSaveMarking, changeAjankohta, changeType} from './etsiactions.js';
 import {changeRadius, onMapClick} from './../mapactions.js';
 class KadonneetList extends React.Component{
   constructor(){
@@ -42,6 +42,7 @@ const mapDispatchToProps = dispatch => {
       saveMarking: () => dispatch(saveMarking()),
       doSaveMarking: () => dispatch(doSaveMarking()),
       changeAjankohta: (e) => dispatch(changeAjankohta(e)),
+      changeType: (type) => dispatch(changeType(type)),
       cancelConfirmMarking: () => dispatch(cancelConfirmMarking())
     }
 

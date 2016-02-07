@@ -184,6 +184,7 @@ mongoConnection.then(db => {
   }).post('/saveilmoita', (req, res) => {
     var copy = {
       name: req.body.name,
+      age: req.body.age,
       description: req.body.description,
       imgsrc: req.body.imgsrc,
       radius: req.body.radius,
@@ -210,6 +211,7 @@ mongoConnection.then(db => {
     console.log('body', req.body);
     var copy = Object.assign({}, req.body);
     copy.searchResult = parseInt(copy.searchResult, 10);
+    delete copy.saving;
     delete copy._id;
 
     collections.kadonneet.update({_id: new ObjectId(req.body._id)}, {'$push': {'markings': copy}}, function (err, result) {

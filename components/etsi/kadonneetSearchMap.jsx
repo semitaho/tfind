@@ -126,12 +126,6 @@ export default class KadonneetSearchMap extends React.Component {
     if (!this.checkLatestPointsDistance(latlng.coords)) {
       return;
     }
-    /*
-
-    this.updateRoute(position);
-    var length = this.calculateLength();
-    this.setState({length: length});
-    */
   }
 
   calculateLength() {

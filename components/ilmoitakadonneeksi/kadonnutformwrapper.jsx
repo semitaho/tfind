@@ -11,9 +11,9 @@ class KadonnutFormWrapper extends React.Component  {
   
 
   render(){
-    let {dispatch, formprops, mapstate, loading} = this.props;
+    let {dispatch, formprops, mapstate, formactions, mapactions, loading} = this.props;
     return (
-      <KadonnutForm loading={loading} {...formprops} {...mapstate}  onSave={(data) => dispatch(save(data))} changeRadius={radius => dispatch(changeRadius(radius))} selectArea={event => dispatch(selectArea(event))} togglePage={page => dispatch(togglePage(page))}  changeField={(field,value) => dispatch(changeField(field,value))} />
+      <KadonnutForm loading={loading} {...formprops} {...mapstate} {...formactions} {...mapactions}  />
     )
   }
 
@@ -25,8 +25,7 @@ class KadonnutFormWrapper extends React.Component  {
         lng: () => this.props.mapstate.center.lng
       }
     };
-    this.props.dispatch(selectArea(event));
-    this.props.dispatch(toggleSpinner(true));
+    this.props.mapactions.selectArea(event);
 
   }
 };
@@ -38,5 +37,21 @@ function mapStateToProps(state){
     loading: state.loading
   };
 }
+function mapDispatchToProps(dispatch){
+  return {
 
-export default connect(mapStateToProps)(KadonnutFormWrapper);
+
+    mapactions: {
+      changeRadius: radius => dispatch(changeRadius(radius)),
+      selectArea: event => dispatch(selectArea(event))
+    },
+    formactions: {
+      onSave: data => dispatch(save(data)),
+      togglePage: page => dispatch(togglePage(page)),
+      changeField: (field,value) => dispatch(changeField(field,value))
+    }
+  }
+
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(KadonnutFormWrapper);

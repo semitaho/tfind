@@ -138,8 +138,7 @@ body {
   max-height: 100px;
 }
 .wizard-content {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin: 20px;
 }
 .darkened {
   z-index: 1000;

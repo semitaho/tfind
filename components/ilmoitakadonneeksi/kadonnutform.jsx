@@ -70,13 +70,15 @@ class KadonnutForm extends React.Component {
 
   render() {
     let isNameValid = this.isValid(["name"]);
-    let isDescriptionValid = this.isValid(['name', 'description']);
-    let isImageValid = this.isValid(['name', 'description', 'imgsrc']);
+    let isAgeValid = this.isValid(["name", "age"]);
 
-    let isTimeValid = this.isValid(['name', 'description', 'imgsrc']) && this.isTimeValid();
-    let isMapValid = this.isValid(['name', 'description', 'imgsrc']) && this.isTimeValid() && this.isMapValid();
+    let isDescriptionValid = this.isValid(['name', 'age', 'description']);
+    let isImageValid = this.isValid(['name', 'age', 'description', 'imgsrc']);
 
-    let fields = [isNameValid, isDescriptionValid, isImageValid, isTimeValid, isMapValid];
+    let isTimeValid = this.isValid(['name', 'age', 'description', 'imgsrc']) && this.isTimeValid();
+    let isMapValid = this.isValid(['name', 'age', 'description', 'imgsrc']) && this.isTimeValid() && this.isMapValid();
+
+    let fields = [isNameValid, isAgeValid,isDescriptionValid, isImageValid, isTimeValid, isMapValid];
 
     var correctCount = 0;
     for (let field of fields) {
@@ -94,11 +96,11 @@ class KadonnutForm extends React.Component {
         <p className="lead">Onko joku sukulainen tai tuttusi kadonnut? Tällä sivulla voit ilmoittaa henkilön kadonneeksi ja tarvittaessa julkaista tapaus Sosiaalisessa mediassa.</p>
         <p className="lead">Täytä allaoleva lomake huolellisesti.</p>  
       <div className="row">
-        <div className="col-md-12">
+        <div className="col-md-10 col-md-offset-1">
           <label className="control-label">Edistys</label>
           <ProgressBar now={ Math.round((correctCount / fields.length ) * 100)} label="%(percent)s%" bsStyle="success"/>
         </div>
-        <div className="col-md-12">
+        <div className="col-md-10 col-md-offset-1 text-left">
           <Tabs activeKey={this.props.active} onSelect={key => this.props.togglePage(key)}>
 
             <Tab eventKey={1} title="1. Nimi" tabIndex="-1">
@@ -107,10 +109,16 @@ class KadonnutForm extends React.Component {
                        placeholder="Syötä muodossa etunimi sukunimi"
                        value={this.props.formstate.name}
                        label="Henkilön nimi"/>
-                <Next disabled={!isNameValid} onClick={() => this.props.togglePage(2)}/>
+                {isNameValid ?
+                <Input tabIndex="2" type="select" onChange={ e =>  this.props.changeField('age', e.target.value)} value={this.props.formstate.age} name="ika"
+                        label="Ikä">
+                <option value="">Valitse</option>
+                {this.props.ages.map(ageobj => <option value={ageobj} >{ageobj}</option>) }
+                </Input> : ''}
+                <Next disabled={!isNameValid || !isAgeValid} onClick={() => this.props.togglePage(2)}/>
               </div>
             </Tab>
-            {isNameValid ?
+            {isAgeValid ?
               <Tab title="2. Tiedot" tabIndex="-1" eventKey={2}>
                 <div className="wizard-content">
                   <Input bsSize="large" type="textarea" autoFocus="true" tabIndex="2"
@@ -168,13 +176,16 @@ class KadonnutForm extends React.Component {
 
             {isFormValid ?
               <Tab title="5. Esikatselu" eventKey={5} tabIndex="-1">
-                <div className="wizard-content">
+                <div className="wizard-content text-left">
                   <fieldset>
                     <legend>Tarkista lomakkeen tiedot</legend>
                     <form className="form-horizontal" id="confirm-form">
                       <FormControls.Static label="Henkilön nimi" value={this.props.formstate.name}
                                            labelClassName="col-md-3"
                                            wrapperClassName="col-md-9"/>
+                      <FormControls.Static label="Ikä" value={this.props.formstate.age}
+                                           labelClassName="col-md-3"
+                                           wrapperClassName="col-md-9"/>                     
                       <FormControls.Static label="Henkilön kuvaus" value={this.props.formstate.description}
                                            labelClassName="col-md-3"
                                            wrapperClassName="col-md-9"/>
@@ -223,6 +234,6 @@ class KadonnutForm extends React.Component {
   }
 
 }
-KadonnutForm.defaultProps = {tilanteet: [{value: 1, label: 'Kadonnut'}]};
+KadonnutForm.defaultProps = { ages: Array.from({length: 100}, (x,y)=> y+1), tilanteet: [{value: 1, label: 'Kadonnut'}]};
 
 export default KadonnutForm;

@@ -5,8 +5,6 @@ import DateTimePicker from 'react-bootstrap-datetimepicker';
 import Spinner from './../spinner.jsx';
 
 class KadonneetConfirmDialog extends React.Component{
-
-
   render(){
  
     const ajankohtaChange = (e) => {
@@ -14,8 +12,8 @@ class KadonneetConfirmDialog extends React.Component{
       this.props.changeAjankohta(e);
     };
 
-    const searchResultChange = () => {
-
+    const searchResultChange = (e) => {
+      this.props.changeType(e.target.value);
     };
 
 

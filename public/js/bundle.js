@@ -26455,11 +26455,12 @@
 	  var state = arguments.length <= 0 || arguments[0] === undefined ? modalInitialState : arguments[0];
 	  var action = arguments[1];
 
+	  var newConfirmObject = undefined;
 	  switch (action.type) {
 
-	    case 'LOAD_SPINNER':
+	    case 'TOGGLE_SPINN':
 	      var newObject = Object.assign({}, state.confirmdialog, {
-	        saving: true
+	        saving: action.value
 	      });
 	      return Object.assign({}, state, {
 	        confirmdialog: newObject
@@ -26471,12 +26472,21 @@
 	      }
 	      return { item: action.item, show: true, opened: true };
 	    case 'CHANGE_AJANKOHTA':
-	      var newConfirmObject = Object.assign({}, state.confirmdialog, {
-	        ajankohta: action.timestamp
+	      newConfirmObject = Object.assign({}, state.confirmdialog, {
+	        ajankohtaTimestamp: action.timestamp
 	      });
 	      return Object.assign({}, state, {
 	        confirmdialog: newConfirmObject
 	      });
+
+	    case 'CHANGE_TYPE':
+	      newConfirmObject = Object.assign({}, state.confirmdialog, {
+	        searchResult: action.result
+	      });
+	      return Object.assign({}, state, {
+	        confirmdialog: newConfirmObject
+	      });
+
 	    case 'OPEN_SAVE_MARKING':
 	      console.log('joo save marking');
 	      return Object.assign({}, state, {
@@ -65370,19 +65380,11 @@
 	      var dispatch = _props.dispatch;
 	      var formprops = _props.formprops;
 	      var mapstate = _props.mapstate;
+	      var formactions = _props.formactions;
+	      var mapactions = _props.mapactions;
 	      var loading = _props.loading;
 
-	      return _react2.default.createElement(_Kadonnutform2.default, _extends({ loading: loading }, formprops, mapstate, { onSave: function onSave(data) {
-	          return dispatch((0, _kadonnutformactions.save)(data));
-	        }, changeRadius: function changeRadius(radius) {
-	          return dispatch((0, _mapactions.changeRadius)(radius));
-	        }, selectArea: function selectArea(event) {
-	          return dispatch((0, _mapactions.selectArea)(event));
-	        }, togglePage: function togglePage(page) {
-	          return dispatch((0, _kadonnutformactions.togglePage)(page));
-	        }, changeField: function changeField(field, value) {
-	          return dispatch((0, _kadonnutformactions.changeField)(field, value));
-	        } }));
+	      return _react2.default.createElement(_Kadonnutform2.default, _extends({ loading: loading }, formprops, mapstate, formactions, mapactions));
 	    }
 	  }, {
 	    key: 'componentDidMount',
@@ -65400,8 +65402,7 @@
 	          }
 	        }
 	      };
-	      this.props.dispatch((0, _mapactions.selectArea)(event));
-	      this.props.dispatch((0, _spinneractions.toggleSpinner)(true));
+	      this.props.mapactions.selectArea(event);
 	    }
 	  }]);
 
@@ -65417,8 +65418,32 @@
 	    loading: state.loading
 	  };
 	}
+	function mapDispatchToProps(dispatch) {
+	  return {
 
-	exports.default = (0, _reactRedux.connect)(mapStateToProps)(KadonnutFormWrapper);
+	    mapactions: {
+	      changeRadius: function changeRadius(radius) {
+	        return dispatch((0, _mapactions.changeRadius)(radius));
+	      },
+	      selectArea: function selectArea(event) {
+	        return dispatch((0, _mapactions.selectArea)(event));
+	      }
+	    },
+	    formactions: {
+	      onSave: function onSave(data) {
+	        return dispatch((0, _kadonnutformactions.save)(data));
+	      },
+	      togglePage: function togglePage(page) {
+	        return dispatch((0, _kadonnutformactions.togglePage)(page));
+	      },
+	      changeField: function changeField(field, value) {
+	        return dispatch((0, _kadonnutformactions.changeField)(field, value));
+	      }
+	    }
+	  };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(KadonnutFormWrapper);
 
 /***/ },
 /* 695 */
@@ -65555,13 +65580,15 @@
 	      var _this4 = this;
 
 	      var isNameValid = this.isValid(["name"]);
-	      var isDescriptionValid = this.isValid(['name', 'description']);
-	      var isImageValid = this.isValid(['name', 'description', 'imgsrc']);
+	      var isAgeValid = this.isValid(["name", "age"]);
 
-	      var isTimeValid = this.isValid(['name', 'description', 'imgsrc']) && this.isTimeValid();
-	      var isMapValid = this.isValid(['name', 'description', 'imgsrc']) && this.isTimeValid() && this.isMapValid();
+	      var isDescriptionValid = this.isValid(['name', 'age', 'description']);
+	      var isImageValid = this.isValid(['name', 'age', 'description', 'imgsrc']);
 
-	      var fields = [isNameValid, isDescriptionValid, isImageValid, isTimeValid, isMapValid];
+	      var isTimeValid = this.isValid(['name', 'age', 'description', 'imgsrc']) && this.isTimeValid();
+	      var isMapValid = this.isValid(['name', 'age', 'description', 'imgsrc']) && this.isTimeValid() && this.isMapValid();
+
+	      var fields = [isNameValid, isAgeValid, isDescriptionValid, isImageValid, isTimeValid, isMapValid];
 
 	      var correctCount = 0;
 	      var _iteratorNormalCompletion = true;
@@ -65619,7 +65646,7 @@
 	          { className: 'row' },
 	          _react2.default.createElement(
 	            'div',
-	            { className: 'col-md-12' },
+	            { className: 'col-md-10 col-md-offset-1' },
 	            _react2.default.createElement(
 	              'label',
 	              { className: 'control-label' },
@@ -65629,7 +65656,7 @@
 	          ),
 	          _react2.default.createElement(
 	            'div',
-	            { className: 'col-md-12' },
+	            { className: 'col-md-10 col-md-offset-1 text-left' },
 	            _react2.default.createElement(
 	              _reactBootstrap.Tabs,
 	              { activeKey: this.props.active, onSelect: function onSelect(key) {
@@ -65647,12 +65674,31 @@
 	                    placeholder: 'Syötä muodossa etunimi sukunimi',
 	                    value: this.props.formstate.name,
 	                    label: 'Henkilön nimi' }),
-	                  _react2.default.createElement(_next2.default, { disabled: !isNameValid, onClick: function onClick() {
+	                  isNameValid ? _react2.default.createElement(
+	                    _reactBootstrap.Input,
+	                    { tabIndex: '2', type: 'select', onChange: function onChange(e) {
+	                        return _this4.props.changeField('age', e.target.value);
+	                      }, value: this.props.formstate.age, name: 'ika',
+	                      label: 'Ikä' },
+	                    _react2.default.createElement(
+	                      'option',
+	                      { value: '' },
+	                      'Valitse'
+	                    ),
+	                    this.props.ages.map(function (ageobj) {
+	                      return _react2.default.createElement(
+	                        'option',
+	                        { value: ageobj },
+	                        ageobj
+	                      );
+	                    })
+	                  ) : '',
+	                  _react2.default.createElement(_next2.default, { disabled: !isNameValid || !isAgeValid, onClick: function onClick() {
 	                      return _this4.props.togglePage(2);
 	                    } })
 	                )
 	              ),
-	              isNameValid ? _react2.default.createElement(
+	              isAgeValid ? _react2.default.createElement(
 	                _reactBootstrap.Tab,
 	                { title: '2. Tiedot', tabIndex: '-1', eventKey: 2 },
 	                _react2.default.createElement(
@@ -65745,7 +65791,7 @@
 	                { title: '5. Esikatselu', eventKey: 5, tabIndex: '-1' },
 	                _react2.default.createElement(
 	                  'div',
-	                  { className: 'wizard-content' },
+	                  { className: 'wizard-content text-left' },
 	                  _react2.default.createElement(
 	                    'fieldset',
 	                    null,
@@ -65758,6 +65804,9 @@
 	                      'form',
 	                      { className: 'form-horizontal', id: 'confirm-form' },
 	                      _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön nimi', value: this.props.formstate.name,
+	                        labelClassName: 'col-md-3',
+	                        wrapperClassName: 'col-md-9' }),
+	                      _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Ikä', value: this.props.formstate.age,
 	                        labelClassName: 'col-md-3',
 	                        wrapperClassName: 'col-md-9' }),
 	                      _react2.default.createElement(_reactBootstrap.FormControls.Static, { label: 'Henkilön kuvaus', value: this.props.formstate.description,
@@ -65819,7 +65868,9 @@
 	  return KadonnutForm;
 	})(_react2.default.Component);
 
-	KadonnutForm.defaultProps = { tilanteet: [{ value: 1, label: 'Kadonnut' }] };
+	KadonnutForm.defaultProps = { ages: Array.from({ length: 100 }, function (x, y) {
+	    return y + 1;
+	  }), tilanteet: [{ value: 1, label: 'Kadonnut' }] };
 
 	exports.default = KadonnutForm;
 
@@ -66239,6 +66290,9 @@
 	      changeAjankohta: function changeAjankohta(e) {
 	        return dispatch((0, _etsiactions.changeAjankohta)(e));
 	      },
+	      changeType: function changeType(type) {
+	        return dispatch((0, _etsiactions.changeType)(type));
+	      },
 	      cancelConfirmMarking: function cancelConfirmMarking() {
 	        return dispatch((0, _etsiactions.cancelConfirmMarking)());
 	      }
@@ -66462,11 +66516,6 @@
 	      if (!this.checkLatestPointsDistance(latlng.coords)) {
 	        return;
 	      }
-	      /*
-	       this.updateRoute(position);
-	      var length = this.calculateLength();
-	      this.setState({length: length});
-	      */
 	    }
 	  }, {
 	    key: 'calculateLength',
@@ -66823,7 +66872,9 @@
 	        _this2.props.changeAjankohta(e);
 	      };
 
-	      var searchResultChange = function searchResultChange() {};
+	      var searchResultChange = function searchResultChange(e) {
+	        _this2.props.changeType(e.target.value);
+	      };
 
 	      return _react2.default.createElement(
 	        _confirmDialog2.default,
@@ -66963,7 +67014,7 @@
 
 /***/ },
 /* 706 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -66973,9 +67024,17 @@
 	exports.toggleEtsiModal = toggleEtsiModal;
 	exports.markToMap = markToMap;
 	exports.changeAjankohta = changeAjankohta;
+	exports.changeType = changeType;
 	exports.doSaveMarking = doSaveMarking;
 	exports.saveMarking = saveMarking;
 	exports.cancelConfirmMarking = cancelConfirmMarking;
+
+	var _jquery = __webpack_require__(483);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function toggleEtsiModal(isopen, item) {
 	  return {
 	    type: 'TOGGLE_ETSI_MODAL',
@@ -66999,17 +67058,35 @@
 	  };
 	}
 
-	function doSaveMarking() {
+	function changeType(type) {
+	  return {
+	    type: 'CHANGE_TYPE',
+	    result: type
+	  };
+	}
 
+	function doSaveMarking() {
 	  return function (dispatch, getState) {
-	    dispatch({ type: 'LOAD_SPINNER' });
+	    dispatch({ type: 'TOGGLE_SPINN', value: true });
+	    var dataobject = getState().etsistate.modal.confirmdialog;
+	    return _jquery2.default.ajax({
+	      type: "POST",
+	      contentType: 'application/json; charset=utf-8',
+	      url: '/savemarking',
+	      data: JSON.stringify(dataobject),
+	      success: function success(_) {
+	        dispatch({ type: 'TOGGLE_SPINN', value: false });
+	        dispatch(cancelConfirmMarking());
+	        dispatch(toggleEtsiModal(false));
+	      }
+	    });
 	  };
 	}
 
 	function saveMarking() {
 	  return function (dispatch, getState) {
 	    var state = getState();
-	    var confirmObject = { ajankohta: new Date().getTime(), name: state.etsistate.modal.item.name, location: state.mapstate.location, radius: state.mapstate.radius };
+	    var confirmObject = { _id: state.etsistate.modal.item._id, searchResult: "1", ajankohtaTimestamp: new Date().getTime(), name: state.etsistate.modal.item.name, location: state.mapstate.location, latLng: state.mapstate.center, radius: state.mapstate.radius };
 	    return dispatch({ type: 'OPEN_SAVE_MARKING', confirmObject: confirmObject });
 	  };
 	}
