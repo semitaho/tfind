@@ -1,5 +1,5 @@
 import React from 'react';
-import KadonnutForm from './Kadonnutform.jsx';
+import KadonnutForm from './kadonnutform.jsx';
 import {changeField, togglePage,save} from './kadonnutformactions.js';
 import {selectArea, changeRadius} from './../mapactions.js';
 import {toggleSpinner} from './../spinneractions.js';
