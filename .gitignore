@@ -5,3 +5,5 @@ build
 bundle.js
 bundle.js.map
 public/js/bundle.js
+**/*.iml
+
