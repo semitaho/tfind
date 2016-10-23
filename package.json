@@ -87,7 +87,9 @@
     "redux": "^3.0.5",
     "redux-thunk": "^1.0.3",
     "stylus": "0.52.4",
-    "uglify-js": "^2.6.1"
+    "uglify-js": "^2.6.1",
+    "webpack": "^1.12.9"
+
   },
   "devDependencies": {
     "babel-jest": "*",
