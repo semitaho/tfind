@@ -27040,9 +27040,13 @@
 	              !item.timeout ? '' : _react2.default.createElement(
 	                'p',
 	                { className: 'text-primary' },
-	                'Kadonneena',
-	                _react2.default.createElement('br', null),
-	                this.onKadonnutTimeout()
+	                _react2.default.createElement(
+	                  'strong',
+	                  null,
+	                  'Kadonneena',
+	                  _react2.default.createElement('br', null),
+	                  this.onKadonnutTimeout()
+	                )
 	              )
 	            )
 	          )
@@ -67145,7 +67149,7 @@
 	        { title: 'Usein kysyttyjä kysymyksiä' },
 	        _react2.default.createElement(
 	          'dl',
-	          null,
+	          { className: 'text-left' },
 	          this.props.items.map(function (item, id) {
 	            return _react2.default.createElement(
 	              'div',

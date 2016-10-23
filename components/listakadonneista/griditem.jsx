@@ -108,7 +108,7 @@ class GridItem extends React.Component {
               <Button bsStyle="info" onClick={this.onNewsOpen}>Uutiset henkilöstä {item.name}</Button>
               <Button bsStyle="success" onClick={self.onFormOpen}>Ilmoita havainnosta</Button>
             </div>
-            {!item.timeout ? '' : <p className="text-primary">Kadonneena<br/>{this.onKadonnutTimeout()}</p>}
+            {!item.timeout ? '' : <p className="text-primary"><strong>Kadonneena<br/>{this.onKadonnutTimeout()}</strong></p>}
           </div>
         </div>
       </div>

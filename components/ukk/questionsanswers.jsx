@@ -9,7 +9,7 @@ class UKKForm extends React.Component {
   }
   render() {
     return <Page title="Usein kysyttyjä kysymyksiä">
-              <dl>{this.props.items.map((item,id) => {
+              <dl className="text-left">{this.props.items.map((item,id) => {
                 return (<div key={id} className="lead">
                           <dt>{item.jnro}. {item.question}</dt>
                           <dd>{item.answer}</dd>

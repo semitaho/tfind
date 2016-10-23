@@ -40,8 +40,10 @@ class Navigation extends React.Component {
               </ul>
               <ul className="navbar-nav nav navbar-right">
                 <li>
-                  <div className="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false"
-                       data-auto-logout-link="true"/>
+
+                    <div className="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false"
+                         data-auto-logout-link="true">
+                    </div>
                   </li>
               </ul>
             </div>

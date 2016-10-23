@@ -121,6 +121,12 @@ body {
   -ms-transform: translate(-50%, 0);
   -webkit-transform: translate(-50%, 0);
 }
+.navbar-right {
+  padding-top: 15px;
+}
+.navbar-right iframe {
+  max-height: 50px;
+}
 .example-appear {
   opacity: 0.01;
 }
@@ -180,4 +186,7 @@ body {
 }
 #kadonneet-form-map {
   height: 400px;
+}
+.fb-login-button:before {
+  display: inline-block !important;
 }
